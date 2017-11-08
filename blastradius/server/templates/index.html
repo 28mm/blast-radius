@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Blast Radius (Terraform Graph Tools)</title>
+        <meta charset="utf-8">
+        <script src="/static/js/d3.v4.js"></script>
+        <script src="/static/js/d3-tip.js"></script>
+        <script src="/static/js/terraform-graph.js"></script>
+        <script src="/static/js/categories.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    </head>
+
+    <body>
+        <h2>{{directory}}</h2>
+        <div id="graph"></div>
+    </body>
+
+    <script>
+        svg_activate('#graph', '/graph.svg', '/graph.json');
+    </script>
+
+</html>

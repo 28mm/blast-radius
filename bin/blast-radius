@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+
+"""blast-radius:
+  Quick hack to produce clarified terraform graph visualizations."""
+
+# standard libraries
+import re
+import sys
+import argparse
+import os
+
+# 1st party libraries
+from blastradius.handlers.dot import DotGraph, Format, DotNode
+from blastradius.handlers.plan import Plan
+from blastradius.handlers.apply import Apply
+from blastradius.handlers.terraform import Terraform
+from blastradius.server.server import app
+
+def main():
+
+    parser = parser = argparse.ArgumentParser(description='docvis.py: quick hack to produce clarified terraform grapp visualizations')
+    parser.add_argument('directory', type=str, help='terraform configuration directory', default=os.getcwd(), nargs='?')
+
+    output_group = parser.add_mutually_exclusive_group()
+    output_group.add_argument('--json', action='store_const', const=True, default=False)
+    output_group.add_argument('--dot', action='store_const', const=True, default=False)
+    output_group.add_argument('--svg', action='store_const', const=True, default=False)
+    output_group.add_argument('--serve', action='store_const', const=True, default=False)
+    
+    parser.add_argument('--graph', type=str, help='terraform graph output')
+    parser.add_argument('--plan', type=str, help='terraform plan output', default=None)
+    parser.add_argument('--state', type=str, help='tfstate file', default=None)
+    parser.add_argument('--apply', type=str, help='terraform apply log', default=None)
+
+    # TBD: allow stdin if !filename
+    args = parser.parse_args()
+
+    if args.serve:
+        app.run()
+        sys.exit(0)
+
+    # We always parse dot/graphviz input, but not always Terraform/.tf
+    dot = DotGraph(args.graph)
+
+    if args.json:
+        tf = Terraform(args.directory)
+        for node in dot.nodes:
+            node.definition = tf.get_def(node) 
+    
+    # 
+    if args.plan:
+        plan = Plan(args.plan)
+
+    # 
+    if args.apply:
+        apply = Apply(args.apply)
+
+    # doesn't affect most nodes (which have types), but things like 
+    # [root] root are given differing shapes, so this corrects them.
+    for node in dot.nodes:
+        node.fmt.add(id = '"' + node.svg_id + '"', shape='box')
+
+    # 
+    if args.json:
+        print(dot.json())
+    elif args.dot:
+        print(dot.dot())
+    elif args.svg:
+        print(dot.svg())
+
+
+if __name__ == '__main__':
+    main()

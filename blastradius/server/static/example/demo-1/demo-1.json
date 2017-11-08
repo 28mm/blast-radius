@@ -1,0 +1,193 @@
+{
+    "nodes": [
+        {
+            "simple_name": "aws_iam_role.default",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_0",
+            "label": "[root] aws_iam_role.default",
+            "type": "aws_iam_role",
+            "resource_name": "default",
+            "def": {
+                "name": "terraform_lambda_alexa_example",
+                "assume_role_policy": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"lambda.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
+            }
+        },
+        {
+            "simple_name": "aws_iam_role_policy.default",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_1",
+            "label": "[root] aws_iam_role_policy.default",
+            "type": "aws_iam_role_policy",
+            "resource_name": "default",
+            "def": {
+                "name": "terraform_lambda_alexa_example",
+                "role": "${aws_iam_role.default.id}",
+                "policy": "{\n    \"Version\": \"2012-10-17\",\n    \"Statement\": [\n        {\n            \"Effect\": \"Allow\",\n            \"Action\": [\n                \"logs:CreateLogGroup\",\n                \"logs:CreateLogStream\",\n                \"logs:PutLogEvents\"\n            ],\n            \"Resource\": \"*\"\n        }\n    ]\n}"
+            }
+        },
+        {
+            "simple_name": "aws_lambda_function.default",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_2",
+            "label": "[root] aws_lambda_function.default",
+            "type": "aws_lambda_function",
+            "resource_name": "default",
+            "def": {
+                "filename": "lambda_function.zip",
+                "source_code_hash": "${base64sha256(file(\"lambda_function.zip\"))}",
+                "function_name": "terraform_lambda_alexa_example",
+                "role": "${aws_iam_role.default.arn}",
+                "handler": "lambda_function.lambda_handler",
+                "runtime": "python2.7"
+            }
+        },
+        {
+            "simple_name": "aws_lambda_permission.default",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_3",
+            "label": "[root] aws_lambda_permission.default",
+            "type": "aws_lambda_permission",
+            "resource_name": "default",
+            "def": {
+                "statement_id": "AllowExecutionFromAlexa",
+                "action": "lambda:InvokeFunction",
+                "function_name": "${aws_lambda_function.default.function_name}",
+                "principal": "alexa-appkit.amazon.com"
+            }
+        },
+        {
+            "simple_name": "provider.aws",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_4",
+            "label": "[root] provider.aws",
+            "type": "provider",
+            "resource_name": "aws",
+            "def": []
+        },
+        {
+            "simple_name": "meta.count-boundary (count boundary fixup)",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_5",
+            "label": "[root] meta.count-boundary (count boundary fixup)",
+            "type": "meta",
+            "resource_name": "count-boundary",
+            "def": []
+        },
+        {
+            "simple_name": "output.aws_lambda_function_arn",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_6",
+            "label": "[root] output.aws_lambda_function_arn",
+            "type": "output",
+            "resource_name": "aws_lambda_function_arn",
+            "def": []
+        },
+        {
+            "simple_name": "provider.aws (close)",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_7",
+            "label": "[root] provider.aws (close)",
+            "type": "provider",
+            "resource_name": "aws",
+            "def": []
+        },
+        {
+            "simple_name": "var.aws_region",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_8",
+            "label": "[root] var.aws_region",
+            "type": "var",
+            "resource_name": "aws_region",
+            "def": {
+                "description": "The AWS region to create things in.",
+                "default": "us-east-1"
+            }
+        },
+        {
+            "simple_name": "root",
+            "definition": {},
+            "group": 20000,
+            "svg_id": "node_9",
+            "label": "[root] root",
+            "type": "",
+            "resource_name": "",
+            "def": []
+        }
+    ],
+    "edges": [
+        {
+            "target": "[root] provider.aws",
+            "svg_id": "edge_0",
+            "source": "[root] aws_iam_role.default"
+        },
+        {
+            "target": "[root] aws_iam_role.default",
+            "svg_id": "edge_1",
+            "source": "[root] aws_iam_role_policy.default"
+        },
+        {
+            "target": "[root] aws_iam_role.default",
+            "svg_id": "edge_2",
+            "source": "[root] aws_lambda_function.default"
+        },
+        {
+            "target": "[root] aws_lambda_function.default",
+            "svg_id": "edge_3",
+            "source": "[root] aws_lambda_permission.default"
+        },
+        {
+            "target": "[root] aws_iam_role_policy.default",
+            "svg_id": "edge_4",
+            "source": "[root] meta.count-boundary (count boundary fixup)"
+        },
+        {
+            "target": "[root] aws_lambda_permission.default",
+            "svg_id": "edge_5",
+            "source": "[root] meta.count-boundary (count boundary fixup)"
+        },
+        {
+            "target": "[root] output.aws_lambda_function_arn",
+            "svg_id": "edge_6",
+            "source": "[root] meta.count-boundary (count boundary fixup)"
+        },
+        {
+            "target": "[root] aws_lambda_function.default",
+            "svg_id": "edge_7",
+            "source": "[root] output.aws_lambda_function_arn"
+        },
+        {
+            "target": "[root] aws_iam_role_policy.default",
+            "svg_id": "edge_8",
+            "source": "[root] provider.aws (close)"
+        },
+        {
+            "target": "[root] aws_lambda_permission.default",
+            "svg_id": "edge_9",
+            "source": "[root] provider.aws (close)"
+        },
+        {
+            "target": "[root] var.aws_region",
+            "svg_id": "edge_10",
+            "source": "[root] provider.aws"
+        },
+        {
+            "target": "[root] meta.count-boundary (count boundary fixup)",
+            "svg_id": "edge_11",
+            "source": "[root] root"
+        },
+        {
+            "target": "[root] provider.aws (close)",
+            "svg_id": "edge_12",
+            "source": "[root] root"
+        }
+    ]
+}

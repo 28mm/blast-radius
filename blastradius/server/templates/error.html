@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title>Terraform Graph Tools</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    </head>
+
+    <body>
+        <h1>Error.</h1>
+        <h3>Something has gone wrong. Please check the following:</h3>
+        <ul>
+            <li>Is Graphviz installed?</li>
+            <li>Is Terraform installed?</li>
+            <li>Is this an init-ed Terraform project?</li>
+        </ul>
+    </body>
+
+    <script>
+        svg_activate('#graph', '/graph.svg', '/graph.json');
+    </script>
+
+</html>

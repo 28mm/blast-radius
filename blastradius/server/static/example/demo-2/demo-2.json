@@ -1,0 +1,457 @@
+{
+    "nodes": [
+        {
+            "svg_id": "node_0",
+            "type": "digitalocean_domain",
+            "simple_name": "digitalocean_domain.mywebserver",
+            "resource_name": "mywebserver",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] digitalocean_domain.mywebserver",
+            "def": {
+                "name": "www.mywebserver.com",
+                "ip_address": "${digitalocean_droplet.mywebserver.ipv4_address}"
+            }
+        },
+        {
+            "svg_id": "node_1",
+            "type": "digitalocean_droplet",
+            "simple_name": "digitalocean_droplet.mywebserver",
+            "resource_name": "mywebserver",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] digitalocean_droplet.mywebserver",
+            "def": {
+                "ssh_keys": [
+                    12345678
+                ],
+                "image": "${var.ubuntu}",
+                "region": "${var.do_ams3}",
+                "size": "512mb",
+                "private_networking": true,
+                "backups": true,
+                "ipv6": true,
+                "name": "mywebserver-ams3",
+                "provisioner": {
+                    "remote-exec": {
+                        "inline": [
+                            "export PATH=$PATH:/usr/bin",
+                            "sudo apt-get update",
+                            "sudo apt-get -y install nginx"
+                        ],
+                        "connection": {
+                            "type": "ssh",
+                            "private_key": "${file(\"~/.ssh/id_rsa\")}",
+                            "user": "root",
+                            "timeout": "2m"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "svg_id": "node_2",
+            "type": "digitalocean_record",
+            "simple_name": "digitalocean_record.mywebserver",
+            "resource_name": "mywebserver",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] digitalocean_record.mywebserver",
+            "def": {
+                "domain": "${digitalocean_domain.mywebserver.name}",
+                "type": "A",
+                "name": "mywebserver",
+                "value": "${digitalocean_droplet.mywebserver.ipv4_address}"
+            }
+        },
+        {
+            "svg_id": "node_3",
+            "type": "provider",
+            "simple_name": "provider.digitalocean",
+            "resource_name": "digitalocean",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] provider.digitalocean",
+            "def": []
+        },
+        {
+            "svg_id": "node_4",
+            "type": "var",
+            "simple_name": "var.do_ams3",
+            "resource_name": "do_ams3",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_ams3",
+            "def": {
+                "description": "Digital Ocean Amsterdam Data Center 3",
+                "default": "ams3"
+            }
+        },
+        {
+            "svg_id": "node_5",
+            "type": "var",
+            "simple_name": "var.ubuntu",
+            "resource_name": "ubuntu",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.ubuntu",
+            "def": {
+                "description": "Default LTS",
+                "default": "ubuntu-16-04-x64"
+            }
+        },
+        {
+            "svg_id": "node_6",
+            "type": "meta",
+            "simple_name": "meta.count-boundary (count boundary fixup)",
+            "resource_name": "count-boundary",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] meta.count-boundary (count boundary fixup)",
+            "def": []
+        },
+        {
+            "svg_id": "node_7",
+            "type": "output",
+            "simple_name": "output.Name",
+            "resource_name": "Name",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] output.Name",
+            "def": []
+        },
+        {
+            "svg_id": "node_8",
+            "type": "output",
+            "simple_name": "output.Public ip",
+            "resource_name": "Public",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] output.Public ip",
+            "def": []
+        },
+        {
+            "svg_id": "node_9",
+            "type": "var",
+            "simple_name": "var.centos",
+            "resource_name": "centos",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.centos",
+            "def": {
+                "description": "Default Centos",
+                "default": "centos-72-x64"
+            }
+        },
+        {
+            "svg_id": "node_10",
+            "type": "var",
+            "simple_name": "var.coreos",
+            "resource_name": "coreos",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.coreos",
+            "def": {
+                "description": "Defaut Coreos",
+                "default": "coreos-899.17.0"
+            }
+        },
+        {
+            "svg_id": "node_11",
+            "type": "var",
+            "simple_name": "var.do_ams2",
+            "resource_name": "do_ams2",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_ams2",
+            "def": {
+                "description": "Digital Ocean Amsterdam Data Center 2",
+                "default": "ams2"
+            }
+        },
+        {
+            "svg_id": "node_12",
+            "type": "var",
+            "simple_name": "var.do_blr1",
+            "resource_name": "do_blr1",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_blr1",
+            "def": {
+                "description": "Digital Ocean Bangalore Data Center 1",
+                "default": "blr1"
+            }
+        },
+        {
+            "svg_id": "node_13",
+            "type": "var",
+            "simple_name": "var.do_fra1",
+            "resource_name": "do_fra1",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_fra1",
+            "def": {
+                "description": "Digital Ocean Frankfurt Data Center 1",
+                "default": "fra1"
+            }
+        },
+        {
+            "svg_id": "node_14",
+            "type": "var",
+            "simple_name": "var.do_lon1",
+            "resource_name": "do_lon1",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_lon1",
+            "def": {
+                "description": "Digital Ocean London Data Center 1",
+                "default": "lon1"
+            }
+        },
+        {
+            "svg_id": "node_15",
+            "type": "var",
+            "simple_name": "var.do_nyc1",
+            "resource_name": "do_nyc1",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_nyc1",
+            "def": {
+                "description": "Digital Ocean New York Data Center 1",
+                "default": "nyc1"
+            }
+        },
+        {
+            "svg_id": "node_16",
+            "type": "var",
+            "simple_name": "var.do_nyc2",
+            "resource_name": "do_nyc2",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_nyc2",
+            "def": {
+                "description": "Digital Ocean New York Data Center 2",
+                "default": "nyc2"
+            }
+        },
+        {
+            "svg_id": "node_17",
+            "type": "var",
+            "simple_name": "var.do_nyc3",
+            "resource_name": "do_nyc3",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_nyc3",
+            "def": {
+                "description": "Digital Ocean New York Data Center 3",
+                "default": "nyc3"
+            }
+        },
+        {
+            "svg_id": "node_18",
+            "type": "var",
+            "simple_name": "var.do_sfo1",
+            "resource_name": "do_sfo1",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_sfo1",
+            "def": {
+                "description": "Digital Ocean San Francisco Data Center 1",
+                "default": "sfo1"
+            }
+        },
+        {
+            "svg_id": "node_19",
+            "type": "var",
+            "simple_name": "var.do_sgp1",
+            "resource_name": "do_sgp1",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_sgp1",
+            "def": {
+                "description": "Digital Ocean Singapore Data Center 1",
+                "default": "sgp1"
+            }
+        },
+        {
+            "svg_id": "node_20",
+            "type": "var",
+            "simple_name": "var.do_tor1",
+            "resource_name": "do_tor1",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] var.do_tor1",
+            "def": {
+                "description": "Digital Ocean Toronto Datacenter 1",
+                "default": "tor1"
+            }
+        },
+        {
+            "svg_id": "node_21",
+            "type": "provider",
+            "simple_name": "provider.digitalocean (close)",
+            "resource_name": "digitalocean",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] provider.digitalocean (close)",
+            "def": []
+        },
+        {
+            "svg_id": "node_22",
+            "type": "provisioner",
+            "simple_name": "provisioner.remote-exec (close)",
+            "resource_name": "remote-exec",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] provisioner.remote-exec (close)",
+            "def": []
+        },
+        {
+            "svg_id": "node_23",
+            "type": "",
+            "simple_name": "root",
+            "resource_name": "",
+            "definition": {},
+            "group": 20000,
+            "label": "[root] root",
+            "def": []
+        }
+    ],
+    "edges": [
+        {
+            "svg_id": "edge_0",
+            "source": "[root] digitalocean_domain.mywebserver",
+            "target": "[root] digitalocean_droplet.mywebserver"
+        },
+        {
+            "svg_id": "edge_1",
+            "source": "[root] digitalocean_droplet.mywebserver",
+            "target": "[root] provider.digitalocean"
+        },
+        {
+            "svg_id": "edge_2",
+            "source": "[root] digitalocean_droplet.mywebserver",
+            "target": "[root] var.do_ams3"
+        },
+        {
+            "svg_id": "edge_3",
+            "source": "[root] digitalocean_droplet.mywebserver",
+            "target": "[root] var.ubuntu"
+        },
+        {
+            "svg_id": "edge_4",
+            "source": "[root] digitalocean_record.mywebserver",
+            "target": "[root] digitalocean_domain.mywebserver"
+        },
+        {
+            "svg_id": "edge_5",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] digitalocean_record.mywebserver"
+        },
+        {
+            "svg_id": "edge_6",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] output.Name"
+        },
+        {
+            "svg_id": "edge_7",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] output.Public ip"
+        },
+        {
+            "svg_id": "edge_8",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.centos"
+        },
+        {
+            "svg_id": "edge_9",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.coreos"
+        },
+        {
+            "svg_id": "edge_10",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_ams2"
+        },
+        {
+            "svg_id": "edge_11",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_blr1"
+        },
+        {
+            "svg_id": "edge_12",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_fra1"
+        },
+        {
+            "svg_id": "edge_13",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_lon1"
+        },
+        {
+            "svg_id": "edge_14",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_nyc1"
+        },
+        {
+            "svg_id": "edge_15",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_nyc2"
+        },
+        {
+            "svg_id": "edge_16",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_nyc3"
+        },
+        {
+            "svg_id": "edge_17",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_sfo1"
+        },
+        {
+            "svg_id": "edge_18",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_sgp1"
+        },
+        {
+            "svg_id": "edge_19",
+            "source": "[root] meta.count-boundary (count boundary fixup)",
+            "target": "[root] var.do_tor1"
+        },
+        {
+            "svg_id": "edge_20",
+            "source": "[root] output.Name",
+            "target": "[root] digitalocean_droplet.mywebserver"
+        },
+        {
+            "svg_id": "edge_21",
+            "source": "[root] output.Public ip",
+            "target": "[root] digitalocean_droplet.mywebserver"
+        },
+        {
+            "svg_id": "edge_22",
+            "source": "[root] provider.digitalocean (close)",
+            "target": "[root] digitalocean_record.mywebserver"
+        },
+        {
+            "svg_id": "edge_23",
+            "source": "[root] provisioner.remote-exec (close)",
+            "target": "[root] digitalocean_droplet.mywebserver"
+        },
+        {
+            "svg_id": "edge_24",
+            "source": "[root] root",
+            "target": "[root] meta.count-boundary (count boundary fixup)"
+        },
+        {
+            "svg_id": "edge_25",
+            "source": "[root] root",
+            "target": "[root] provider.digitalocean (close)"
+        },
+        {
+            "svg_id": "edge_26",
+            "source": "[root] root",
+            "target": "[root] provisioner.remote-exec (close)"
+        }
+    ]
+}
