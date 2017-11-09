@@ -20,19 +20,21 @@ class Terraform:
         self.config = hcl.load(config_io)
 
     def get_def(self, node):
+        try: 
+            # non resource types
+            types = { 'var'  : lambda x: self.config['variable'][x.resource_name],
+            'provider'     : lambda x: self.config['provider'][x.resource_name],
+            'output'       : lambda x: self.config['output'][x.resource_name],
+            'data'         : lambda x: self.config['data'][x.resource_name],
+            'meta'         : lambda x: '',
+            'provisioner'  : lambda x: '',
+            ''             : lambda x: '' }
+            if node.type in types:
+                return types[node.type](node)
 
-        # non resource types
-        types = { 'var'  : lambda x: self.config['variable'][x.resource_name],
-          'provider'     : lambda x: self.config['provider'][x.resource_name],
-          'output'       : lambda x: self.config['output'][x.resource_name],
-          'data'         : lambda x: self.config['data'][x.resource_name],
-          'meta'         : lambda x: '',
-          'provisioner'  : lambda x: '',
-          ''             : lambda x: '' }
-        if node.type in types:
-            return types[node.type](node)
-
-        # resources are a little different _many_ possible types,
-        # nested within the 'resource' field. 
-        else:
-            return self.config['resource'][node.type][node.resource_name]
+            # resources are a little different _many_ possible types,
+            # nested within the 'resource' field. 
+            else:
+                return self.config['resource'][node.type][node.resource_name]
+        except:
+            return ''
