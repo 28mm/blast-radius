@@ -2,7 +2,7 @@
 
 *Blast Radius* is a tool for reasoning about *Terraform* dependency graphs with interactive visualizations. Use *Blast Radius* to:
   * **Learn** about *Terraform* or one of its cloud providers, through [example configurations](https://blast-radius.github.io).
-  * **Document** your existing infrastructure
+  * **Document** your infrastructure
   * **Reason** about relationships between resources, and evaluate changes to them.
 
 ![Blast Radius Preview](doc/blast-radius-demo.svg)

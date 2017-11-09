@@ -32,6 +32,8 @@ def graph_svg():
     Edge.svg_id_counter = itertools.count().__next__ # FIXME: NO!
     dot_str = run_tf_graph()
     dot = DotGraph('', file_contents=dot_str)
+    for node in dot.nodes:
+        node.fmt.add(id = '"' + node.svg_id + '"', shape='box')
     return dot.svg()
 
 
