@@ -1,13 +1,13 @@
 # Blast Radius
 
 *Blast Radius* is a tool for reasoning about *Terraform* dependency graphs with interactive visualizations. Use *Blast Radius* to:
-  * **Learn** about *Terraform* or one of its cloud providers, through [example configurations](https://28mm.github.io/blast-radius-docs/examples/).
+  * **Learn** about *Terraform* or one of its cloud providers, through [example configurations](https://28mm.github.io/blast-radius-docs/).
   * **Document** your infrastructure
   * **Reason** about relationships between resources, and evaluate changes to them.
 
 ![Blast Radius Preview](doc/blast-radius-demo.svg)
 
-  * **Interact** with this diagram (and many others) [here](https://28mm.github.io/blast-radius-docs/examples/).
+  * **Interact** with this diagram (and many others) [here](https://28mm.github.io/blast-radius-docs/).
 
 # Quickstart
 
@@ -32,4 +32,4 @@ Point *Blast Radius* at an `init-ed` *Terraform* project, and connect with your 
 # Further Reading
 
   * The motivations for *Blast Radius* are documented in a series of [blog](https://28mm.github.io) posts: [part 1](https://28mm.github.io/notes/d3-terraform-graphs), and [part 2](https://28mm.github.io/notes/d3-terraform-graphs-2).
-  * A catalog of example *Terraform* configurations, and their dependency graphs can be found at [https://28mm.github.io/blast-radius-docs/examples/](https://28mm.github.io/blast-radius-docs/examples/).
+  * A catalog of example *Terraform* configurations, and their dependency graphs can be found at [https://28mm.github.io/blast-radius-docs/](https://28mm.github.io/blast-radius-docs/).
