@@ -7,6 +7,9 @@ from io import StringIO
 # 3rd party libraries 
 import jinja2
 
+# 1st party libraries
+from blastradius.util import Counter
+
 class Graph:
     def __init__(self, nodes, edges):
         self.nodes = nodes
@@ -55,23 +58,32 @@ class Edge:
 
     # we need unique ids for each edge, for SVG output,
     # svg_id_counter provides this facility.
-    svg_id_counter = itertools.count().__next__
+    svg_id_counter = Counter().next
 
     def __init__(self, source, target):
         self.source = source
         self.target = target
-        self.svg_id = 'edge_' + str(self.svg_id_counter())
+        self.svg_id = 'edge_' + str(Edge.svg_id_counter())
 
     def __iter__(self):
         for key in {'source', 'target'}: 
             yield (key, getattr(self, key))
+
+    @staticmethod
+    def reset_counter():
+        Edge.svg_id_counter = Counter().next
 
 
 class Node(ABC):
 
     # we need unique ids for each node, for SVG output,
     # svg_id_counter provides this facility.
-    svg_id_counter = itertools.count().__next__
+    svg_id_counter = Counter().next
+
+    @staticmethod
+    def reset_counter():
+        Node.svg_id_counter = Counter().next
+
 
     @abstractmethod
     def __init__(self):

@@ -12,37 +12,33 @@ import jinja2
 from blastradius.handlers.dot import DotGraph, Format, DotNode
 from blastradius.handlers.terraform import Terraform
 from blastradius.util import which
-from blastradius.graph import Node, Edge
+from blastradius.graph import Node, Edge, Counter
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-
     # we need terraform, graphviz, and an init-ed terraform project.
     if not which('terraform') or not which('dot') or not os.path.exists('.terraform'):
         return render_template('error.html')
 
-    #
     return render_template('index.html', directory=os.getcwd())
 
 @app.route('/graph.svg')
 def graph_svg():
-    Node.svg_id_counter = itertools.count().__next__ # FIXME: NO!
-    Edge.svg_id_counter = itertools.count().__next__ # FIXME: NO!
-    dot_str = run_tf_graph()
-    dot = DotGraph('', file_contents=dot_str)
-    for node in dot.nodes:
-        node.fmt.add(id = '"' + node.svg_id + '"', shape='box')
+    Node.reset_counter()
+    Edge.reset_counter() # FIXME: NO!
+
+    dot = DotGraph('', file_contents=run_tf_graph())
     return dot.svg()
 
 
 @app.route('/graph.json')
 def graph_json():
-    Node.svg_id_counter = itertools.count().__next__ # FIXME: NO!
-    Edge.svg_id_counter = itertools.count().__next__ # FIXME: NO!
-    dot_str = run_tf_graph()
-    dot = DotGraph('', file_contents=dot_str)
+    Node.reset_counter() # FIXME: NO!
+    Edge.reset_counter() # FIXME: NO!
+
+    dot = DotGraph('', file_contents=run_tf_graph())
 
     tf = Terraform(os.getcwd())
     for node in dot.nodes:

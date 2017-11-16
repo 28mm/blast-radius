@@ -8,6 +8,7 @@ import re
 import sys
 import argparse
 import os
+import itertools
 
 # 1st party libraries
 from blastradius.handlers.dot import DotGraph, Format, DotNode
@@ -38,7 +39,7 @@ def main():
         os.chdir(args.directory)
         app.run()
         sys.exit(0)
-
+    
     elif args.json or args.dot or args.svg:
         if args.graph is sys.stdin:
             dot = DotGraph('', file_contents=sys.stdin.read())
@@ -50,18 +51,6 @@ def main():
             for node in dot.nodes:
                 node.definition = tf.get_def(node) 
         
-        #if args.plan:
-        #    plan = Plan(args.plan)
-
-        #if args.apply:
-        #    apply = Apply(args.apply)
-
-        # doesn't affect most nodes (which have types), but things like 
-        # [root] root are given differing shapes, so this corrects them.
-        for node in dot.nodes:
-            node.fmt.add(id = '"' + node.svg_id + '"', shape='box')
-
-        # 
         if args.json:
             print(dot.json())
         elif args.dot:

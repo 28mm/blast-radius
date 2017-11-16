@@ -52,3 +52,11 @@ def which(program):
 
     return None
 
+class Counter:
+
+    def __init__(self, start=-1):
+        self.count = start
+
+    def next(self):
+        self.count += 1
+        return self.count

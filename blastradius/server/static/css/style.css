@@ -31,10 +31,10 @@ p.explain {
   
   /* tooltip stuff */
   .d3-tip {
-    line-height: 1;
+    line-height: 1.4;
     font-weight: normal;
-    font-family: 'consolas', 'monaco', fixed-width;
-    font-size: 10px;
+    font-family: 'courier new', 'monaco', fixed-width;
+    font-size: 14px;
     padding: 6px;
     background: rgba(0, 0, 0, 0.8);
     color: #fff;
@@ -44,8 +44,9 @@ p.explain {
   
   .d3-tip p {
     font-weight: normal;
-    font-family: 'consolas', 'monaco', fixed-width;
-    font-size: 10px;
+    line-height: 1.2;
+    font-family: 'courier new', 'monaco', fixed-width;
+    font-size: 11px;
   }
   
   span.header {
@@ -59,8 +60,8 @@ p.explain {
   }
   
   span.dep {
-       line-height: 14px;
-       font-size: 10px;
+       line-height: 15px;
+       font-size: 12px;
        color: white;
        display: inline-block;
        margin: 1px;
