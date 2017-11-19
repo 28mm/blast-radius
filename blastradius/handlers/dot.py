@@ -110,11 +110,7 @@ class DotGraph(Graph):
                             e.edge_type = EdgeType.HIDDEN
                             last_edge = e
                     self.edges.append(DotEdge(prev.label, n.label, fmt=Format('style=dashed,arrowhead=none'), edge_type=EdgeType.LAYOUT_SHOWN))
-                    #print('\tsource: ' + prev.label)
-                    #print('\ttarget: ' + n.label)
-                    #print('\tsvg_id: ' + self.edges[-1].svg_id)
-                    #print('')
-                    #print('') 
+
                 # each iteration.
                 prev = n
             
@@ -133,15 +129,16 @@ class DotGraph(Graph):
     dot_template_str = """
 digraph {
     compound = "true"
-
     graph [fontname = "courier new",fontsize=8];
     node [fontname = "courier new",fontsize=8];
     edge [fontname = "courier new",fontsize=8];
+
+    {# just the root module #}
     {% for cluster in clusters %}
         subgraph "{{cluster}}" {
             style=invis;
             {% for node in nodes %}
-                {% if node.cluster == cluster %}
+                {% if node.cluster == cluster and node.module == 'root' %}
                     {% if node.type %}
                     "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
                             <TR><TD>{{node.type}}</TD></TR>
@@ -154,6 +151,19 @@ digraph {
             {% endfor %}
         }
     {% endfor %}
+
+    {# non-root modules #}
+    {% for node in nodes %}
+        {% if node.module != 'root' %}
+            "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                {% for module in node.modules %}<TR><TD>(M) {{module}}</TD></TR>{% endfor %}
+                <TR><TD>{{node.type}}</TD></TR>
+                <TR><TD>{{node.resource_name}}</TD></TR>
+                </TABLE>>];
+                {% endif %}
+
+    {% endfor %}
+
         {% for edge in edges %}
             {% if edge.edge_type == EdgeType.NORMAL %}"{{edge.source}}" -> "{{edge.target}}" {% if edge.fmt %} [{{edge.fmt}}] {% endif %}{% endif %}
             {% if edge.edge_type == EdgeType.LAYOUT_SHOWN %}"{{edge.source}}" -> "{{edge.target}}" {% if edge.fmt %} [{{edge.fmt}}] {% endif %}{% endif %}
@@ -200,39 +210,40 @@ class Format:
 class DotNode(Node):
 
     def __init__(self, label, fmt=None):
-        self.label          = label
-        self.fmt            = fmt if fmt else Format('')
-        self.simple_name    = re.sub(r'\[root\]\s+', '', label)
-        self.type           = DotNode._resource_type(label)
-        self.resource_name  = DotNode._resource_name(label)
-        self.group          = 20000 # placeholder.
-        self.svg_id         = 'node_' + str(Node.svg_id_counter())
-        self.definition     = {}
-        self.cluster        = None # for graphviz groupings.
+        self.label          = label # node name exactly as it appears in tf graph output.
+        self.fmt            = fmt if fmt else Format('') # graphviz formatting.
+        self.simple_name    = re.sub(r'\[root\]\s+', '', label) # strip root module notation.
+        self.type           = DotNode._resource_type(label) # e.g. var, aws_instance, output...
+        self.resource_name  = DotNode._resource_name(label) #
+        self.svg_id         = 'node_' + str(Node.svg_id_counter()) #
+        self.definition     = {} # 
+        self.group          = 20000 # for coloration. placeholder. replaced in javascript.
+        self.module         = DotNode._module(label) # for module groupings. 'root' or 'module.foo.module.bar'
+        self.cluster        = None # for stacked resources (usually var/output).
+
+        self.modules = [ m for m in self.module.split('.') if m != 'module' ]
 
     def __iter__(self):
-        for key in {'label', 'simple_name', 'type', 'resource_name', 'group', 'svg_id', 'definition', 'cluster'}:
+        for key in {'label', 'simple_name', 'type', 'resource_name', 'group', 'svg_id', 'definition', 'cluster', 'module', 'modules'}:
            yield (key, getattr(self, key))
 
     @staticmethod
-    def _resource_type(name):
-        # strip [root] if this is a top-level thing.
-        full_name = re.sub(r'\[root\]\s+', '', name)
-        m = re.match(r'(?P<type>\S+)\.\S+', full_name)
-        if m:
-            return m.groupdict()['type']
-        else:
-            return ''
+    def _resource_type(label):
+        m = re.match(r'(\[root\]\s+)*((?P<modprefix>\S+)\.)*(?P<type>\S+)\.\S+', label)
+        return m.groupdict()['type'] if m else ''
 
     @staticmethod
-    def _resource_name(name):
-        # strip [root] if this is a top-level thing.
-        full_name = re.sub(r'\[root\]\s+', '', name)
-        m = re.match(r'(?P<type>\S+)\.(?P<name>\S+)', full_name)
-        if m:
-            return m.groupdict()['name']
-        else:
-            return ''
+    def _resource_name(label):
+        m = re.match(r'(\[root\]\s+)*(?P<type>\S+)\.(?P<name>\S+)', label)
+        return m.groupdict()['name'] if m else ''
+
+    @staticmethod
+    def _module(label):
+        if not re.match(r'(\[root\]\s+)*module\..*', label):
+            return 'root'
+        m = re.match(r'(\[root\]\s+)*(?P<module>\S+)\.(?P<type>\S+)\.\S+', label)
+        return m.groupdict()['module']
+
 
 class EdgeType:
     '''Sometimes we want to hide edges, and sometimes we want to add edges in order

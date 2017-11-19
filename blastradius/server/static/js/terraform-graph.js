@@ -86,7 +86,6 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     }
 
                 }
-                //console.log(ret_str);
                 return ret_str;
             }
 
@@ -171,8 +170,8 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 .on('mouseover', highlight)
                 .on('mouseout', unhighlight)
                 .on('mousedown', highlight)
-                .attr('fill', function (d) { return color(d.group); })
-                .select('polygon')
+                //.attr('fill', function (d) { return color(d.group); })
+                .select('polygon:nth-last-of-type(2)')
                 .style('fill', (function (d) {
                     if (d)
                         return color(d.group);
