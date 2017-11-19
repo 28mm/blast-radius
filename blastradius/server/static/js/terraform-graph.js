@@ -16,7 +16,6 @@ var replacer = function (key, value) {
     if (typeof value == 'string') {
         return value.replace(/\n/g, '<br>');
     }
-    console.log(value);
     return value;
 }
 
@@ -55,12 +54,11 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             var nodes = {};
             data.nodes.forEach(function (node) {
                 if (!(node.type in resource_groups))
-                    console.log(node);
+                    console.log(node.type)
                 node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
                 nodes[node['label']] = node;
                 svg_nodes.push(node);
             });
-            console.log(nodes);
 
             var svg = container.select('svg');
             if (scale != null) {
@@ -170,7 +168,7 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 .on('mouseover', highlight)
                 .on('mouseout', unhighlight)
                 .on('mousedown', highlight)
-                //.attr('fill', function (d) { return color(d.group); })
+                .attr('fill', function (d) { return color(d.group); })
                 .select('polygon:nth-last-of-type(2)')
                 .style('fill', (function (d) {
                     if (d)
@@ -178,6 +176,21 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     else
                         return '#000';
                 }));
+
+            // colorize modules
+            svg.selectAll('polygon')
+            .each(function(d, i) {
+                if (d != undefined)
+                    return undefined;
+                sibling = this.nextElementSibling;
+                if (sibling) {
+                    if(sibling.innerHTML.match(/\(M\)/)) {
+                        console.log(sibling);
+                        this.setAttribute('fill', color(sibling.innerHTML));
+                    }
+                }
+            });
+
 
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')
