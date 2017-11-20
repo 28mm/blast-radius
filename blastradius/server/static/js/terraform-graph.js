@@ -16,9 +16,44 @@ var replacer = function (key, value) {
     if (typeof value == 'string') {
         return value.replace(/\n/g, '<br>');
     }
-    console.log(value);
     return value;
 }
+
+var to_list = function(obj) {
+    var lst = [];
+    for (var k in obj)
+        lst.push(obj[k]);
+    return lst;
+}
+
+function Queue() {
+    this._oldestIndex = 1;
+    this._newestIndex = 1;
+    this._storage = {};
+}
+ 
+Queue.prototype.size = function() {
+    return this._newestIndex - this._oldestIndex;
+};
+ 
+Queue.prototype.enqueue = function(data) {
+    this._storage[this._newestIndex] = data;
+    this._newestIndex++;
+};
+ 
+Queue.prototype.dequeue = function() {
+    var oldestIndex = this._oldestIndex,
+        newestIndex = this._newestIndex,
+        deletedData;
+ 
+    if (oldestIndex !== newestIndex) {
+        deletedData = this._storage[oldestIndex];
+        delete this._storage[oldestIndex];
+        this._oldestIndex++;
+ 
+        return deletedData;
+    }
+};
 
 // Takes a unique selector, e.g. "#demo-1", and
 // appends svg xml from svg_url, and takes graph
@@ -55,12 +90,20 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             var nodes = {};
             data.nodes.forEach(function (node) {
                 if (!(node.type in resource_groups))
-                    console.log(node);
+                    console.log(node.type)
                 node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
                 nodes[node['label']] = node;
                 svg_nodes.push(node);
             });
-            console.log(nodes);
+
+            // convenient to access edges by their source.
+            var edges_by_source = {}
+            for (var i in edges) {
+                if(edges[i].source in edges_by_source)
+                    edges_by_source[edges[i].source].push(edges[i]);
+                else
+                    edges_by_source[edges[i].source] = [edges[i]];
+            }
 
             var svg = container.select('svg');
             if (scale != null) {
@@ -77,81 +120,76 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             svg.call(tip);
 
             // returns <span> elements representing a node's direct children 
-            var child_html = function (d) {
-                ret_str = '';
-                for (var src in data.edges) {
-                    if (d.label == edges[src].source) {
-                        var node = lookup(data.nodes, 'label', data.edges[src].target);
-                        ret_str += '<span class="dep" style="background:' + color(node.group) + ';">' + node.simple_name + '</span><br>';
+            var child_html = function(d) {
+                var children = new Set();
+                var edges   = edges_by_source[d.label];
+                for (i in edges) {
+                    edge = edges[i];
+                    if (edge.edge_type == edge_types.NORMAL || edge.edge_type == edge_types.HIDDEN) {
+                        var node = nodes[edge.target];
+                        children.add('<span class="dep" style="background:' + color(node.group) + ';">' + node.simple_name + '</span><br>');
                     }
-
                 }
-                //console.log(ret_str);
-                return ret_str;
+                return Array.from(children).join('');
             }
 
-            // FIXME: this is grosssssssss.
-            var get_dependencies = function (node) {
-
-                var ret_children = [];
-
-                for (var i in edges) {
-                    if (edges[i].source == node.label) {
-                        ret_children.push(nodes[edges[i].target]);
-                        if (edges[i].target in nodes) {
-                            var children = get_dependencies(nodes[edges[i].target]);
-                            for (var j in children) {
-                                ret_children.push(children[j]);
-                            }
-                        }
+            var get_children_to_show = function (node) {
+                var children    = {};
+                children[node.label] = node;
+                var visit_queue = new Queue();
+                visit_queue.enqueue(node);
+                while (visit_queue.size() > 0 ) {
+                    var cur_node = visit_queue.dequeue();
+                    var edges    = edges_by_source[cur_node.label];
+                    for (var i in edges) {
+                        if (edges[i].target in children)
+                            continue;
+                        var n = nodes[edges[i].target];
+                        children[n.label] = n;
+                        visit_queue.enqueue(n);
                     }
                 }
-                return ret_children;
+                return to_list(children);
             }
 
-            // FIXME: also grossss.
-            var get_dependency_edges = function(node) {
-                var ret_edges = [];
-                var children  = [];
+            var get_edges_to_show = function(node) {
+                var ret_edges   = new Set();
+                var children    = new Set();
+                var visit_queue = new Queue();
 
-                for (var i in edges) {
-                    if (edges[i].source == node.label) {
-                        ret_edges.push(edges[i]);
-                        children.push(nodes[edges[i].target]);
+                visit_queue.enqueue(node);
+                while (visit_queue.size() > 0) {
+                    var cur_node = visit_queue.dequeue();
+                    var edges    = edges_by_source[cur_node.label];
+                    for (var i in edges) {
+                        e = edges[i];
+                        if (e in ret_edges || e.edge_type == edge_types.HIDDEN || e.edge_type == edge_types.LAYOUT_HIDDEN)
+                            continue;
+                        var n = nodes[edges[i].target];
+                        ret_edges.add(e);
+                        children.add(n);
+                        visit_queue.enqueue(n);
                     }
                 }
-                for (var c in children) {
-                    var dep_edges = get_dependency_edges(children[c]);
-                    for (var i in dep_edges) {
-                        ret_edges.push(dep_edges[i]);
-                    }
-                }
-                return ret_edges;
+                return Array.from(ret_edges);
             }
 
             var highlight = function (d) {
                 tip.show(d);
 
-                var dependencies = get_dependencies(d);
-                dependencies.push(d);
+                var dependencies     = get_children_to_show(d);
+                var dependency_edges = get_edges_to_show(d);
 
-                var dependency_edges = get_dependency_edges(d);
-
-                // transtition()s add a little frustration to mouse interaction.
-                // if the user mouseout()s before the transition completes, the
-                // figure doesn't always return to normal....
                 svg.selectAll('g.node')
                     .data(dependencies, function (d) { return (d && d.svg_id) || d3.select(this).attr("id"); })
                     .attr('opacity', 1.0)
                     .exit()
-                    //.transition()
                     .attr('opacity', 0.2);
 
                 svg.selectAll('g.edge')
                     .data(dependency_edges, function(d) { return d && d.svg_id || d3.select(this).attr("id"); })
                     .attr('opacity', 1.0)
                     .exit()
-                    //.transition()
                     .attr('opacity', 0.0);
             }
 
@@ -172,13 +210,27 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 .on('mouseout', unhighlight)
                 .on('mousedown', highlight)
                 .attr('fill', function (d) { return color(d.group); })
-                .select('polygon')
+                .select('polygon:nth-last-of-type(2)')
                 .style('fill', (function (d) {
                     if (d)
                         return color(d.group);
                     else
                         return '#000';
                 }));
+
+            // colorize modules
+            svg.selectAll('polygon')
+            .each(function(d, i) {
+                if (d != undefined)
+                    return undefined;
+                sibling = this.nextElementSibling;
+                if (sibling) {
+                    if(sibling.innerHTML.match(/\(M\)/)) {
+                        this.setAttribute('fill', color(sibling.innerHTML));
+                    }
+                }
+            });
+
 
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')
