@@ -174,8 +174,45 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 return Array.from(ret_edges);
             }
 
-            var highlight = function (d) {
+
+            var sticky_node = null;
+            var node_mousedown = function(d) {
+                if (sticky_node == d) {
+                    unhighlight(d);
+                    tip.hide(d);
+                    sticky_node = null;
+                }
+                else {
+                    if (sticky_node)
+                        node_mousedown(sticky_node);
+                    sticky_node = d;
+                    highlight(d);
+                    tip.show(d);
+                }
+            }
+
+            var node_mouseover = function(d) {
                 tip.show(d);
+                if (! sticky_node)
+                    highlight(d);
+            }
+
+            var node_mouseout = function(d) {
+                if (sticky_node == d) {
+                    return;
+                }
+                else if (! sticky_node) {
+                    unhighlight(d);
+                    tip.hide(d);
+                }
+                else {
+                    tip.hide(d);
+                    highlight(sticky_node);
+                }
+
+            }
+
+            var highlight = function (d) {
 
                 var dependencies     = get_children_to_show(d);
                 var dependency_edges = get_edges_to_show(d);
@@ -198,7 +235,7 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     .attr('opacity', 1.0);
                 svg.selectAll('g.edge')
                     .attr('opacity', 1.0)
-                tip.hide(d);
+
             }
 
             // colorize nodes, and add mouse candy.
@@ -206,9 +243,9 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 .data(svg_nodes, function (d) {
                     return (d && d.svg_id) || d3.select(this).attr("id");
                 })
-                .on('mouseover', highlight)
-                .on('mouseout', unhighlight)
-                .on('mousedown', highlight)
+                .on('mouseover', node_mouseover)
+                .on('mouseout', node_mouseout)
+                .on('mousedown', node_mousedown)
                 .attr('fill', function (d) { return color(d.group); })
                 .select('polygon:nth-last-of-type(2)')
                 .style('fill', (function (d) {
@@ -231,6 +268,23 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 }
             });
 
+            // hack to make mouse events and coloration work on the root node again.
+            var root = nodes['[root] root'];
+            svg.selectAll('g.node#' + root.svg_id)
+                .data(svg_nodes, function (d) {
+                    return (d && d.svg_id) || d3.select(this).attr("id");
+                })
+                .on('mouseover', node_mouseover)
+                .on('mouseout', node_mouseout)
+                .on('mousedown', node_mousedown)
+                .select('polygon')
+                .attr('fill', function (d) { return color(d.group); })
+                .style('fill', (function (d) {
+                    if (d)
+                        return color(d.group);
+                    else
+                        return '#000';
+                }));
 
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')

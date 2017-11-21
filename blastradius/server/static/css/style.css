@@ -56,7 +56,6 @@ p.explain {
           line-height: 17px;
           color: white;
           width: 100%;
-          /* background: #888; */ /* set via js */
   }
   
   span.dep {
