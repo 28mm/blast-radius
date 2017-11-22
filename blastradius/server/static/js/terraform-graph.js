@@ -115,22 +115,52 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function (d) {
-                    return "<span style='background:" + color(d.group) + ";' class='header'>" + d.simple_name + "</span>" + (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
+                    return title_html(d) + (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
                 });
             svg.call(tip);
 
+            // returns <div> element representinga  node's title and module namespace.
+            var title_html = function(d) {
+                var node = d;
+                var title = [ '<div class="header">']
+                if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                    title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                    title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                }
+                else {
+                    for (var i in node.modules) {
+                        title[title.length] = '<span class="title" style="background: ' + color('(M) ' + node.modules[i]) + ';">' + node.modules[i] + '</span>';
+                    }
+                    title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                    title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                }
+                title[title.length] = '</div>'
+                return title.join('');
+            }
             // returns <span> elements representing a node's direct children 
             var child_html = function(d) {
-                var children = new Set();
+                var children = [];
                 var edges   = edges_by_source[d.label];
+                console.log(edges);
                 for (i in edges) {
                     edge = edges[i];
                     if (edge.edge_type == edge_types.NORMAL || edge.edge_type == edge_types.HIDDEN) {
                         var node = nodes[edge.target];
-                        children.add('<span class="dep" style="background:' + color(node.group) + ';">' + node.simple_name + '</span><br>');
+                        if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                            children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                            children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.resource_name + '</span></br>';
+                        }
+                        else {
+                            for (var i in node.modules) {
+                                children[children.length] = '<span class="dep" style="background: ' + color('(M) ' + node.modules[i]) + ';">' + node.modules[i] + '</span>';
+                            }
+                            children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                            children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.resource_name + '</span></br>';
+                        }
+
                     }
                 }
-                return Array.from(children).join('');
+                return children.join('');
             }
 
             var get_children_to_show = function (node) {

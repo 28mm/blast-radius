@@ -2,6 +2,7 @@
 import json
 import re
 import subprocess
+from collections import OrderedDict
 
 # 3rd party libraries 
 import jinja2
@@ -15,7 +16,8 @@ class DotGraph(Graph):
         self.filename = filename
         self.nodes    = []
         self.edges    = []
-        self.clusters = ('root',)
+        self.clusters = OrderedDict()
+        self.clusters['root'] = True # Used like an ordered Set.
         
         if file_contents:
             self.contents = file_contents
@@ -69,6 +71,8 @@ class DotGraph(Graph):
         and share the same (single) parent and (single) child, then
         hide their dependencies, and create a chain of pseudo-dependencies 
         so that they stack one above the next in the final diagram.'''
+        new_edges = []
+
         for n in self.nodes:
             if n.type != node_type:
                 continue
@@ -82,9 +86,9 @@ class DotGraph(Graph):
             # setup the cluster.
             target = children[0].target if len(children) > 0 else ''
             n.cluster = 'cluster' + parents[0].source + '_' + node_type + '_' + target
-            self.clusters = self.clusters + (n.cluster,)
+            self.clusters[n.cluster] = True # <-- OrderedDict, used for its ordering. Pretend its a Set
 
-        for cluster in [ cluster for cluster in self.clusters if re.match('.*_' +  node_type + '_.*', cluster) ]:
+        for cluster in [ cluster for cluster in self.clusters.keys() if re.match('.*_' +  node_type + '_.*', cluster) ]:
             nodes     = [ n for n in self.nodes if n.cluster == cluster ]
             prev      = None
             last_edge = None
@@ -109,13 +113,15 @@ class DotGraph(Graph):
                         if e.source == n.label:
                             e.edge_type = EdgeType.HIDDEN
                             last_edge = e
-                    self.edges.append(DotEdge(prev.label, n.label, fmt=Format('style=dashed,arrowhead=none'), edge_type=EdgeType.LAYOUT_SHOWN))
+                    new_edges.append(DotEdge(prev.label, n.label, fmt=Format('style=dashed,arrowhead=none'), edge_type=EdgeType.LAYOUT_SHOWN))
 
                 # each iteration.
                 prev = n
             
             if last_edge:
                 last_edge.edge_type = EdgeType.NORMAL
+
+        self.edges = self.edges + new_edges
 
     def dot(self):
         'returns a dot/graphviz representation of the graph (a string)'
