@@ -25,7 +25,8 @@ class Terraform:
         config_io = io.StringIO(self.config_str)
         self.config = hcl.load(config_io)
 
-        # then any submodules it may contain.
+        # then any submodules it may contain, skipping any remote modules for
+        # the time being.
         self.modules = {}
         if 'module' in self.config:
             for name, mod in self.config['module'].items():
@@ -39,7 +40,10 @@ class Terraform:
                 elif re.match(r'.*\@.*', source):
                     continue
                 # 'github.com' special behavior.
-                elif re.match(r'github.com.*', source):
+                elif re.match(r'github\.com.*', source):
+                    continue
+                # points to module registry.
+                elif re.match(r'hashicorp.*', source):
                     continue
                 # fixme path join. eek.
                 self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)

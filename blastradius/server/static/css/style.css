@@ -30,7 +30,7 @@ p.explain {
   
   div.container {
     margin: 30px;
-    //overflow: scroll;
+    /*overflow: scroll;*/
   }
   
   /* tooltip stuff */
@@ -44,8 +44,8 @@ p.explain {
     color: #fff;
     border-radius: 2px;
     z-index: 91;
-    min-width: 600px;
-    max-width: 600px;
+    min-width: 300px;
+    /*max-width: 600px;*/
   }
   
   .d3-tip p {
@@ -99,7 +99,7 @@ p.explain {
   }
   
   g.node text {
-         font-family: 'consolas', 'monaco', 'fixed-widht';
+         font-family: 'consolas', 'monaco', 'fixed-width';
          font-size: 8px;
   }
   

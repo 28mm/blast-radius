@@ -19,6 +19,10 @@ var replacer = function (key, value) {
     return value;
 }
 
+//
+// Utilities
+//
+
 var to_list = function(obj) {
     var lst = [];
     for (var k in obj)
@@ -26,7 +30,7 @@ var to_list = function(obj) {
     return lst;
 }
 
-function Queue() {
+var Queue = function() {
     this._oldestIndex = 1;
     this._newestIndex = 1;
     this._storage = {};
@@ -137,6 +141,7 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 title[title.length] = '</div>'
                 return title.join('');
             }
+
             // returns <span> elements representing a node's direct children 
             var child_html = function(d) {
                 var children = [];
@@ -217,12 +222,16 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                         node_mousedown(sticky_node);
                     sticky_node = d;
                     highlight(d);
-                    tip.show(d);
+                    tip.show(d)
+                        .direction(tipdir(d))
+                        .offset(tipoff(d));
                 }
             }
 
             var node_mouseover = function(d) {
-                tip.show(d);
+                tip.show(d)
+                    .direction(tipdir(d))
+                    .offset(tipoff(d));
                 if (! sticky_node)
                     highlight(d);
             }
@@ -240,6 +249,14 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     highlight(sticky_node);
                 }
 
+            }
+
+            var tipdir = function(d) {
+                return 'e';
+            }
+
+            var tipoff = function(d) {
+                return [0, 10];
             }
 
             var highlight = function (d) {

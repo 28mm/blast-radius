@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='BlastRadius',
-    version='0.1.4',
+    version='0.1.5',
     author='Patrick McMurchie',
     author_email='patrick.mcmurchie@gmail.com',
     packages=find_packages(),
