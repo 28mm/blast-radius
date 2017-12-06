@@ -1,1 +1,10 @@
 include *
+include blastradius/server/static/css/*
+include blastradius/server/static/js/*
+include blastradius/server/example/demo-1/*
+include blastradius/server/example/demo-2/*
+include blastradius/server/example/demo-3/*
+include blastradius/server/templates/*
+include blastradius/doc/*
+include blastradius/utilities/providers/*
+

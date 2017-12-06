@@ -3,13 +3,11 @@ from setuptools import find_packages
 
 setup(
     name='BlastRadius',
-    version='0.1.5',
+    version='0.1.6',
     author='Patrick McMurchie',
     author_email='patrick.mcmurchie@gmail.com',
     packages=find_packages(),
-     package_data={
-      '': ['*', '*/*', '*/*/*'], # yikes
-   },
+    include_package_data=True,
     scripts=['bin/blast-radius'],
     url='http://pypi.python.org/pypi/BlastRadius/',
     license='LICENSE.txt',

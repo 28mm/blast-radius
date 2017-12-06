@@ -252,7 +252,7 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             }
 
             var tipdir = function(d) {
-                return 'e';
+                return 'n';
             }
 
             var tipoff = function(d) {
