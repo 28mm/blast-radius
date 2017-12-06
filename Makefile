@@ -1,7 +1,11 @@
 .PHONY: clean
 clean:
-	#-find . -type f -name *~ -exec rm {} \+
 	-find . -type d -name __pycache__ -exec rm -r {} \+
+
+# build pypi package
+.PHONY: dist
+dist: clean
+	-python3 setup.py sdist
 
 # categories.js & categories.json help with resource coloration.
 # new resource types are added all the time, so we regenerate them

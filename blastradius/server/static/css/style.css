@@ -28,6 +28,10 @@ p.explain {
     pointer-events: none;
   }
   
+  div.container {
+    margin: 30px;
+    /*overflow: scroll;*/
+  }
   
   /* tooltip stuff */
   .d3-tip {
@@ -40,6 +44,8 @@ p.explain {
     color: #fff;
     border-radius: 2px;
     z-index: 91;
+    min-width: 300px;
+    /*max-width: 600px;*/
   }
   
   .d3-tip p {
@@ -49,14 +55,17 @@ p.explain {
     font-size: 11px;
   }
   
-  span.header {
-          display: block;
+  div.title {
+    width: 100%;
+    display: block;
+  }
+
+  span.title {
+          display: inline-block;
           font-size: 14px;
-          text-align: center;
           line-height: 17px;
           color: white;
-          width: 100%;
-          /* background: #888; */ /* set via js */
+          margin: 1px;
   }
   
   span.dep {
@@ -90,7 +99,7 @@ p.explain {
   }
   
   g.node text {
-         font-family: 'consolas', 'monaco', 'fixed-widht';
+         font-family: 'consolas', 'monaco', 'fixed-width';
          font-size: 8px;
   }
   

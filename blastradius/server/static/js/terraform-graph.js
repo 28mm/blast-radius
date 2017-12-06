@@ -19,6 +19,10 @@ var replacer = function (key, value) {
     return value;
 }
 
+//
+// Utilities
+//
+
 var to_list = function(obj) {
     var lst = [];
     for (var k in obj)
@@ -26,7 +30,7 @@ var to_list = function(obj) {
     return lst;
 }
 
-function Queue() {
+var Queue = function() {
     this._oldestIndex = 1;
     this._newestIndex = 1;
     this._storage = {};
@@ -115,22 +119,53 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function (d) {
-                    return "<span style='background:" + color(d.group) + ";' class='header'>" + d.simple_name + "</span>" + (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
+                    return title_html(d) + (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
                 });
             svg.call(tip);
 
+            // returns <div> element representinga  node's title and module namespace.
+            var title_html = function(d) {
+                var node = d;
+                var title = [ '<div class="header">']
+                if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                    title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                    title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                }
+                else {
+                    for (var i in node.modules) {
+                        title[title.length] = '<span class="title" style="background: ' + color('(M) ' + node.modules[i]) + ';">' + node.modules[i] + '</span>';
+                    }
+                    title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                    title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                }
+                title[title.length] = '</div>'
+                return title.join('');
+            }
+
             // returns <span> elements representing a node's direct children 
             var child_html = function(d) {
-                var children = new Set();
+                var children = [];
                 var edges   = edges_by_source[d.label];
+                console.log(edges);
                 for (i in edges) {
                     edge = edges[i];
                     if (edge.edge_type == edge_types.NORMAL || edge.edge_type == edge_types.HIDDEN) {
                         var node = nodes[edge.target];
-                        children.add('<span class="dep" style="background:' + color(node.group) + ';">' + node.simple_name + '</span><br>');
+                        if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                            children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                            children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.resource_name + '</span></br>';
+                        }
+                        else {
+                            for (var i in node.modules) {
+                                children[children.length] = '<span class="dep" style="background: ' + color('(M) ' + node.modules[i]) + ';">' + node.modules[i] + '</span>';
+                            }
+                            children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                            children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.resource_name + '</span></br>';
+                        }
+
                     }
                 }
-                return Array.from(children).join('');
+                return children.join('');
             }
 
             var get_children_to_show = function (node) {
@@ -174,8 +209,57 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 return Array.from(ret_edges);
             }
 
+
+            var sticky_node = null;
+            var node_mousedown = function(d) {
+                if (sticky_node == d) {
+                    unhighlight(d);
+                    tip.hide(d);
+                    sticky_node = null;
+                }
+                else {
+                    if (sticky_node)
+                        node_mousedown(sticky_node);
+                    sticky_node = d;
+                    highlight(d);
+                    tip.show(d)
+                        .direction(tipdir(d))
+                        .offset(tipoff(d));
+                }
+            }
+
+            var node_mouseover = function(d) {
+                tip.show(d)
+                    .direction(tipdir(d))
+                    .offset(tipoff(d));
+                if (! sticky_node)
+                    highlight(d);
+            }
+
+            var node_mouseout = function(d) {
+                if (sticky_node == d) {
+                    return;
+                }
+                else if (! sticky_node) {
+                    unhighlight(d);
+                    tip.hide(d);
+                }
+                else {
+                    tip.hide(d);
+                    highlight(sticky_node);
+                }
+
+            }
+
+            var tipdir = function(d) {
+                return 'n';
+            }
+
+            var tipoff = function(d) {
+                return [0, 10];
+            }
+
             var highlight = function (d) {
-                tip.show(d);
 
                 var dependencies     = get_children_to_show(d);
                 var dependency_edges = get_edges_to_show(d);
@@ -198,7 +282,7 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     .attr('opacity', 1.0);
                 svg.selectAll('g.edge')
                     .attr('opacity', 1.0)
-                tip.hide(d);
+
             }
 
             // colorize nodes, and add mouse candy.
@@ -206,9 +290,9 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 .data(svg_nodes, function (d) {
                     return (d && d.svg_id) || d3.select(this).attr("id");
                 })
-                .on('mouseover', highlight)
-                .on('mouseout', unhighlight)
-                .on('mousedown', highlight)
+                .on('mouseover', node_mouseover)
+                .on('mouseout', node_mouseout)
+                .on('mousedown', node_mousedown)
                 .attr('fill', function (d) { return color(d.group); })
                 .select('polygon:nth-last-of-type(2)')
                 .style('fill', (function (d) {
@@ -231,6 +315,23 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 }
             });
 
+            // hack to make mouse events and coloration work on the root node again.
+            var root = nodes['[root] root'];
+            svg.selectAll('g.node#' + root.svg_id)
+                .data(svg_nodes, function (d) {
+                    return (d && d.svg_id) || d3.select(this).attr("id");
+                })
+                .on('mouseover', node_mouseover)
+                .on('mouseout', node_mouseout)
+                .on('mousedown', node_mousedown)
+                .select('polygon')
+                .attr('fill', function (d) { return color(d.group); })
+                .style('fill', (function (d) {
+                    if (d)
+                        return color(d.group);
+                    else
+                        return '#000';
+                }));
 
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')
