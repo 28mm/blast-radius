@@ -16,7 +16,7 @@
 Install *Blast Radius* with pip, and *Graphviz* through your system's package manager.
 
 ````bash
-[...]$ pip3 install blast-radius
+[...]$ pip3 install BlastRadius
 [...]$ brew install graphviz
 ````
 
