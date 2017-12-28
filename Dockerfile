@@ -1,8 +1,10 @@
-#usage
+#howto build docker image (from working-directory having blast-radius source)
+#  docker build -t blast-radius .
 #
-#docker run -it --rm -p 5000:5000 -v $(pwd):/workdir blast-radius
+#howto run docker container (from working-directory having *.tf files)
+#  docker run -it --rm -p 5000:5000 -v $(pwd):/workdir blast-radius
 
-#use latest tag for now for terraform version tag
+#use latest tag for now for terraform version
 FROM hashicorp/terraform:latest
 
 #expose blast-radius port
