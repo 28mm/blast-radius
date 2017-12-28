@@ -1,3 +1,5 @@
+#Dockerfile to encapsulate both terraform and blast-radius
+#
 #howto build docker image (from working-directory having blast-radius source)
 #  docker build -t blast-radius .
 #
