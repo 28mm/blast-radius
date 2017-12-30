@@ -37,7 +37,7 @@ def main():
 
     if args.serve:
         os.chdir(args.directory)
-        app.run()
+        app.run(host='0.0.0.0')
         sys.exit(0)
     
     elif args.json or args.dot or args.svg:
