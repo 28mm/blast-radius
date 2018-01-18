@@ -256,7 +256,7 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             }
 
             var tipoff = function(d) {
-                return [0, 10];
+                return [-10, 0];
             }
 
             var highlight = function (d) {
