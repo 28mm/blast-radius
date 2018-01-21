@@ -145,7 +145,6 @@ class DotGraph(Graph):
                     match = True
                     break
             if match == False:
-                print(n.modules)
                 placeholders.append(ModuleNode(n.modules[:depth]))
 
         # create replacement edges
