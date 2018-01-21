@@ -29,6 +29,13 @@ def main():
     output_group.add_argument('--serve', action='store_const', const=True, default=False, help='spins up a webserver with an interactive Terraform graph')
     
     parser.add_argument('--graph', type=str, help='`terraform graph` output (defaults to stdin)', default=sys.stdin)
+
+    # options to limit, re-focus, and re-center presentation of larger graphs.
+    parser.add_argument('--module-depth', type=int, help='hide module details', required=False)
+    parser.add_argument('--focus', type=str, help='', required=False)
+    parser.add_argument('--center', type=str, help='', required=False)
+
+    # TODO present changes, and animate `terraform apply'
     #parser.add_argument('--plan', type=str, help='terraform plan output', default=None)
     #parser.add_argument('--state', type=str, help='tfstate file', default=None)
     #parser.add_argument('--apply', type=str, help='terraform apply log', default=None)
@@ -46,10 +53,18 @@ def main():
         else:
             dot = DotGraph(args.graph)
 
+        # we might not want to show every node in the depedency graph
+        # specifying --module-depth is an easy way to limit detail
+        if 'module_depth' in args:
+            if args.module_depth < 0:
+                parser.print_help()
+                sys.exit(1)
+            dot.set_module_depth(args.module_depth)
+
         if args.json:
             tf = Terraform(args.directory)
             for node in dot.nodes:
-                node.definition = tf.get_def(node) 
+                node.definition = tf.get_def(node)
         
         if args.json:
             print(dot.json())

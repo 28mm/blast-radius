@@ -35,6 +35,11 @@ class Graph:
         'returns a json representation of the graph (a string)'
         return json.dumps({ 'nodes' : dict(nodes), 'edges' : dict(edges) }, indent=4, sort=True)
 
+    @staticmethod
+    def reset_counters():
+        Node.reset_counter()
+        Edge.reset_counter()
+
     dot_template_str = """
 digraph {
     compound = "true"

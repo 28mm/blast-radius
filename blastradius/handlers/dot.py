@@ -123,6 +123,68 @@ class DotGraph(Graph):
 
         self.edges = self.edges + new_edges
 
+    def set_module_depth(self, depth):
+        """group resources belonging to modules into a single node, to simplify presentation.
+        WOWEE.... THIS CODE IS PAINFUL TO LOOK AT!"""
+
+        depth += 1 # account for [root] module
+
+        def is_too_deep(modules):
+            if len(modules) >= depth and modules[0] != 'root':
+                return True
+        
+        # find DotNodes at too great a depth.
+        too_deep     = [ n for n in self.nodes if is_too_deep(n.modules) ]
+
+        # generate ModuleNodes to stand-in for DotNodes at too great a depth.
+        placeholders = []
+        for n in too_deep:
+            match = False
+            for p in placeholders:
+                if p.is_standin(n.modules):
+                    match = True
+                    break
+            if match == False:
+                print(n.modules)
+                placeholders.append(ModuleNode(n.modules[:depth]))
+
+        # create replacement edges
+        new_edges = []
+        for e in self.edges:
+            src_mods = DotNode._label_to_modules(e.source)
+            tgt_mods = DotNode._label_to_modules(e.target)
+
+            if is_too_deep(src_mods) and is_too_deep(tgt_mods):
+                continue
+            elif is_too_deep(src_mods):
+                for p in placeholders:
+                    if p.is_standin(src_mods):
+                        replace = True
+                        for ne in new_edges:
+                            if ne.source == p.label and ne.target == e.target:
+                                replace = False
+                                break
+                        if replace:
+                            new_edges.append(DotEdge(p.label, e.target))
+                        break
+            elif is_too_deep(tgt_mods):
+                for p in placeholders:
+                    if p.is_standin(tgt_mods):
+                        replace = True
+                        for ne in new_edges:
+                            if ne.source == e.source and ne.target == p.label:
+                                replace = False
+                                break
+                        if replace:
+                            new_edges.append(DotEdge(e.source, p.label))
+                        break
+            else:
+                new_edges.append(e)
+        self.edges = new_edges
+
+        # add placeholder nodes, remove too_deep
+        self.nodes = list(set(placeholders) | (set(self.nodes) - set(too_deep)))
+
     def dot(self):
         'returns a dot/graphviz representation of the graph (a string)'
         return self.dot_template.render({ 'nodes': self.nodes, 'edges': self.edges, 'clusters' : self.clusters, 'EdgeType' : EdgeType })
@@ -161,12 +223,21 @@ digraph {
     {# non-root modules #}
     {% for node in nodes %}
         {% if node.module != 'root' %}
+
+            {% if node.collapsed %}
+                "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                {% for module in node.modules %}<TR><TD>(M) {{module}}</TD></TR>{% endfor %}
+                <TR><TD>(collapsed)</TD></TR>
+                <TR><TD>...</TD></TR>
+               </TABLE>>];
+            {% else %}
             "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
                 {% for module in node.modules %}<TR><TD>(M) {{module}}</TD></TR>{% endfor %}
                 <TR><TD>{{node.type}}</TD></TR>
                 <TR><TD>{{node.resource_name}}</TD></TR>
                 </TABLE>>];
-                {% endif %}
+            {% endif %}
+        {% endif %}
 
     {% endfor %}
 
@@ -226,6 +297,7 @@ class DotNode(Node):
         self.group          = 20000 # for coloration. placeholder. replaced in javascript.
         self.module         = DotNode._module(label) # for module groupings. 'root' or 'module.foo.module.bar'
         self.cluster        = None # for stacked resources (usually var/output).
+        self.collapsed      = False
 
         self.modules = [ m for m in self.module.split('.') if m != 'module' ]
 
@@ -249,6 +321,37 @@ class DotNode(Node):
             return 'root'
         m = re.match(r'(\[root\]\s+)*(?P<module>\S+)\.(?P<type>\S+)\.\S+', label)
         return m.groupdict()['module']
+
+    @staticmethod
+    def _label_to_modules(label):
+        return [ m for m in DotNode._module(label).split('.') if m != 'module' ]
+
+
+
+class ModuleNode(DotNode):
+    'stands in for multiple DotNodes at the same module depth...'
+    def __init__(self, modules):
+        self.label = '[root] ' + 'module.' + '.module.'.join(modules) + '.collapsed.etc'
+        self.fmt = Format('')
+        self.simple_name    = re.sub(r'\[root\]\s+', '', self.label) # strip root module notation.
+        self.type           = DotNode._resource_type(self.label)
+        self.resource_name  = DotNode._resource_name(self.label)
+        self.svg_id         = 'node_' + str(Node.svg_id_counter())
+        self.definition     = {}
+        self.group          = 20000 # for coloration. placeholder. replaced in javascript.
+        self.module         = DotNode._module(self.label) # for module groupings. 'root' or 'module.foo.module.bar'
+        self.cluster        = None # for stacked resources (usually var/output).
+        self.modules        = [ m for m in self.module.split('.') if m != 'module' ]
+        self.collapsed      = True
+
+    def is_standin(self, modules):
+        'should this ModuleNode standin for the provided DotNode?'
+        if len(modules) < len(self.modules):
+            return False
+        for i in range(len(self.modules)):
+            if self.modules[i] != modules[i]:
+                return False
+        return True
 
 
 class EdgeType:

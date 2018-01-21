@@ -6,13 +6,14 @@ import itertools
 # 3rd-party libraries
 from flask import Flask
 from flask import render_template
+from flask import request
 import jinja2
 
 # 1st-party libraries
 from blastradius.handlers.dot import DotGraph, Format, DotNode
 from blastradius.handlers.terraform import Terraform
 from blastradius.util import which
-from blastradius.graph import Node, Edge, Counter
+from blastradius.graph import Node, Edge, Counter, Graph
 
 app = Flask(__name__)
 
@@ -26,19 +27,22 @@ def index():
 
 @app.route('/graph.svg')
 def graph_svg():
-    Node.reset_counter()
-    Edge.reset_counter() # FIXME: NO!
-
+    Graph.reset_counters()
     dot = DotGraph('', file_contents=run_tf_graph())
+
+    module_depth = request.args.get('module_depth', default=None, type=int)
+    if module_depth is not None and module_depth >= 0:
+        dot.set_module_depth(module_depth)
     return dot.svg()
 
 
 @app.route('/graph.json')
 def graph_json():
-    Node.reset_counter() # FIXME: NO!
-    Edge.reset_counter() # FIXME: NO!
-
+    Graph.reset_counters()
     dot = DotGraph('', file_contents=run_tf_graph())
+    module_depth = request.args.get('module_depth', default=None, type=int)
+    if module_depth is not None and module_depth >= 0:
+        dot.set_module_depth(module_depth) 
 
     tf = Terraform(os.getcwd())
     for node in dot.nodes:
