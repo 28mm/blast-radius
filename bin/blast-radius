@@ -55,7 +55,7 @@ def main():
 
         # we might not want to show every node in the depedency graph
         # specifying --module-depth is an easy way to limit detail
-        if 'module_depth' in args:
+        if 'module_depth' in args and args.module_depth != None:
             if args.module_depth < 0:
                 parser.print_help()
                 sys.exit(1)
