@@ -109,6 +109,15 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     edges_by_source[edges[i].source] = [edges[i]];
             }
 
+            // convenient access to edges by their target.
+            var edges_by_target = {}
+            for (var i in edges) {
+                if(edges[i].target in edges_by_target)
+                    edges_by_target[edges[i].target].push(edges[i]);
+                else
+                    edges_by_target[edges[i].target] = [edges[i]];
+            }
+
             var svg = container.select('svg');
             if (scale != null) {
                 svg.attr('height', scale).attr('width', scale);
@@ -168,7 +177,7 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 return children.join('');
             }
 
-            var get_children_to_show = function (node) {
+            var get_downstream_nodes = function (node) {
                 var children    = {};
                 children[node.label] = node;
                 var visit_queue = new Queue();
@@ -187,7 +196,26 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 return to_list(children);
             }
 
-            var get_edges_to_show = function(node) {
+            var get_upstream_nodes = function (node) {
+                var parents = {};
+                parents[node.label] = node;
+                var visit_queue = new Queue();
+                visit_queue.enqueue(node);
+                while (visit_queue.size() > 0) {
+                    var cur_node = visit_queue.dequeue();
+                    var edges    = edges_by_target[cur_node.label];
+                    for (var i in edges) {
+                        if (edges[i].source in parents)
+                            continue;
+                        var n = nodes[edges[i].source];
+                        parents[n.label] = n;
+                        visit_queue.enqueue(n);
+                    }
+                }
+                return to_list(parents);
+            }
+
+            var get_downstream_edges = function(node) {
                 var ret_edges   = new Set();
                 var children    = new Set();
                 var visit_queue = new Queue();
@@ -209,19 +237,59 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 return Array.from(ret_edges);
             }
 
+            var get_upstream_edges = function(node) {
+                var ret_edges   = new Set();
+                var parents     = new Set();
+                var visit_queue = new Queue();
 
+                visit_queue.enqueue(node);
+                while (visit_queue.size() > 0) {
+                    var cur_node = visit_queue.dequeue();
+                    var edges    = edges_by_target[cur_node.label];
+                    for (var i in edges) {
+                        e = edges[i];
+                        if (e in ret_edges || e.edge_type == edge_types.HIDDEN || e.edge_type == edge_types.LAYOUT_HIDDEN)
+                            continue;
+                        var n = nodes[edges[i].source];
+                        ret_edges.add(e);
+                        parents.add(n);
+                        visit_queue.enqueue(n);
+                    }
+                }
+                return Array.from(ret_edges);
+            }
+
+            //
+            // mouse event handling
+            //
+            //  * 1st click (and mouseover): highlight downstream connections, only + tooltip
+            //  * 2nd click: highlight upstream and downstream connections + no tooltip
+            //  * 3rd click: return to normal (no-selection/highlights)
+            //
+
+            var click_count = 0;
             var sticky_node = null;
+
             var node_mousedown = function(d) {
-                if (sticky_node == d) {
+                if (sticky_node == d && click_count == 1) {
+                    tip.hide(d);
+                    highlight(d, true, true);
+                    click_count += 1;
+                }
+                else if (sticky_node == d && click_count == 2) {
                     unhighlight(d);
                     tip.hide(d);
                     sticky_node = null;
+                    click_count = 0;
                 }
                 else {
-                    if (sticky_node)
-                        node_mousedown(sticky_node);
+                    if (sticky_node) {
+                        unhighlight(sticky_node);
+                        tip.hide(sticky_node);
+                    }                    
                     sticky_node = d;
-                    highlight(d);
+                    click_count = 1;
+                    highlight(d, true, false);
                     tip.show(d)
                         .direction(tipdir(d))
                         .offset(tipoff(d));
@@ -233,7 +301,7 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     .direction(tipdir(d))
                     .offset(tipoff(d));
                 if (! sticky_node)
-                    highlight(d);
+                    highlight(d, true, false);
             }
 
             var node_mouseout = function(d) {
@@ -246,7 +314,10 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 }
                 else {
                     tip.hide(d);
-                    highlight(sticky_node);
+                    if (click_count == 2)
+                        highlight(sticky_node, true, true);
+                    else
+                        highlight(sticky_node, true, false);
                 }
 
             }
@@ -259,19 +330,29 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 return [-10, 0];
             }
 
-            var highlight = function (d) {
+            var highlight = function (d, downstream, upstream) {
 
-                var dependencies     = get_children_to_show(d);
-                var dependency_edges = get_edges_to_show(d);
+                var highlight_nodes = [];
+                var highlight_edges = [];
+
+                if (downstream) {
+                    highlight_nodes     = highlight_nodes.concat(get_downstream_nodes(d));
+                    highlight_edges     = highlight_edges.concat(get_downstream_edges(d));
+                }
+
+                if (upstream) {
+                    highlight_nodes     = highlight_nodes.concat(get_upstream_nodes(d));
+                    highlight_edges     = highlight_edges.concat(get_upstream_edges(d));
+                }
 
                 svg.selectAll('g.node')
-                    .data(dependencies, function (d) { return (d && d.svg_id) || d3.select(this).attr("id"); })
+                    .data(highlight_nodes, function (d) { return (d && d.svg_id) || d3.select(this).attr("id"); })
                     .attr('opacity', 1.0)
                     .exit()
                     .attr('opacity', 0.2);
 
                 svg.selectAll('g.edge')
-                    .data(dependency_edges, function(d) { return d && d.svg_id || d3.select(this).attr("id"); })
+                    .data(highlight_edges, function(d) { return d && d.svg_id || d3.select(this).attr("id"); })
                     .attr('opacity', 1.0)
                     .exit()
                     .attr('opacity', 0.0);
