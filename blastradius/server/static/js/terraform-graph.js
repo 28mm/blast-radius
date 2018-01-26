@@ -417,6 +417,27 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')
                 .data(edges, function(d) { return d && d.svg_id || d3.select(this).attr("id"); });
+
+            // blast-radius --serve mode stuff. check for a zoom-in button as a proxy
+            // for whether other facilities will be available.
+            if (d3.select(selector + '-zoom-in')) {
+                var zin_btn  = document.querySelector(selector + '-zoom-in');
+                var zout_btn = document.querySelector(selector + '-zoom-out');
+                var svg_el   = document.querySelector(selector + ' svg')
+                var panzoom  = svgPanZoom(svg_el);
+
+                zin_btn.addEventListener('click', function(ev){
+                    ev.preventDefault()
+                    panzoom.zoomIn()
+                });
+
+                zout_btn.addEventListener('click', function(ev){
+                    ev.preventDefault()
+                    panzoom.zoomOut()
+                });
+          
+
+            }
         });
 
 

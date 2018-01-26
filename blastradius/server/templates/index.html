@@ -2,18 +2,84 @@
     <head>
         <title>Blast Radius (Terraform Graph Tools)</title>
         <meta charset="utf-8">
+
+        <script src="/static/js/jquery.slim.min.js"></script>
+        <script src="/static/js/bootstrap.min.js"></script>
+        <script src="/static/js/fontawesome-all.min.js"></script>
+
         <script src="/static/js/d3.v4.js"></script>
         <script src="/static/js/d3-tip.js"></script>
         <script src="/static/js/terraform-graph.js"></script>
         <script src="/static/js/categories.js"></script>
+        <script src="/static/js/blast-radius-ui.js"></script>
+        <script src="/static/js/svg-pan-zoom.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+        <style>
+        .navbar-nav > li {
+            padding-left:6px;
+        }
+        .navbar-brand {
+            font-family: 'courier new';
+        }
+        </style>
     </head>
     
     <body>
+
+        <!-- navigation and controls -->
+        <nav class="navbar navbar-expand bg-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                        <a class="navbar-brand" href="#">Blast Radius</a>
+                </li>
+                <li class="nav-item">                    
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-primary" id="graph-zoom-out">&nbsp;<i class="fas fa-search-minus"></i></button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-primary" id="graph-zoom-in">&nbsp;<i class="fas fa-search-plus"></i></button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-primary" onClick="download();">&nbsp;<i class="fas fa-download"></i> Download</button>
+                </li>
+                <li class="nav-item">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Module Depth
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">1</a>
+                            <a class="dropdown-item" href="#">2</a>
+                            <a class="dropdown-item" href="#">3</a>
+                            </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="diagMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-question-circle" aria-hidden="true"></i> Help
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="diagMenuButton">
+                            <ul>
+                                <li>{{directory}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- main document body -->
         <div class="container">
-            <h2>{{directory}}</h2>
-            <div id="graph"></div>
+            <div id="graph"></div><!-- graph svg is appended to div#graph -->
         </div>
+
     </body>
 
     <script>
