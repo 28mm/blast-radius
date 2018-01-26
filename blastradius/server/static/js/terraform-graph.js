@@ -435,8 +435,28 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     ev.preventDefault()
                     panzoom.zoomOut()
                 });
-          
 
+                var render_searchbox_node = function(d) {
+                    return title_html(d);
+                }
+                
+                var select_node = function(d) {
+                    console.log('!!!!');
+                    console.log(d);
+                    node_mousedown(nodes[d]);
+                }
+
+                $('#graph-search').selectize({
+                    valueField: 'label',
+                    searchField: ['label'],
+                    create: false,
+                    onChange: select_node,
+                    render: {
+                        option: render_searchbox_node,
+                        item : render_searchbox_node
+                    },
+                    options: svg_nodes
+                });
             }
         });
 

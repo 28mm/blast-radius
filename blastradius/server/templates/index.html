@@ -13,8 +13,10 @@
         <script src="/static/js/categories.js"></script>
         <script src="/static/js/blast-radius-ui.js"></script>
         <script src="/static/js/svg-pan-zoom.js"></script>
+        <script src="/static/js/selectize.js"></script>
 
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/selectize.css">
         <link rel="stylesheet" type="text/css" href="/static/css/style.css">
         <style>
         .navbar-nav > li {
@@ -32,12 +34,15 @@
         <nav class="navbar navbar-expand bg-light">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                        <a class="navbar-brand" href="#">Blast Radius</a>
+                        <a class="navbar-brand" href="#">blastradius</a>
                 </li>
                 <li class="nav-item">                    
                     <form class="form-inline my-2 my-lg-0">
-                        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                        <select style="width: 300px;" id="graph-search"></select>
                     </form>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-primary" id="graph-refocus">&nbsp;<i class="fas fa-code-branch"></i></button>
                 </li>
                 <li class="nav-item">
                     <button class="btn btn-primary" id="graph-zoom-out">&nbsp;<i class="fas fa-search-minus"></i></button>
