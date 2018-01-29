@@ -3,6 +3,7 @@ import json
 import re
 import subprocess
 from collections import OrderedDict
+from collections import deque
 
 # 3rd party libraries 
 import jinja2
@@ -60,6 +61,18 @@ class DotGraph(Graph):
         # leftover nodes belong to the root subgraph.
         for n in self.nodes:
             n.cluster = 'root' if not n.cluster else n.cluster
+
+    def get_node_by_name(self, label):
+        '''return node by label (if exists) otherwise simple_name'''
+        for n in self.nodes:
+            if n.label == label:
+                return n
+
+        for n in self.nodes:
+            if n.simple_name == label:
+                return n
+        
+        return None
 
     #
     # Output functions (return strings).
@@ -211,6 +224,87 @@ class DotGraph(Graph):
 
         # add placeholder nodes, remove nodes beyond specified module_depth.
         self.nodes = list(OrderedSet(placeholders) | (OrderedSet(self.nodes) - OrderedSet(too_deep)))
+    
+
+    def center(self, node):
+        '''
+        prunes graph to include only (1) the given node, (2) its 
+        dependencies, and nodes that depend on it.
+        '''
+        edges_by_source = {}
+        for e in self.edges:
+            if e.source in edges_by_source:
+                edges_by_source[e.source].append(e)
+            else:
+                edges_by_source[e.source] = [ e ]
+
+        edges_by_target = {}
+        for e in self.edges: 
+            if e.target in edges_by_target:
+                edges_by_target[e.target].append(e)
+            else:
+                edges_by_target[e.target] = [ e ]
+
+        edges_to_save = OrderedSet() # edge objects
+        nodes_to_save = OrderedSet() # label strings
+
+        q = deque()
+        if node.label in edges_by_source:
+            q.append(node.label)
+            nodes_to_save.add(node.label)
+            while len(q) > 0:
+                source = q.pop()
+                if source in edges_by_source:
+                    for e in edges_by_source[source]:
+                        q.append(e.target)
+                        edges_to_save.add(e)
+                        nodes_to_save.add(e.target)
+
+        q = deque()
+        if node.label in edges_by_target:
+            q.append(node.label)
+            nodes_to_save.add(node.label)
+            while len(q) > 0:
+                target = q.pop()
+                if target in edges_by_target:
+                    for e in edges_by_target[target]:
+                        q.append(e.source)
+                        edges_to_save.add(e)
+                        nodes_to_save.add(e.source)
+
+        self.edges = list(edges_to_save)
+        self.nodes = [ n for n in self.nodes if n.label in nodes_to_save ]
+
+    def focus(self, node):
+        '''
+        prunes graph to include only the given node and its dependencies.
+        '''
+        edges_by_source = {}
+        for e in self.edges:
+            if e.source in edges_by_source:
+                edges_by_source[e.source].append(e)
+            else:
+                edges_by_source[e.source] = [ e ]
+
+        edges_to_save = OrderedSet() # edge objects
+        nodes_to_save = OrderedSet() # label strings
+
+        q = deque()
+        if node.label in edges_by_source:
+            q.append(node.label)
+            nodes_to_save.add(node.label)
+            while len(q) > 0:
+                source = q.pop()
+                if source in edges_by_source:
+                    for e in edges_by_source[source]:
+                        q.append(e.target)
+                        edges_to_save.add(e)
+                        nodes_to_save.add(e.target)
+
+        self.edges = list(edges_to_save)
+        self.nodes = [ n for n in self.nodes if n.label in nodes_to_save ]
+
+
     
     #
     # Formatting templates.

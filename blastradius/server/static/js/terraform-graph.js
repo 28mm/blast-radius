@@ -151,6 +151,26 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 return title.join('');
             }
 
+            // returns <div> element representing node's title and module namespace.
+            // intended for use in an interactive searchbox. 
+            var searchbox_listing = function(d) {
+                var node = d;
+                var title = [ '<div class="sbox-listings">']
+                if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                    title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                    title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                }
+                else {
+                    for (var i in node.modules) {
+                        title[title.length] = '<span class="sbox-listing" style="background: ' + color('(M) ' + node.modules[i]) + ';">' + node.modules[i] + '</span>';
+                    }
+                    title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                    title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                }
+                title[title.length] = '</div>'
+                return title.join('');
+            }
+
             // returns <span> elements representing a node's direct children 
             var child_html = function(d) {
                 var children = [];
@@ -437,7 +457,8 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 });
 
                 var render_searchbox_node = function(d) {
-                    return title_html(d);
+                    //return title_html(d);
+                    return searchbox_listing(d);
                 }
                 
                 var select_node = function(d) {

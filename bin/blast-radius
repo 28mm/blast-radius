@@ -31,9 +31,10 @@ def main():
     parser.add_argument('--graph', type=str, help='`terraform graph` output (defaults to stdin)', default=sys.stdin)
 
     # options to limit, re-focus, and re-center presentation of larger graphs.
-    parser.add_argument('--module-depth', type=int, help='hide module details', required=False)
-    parser.add_argument('--focus', type=str, help='', required=False)
-    parser.add_argument('--center', type=str, help='', required=False)
+    constraint_group = parser.add_mutually_exclusive_group()
+    constraint_group.add_argument('--module-depth', type=int, help='hide module details', required=False)
+    constraint_group.add_argument('--focus', type=str, help='', required=False)
+    constraint_group.add_argument('--center', type=str, help='', required=False)
 
     # TODO present changes, and animate `terraform apply'
     #parser.add_argument('--plan', type=str, help='terraform plan output', default=None)
@@ -60,6 +61,20 @@ def main():
                 parser.print_help()
                 sys.exit(1)
             dot.set_module_depth(args.module_depth)
+
+        if 'center' in args and args.center:
+            c_node = dot.get_node_by_name(args.center)
+            if not c_node:
+                parser.print_help()
+                sys.exit(1)
+            dot.center(c_node)
+
+        if 'focus' in args and args.focus:
+            f_node = dot.get_node_by_name(args.focus)
+            if not f_node:
+                parser.print_help()
+                sys.exit(1)
+            dot.focus(f_node)
 
         if args.json:
             tf = Terraform(args.directory)
