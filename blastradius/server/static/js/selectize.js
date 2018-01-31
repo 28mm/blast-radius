@@ -1467,6 +1467,15 @@
 				}
 			}
 		},
+
+		/**
+		 * Replaces onChange callback - pm 01/31/2018
+		 */
+		swapOnChange: function() {
+			this.off('change');
+			this.on('change', this.settings.onChange);
+		},
+
 	
 		/**
 		 * Triggered when the main control element
@@ -2010,11 +2019,13 @@
 				scroll_top    = y;
 				scroll_bottom = y - height_menu + height_item;
 	
-				if (y + height_item > height_menu + scroll) {
-					self.$dropdown_content.stop().animate({scrollTop: scroll_bottom}, animate ? self.settings.scrollDuration : 0);
-				} else if (y < scroll) {
-					self.$dropdown_content.stop().animate({scrollTop: scroll_top}, animate ? self.settings.scrollDuration : 0);
-				}
+				// FIXME TODO XXX: commenting this region made re-selection work for UNKNOWN reasons.
+				// 01/31/2017 pm.
+				//if (y + height_item > height_menu + scroll) {
+				//	self.$dropdown_content.stop().animate({scrollTop: scroll_bottom}, animate ? self.settings.scrollDuration : 0);
+				//} else if (y < scroll) {
+				//	self.$dropdown_content.stop().animate({scrollTop: scroll_top}, animate ? self.settings.scrollDuration : 0);
+				//}
 	
 			}
 		},

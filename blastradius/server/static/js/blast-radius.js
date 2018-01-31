@@ -25,7 +25,6 @@ build_uri = function(url, params) {
     url += '?'
     for (var key in params)
         url += key + '=' + params[key] + '&';
-    console.log(url.slice(0,-1));
     return url.slice(0,-1);
 }
 
@@ -73,6 +72,10 @@ blastradius = function (selector, svg_url, json_url, br_state) {
     // TODO: remove scale.
     scale = null
 
+    // mainly for d3-tips
+    class_selector = '.' + selector.slice(1,selector.length);
+
+
     // we should have an object to keep track of state with, but if we
     // don't, just fudge one.
     if (! br_state) {
@@ -94,7 +97,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
     var color = (state['color'] ? state['color'] : d3.scaleOrdinal(d3['schemeCategory20']));
     state['color'] = color;
 
-    console.log(state);
+    //console.log(state);
 
     // 1st pull down the svg, and append it to the DOM as a child
     // of our selector. If added as <img src="x.svg">, we wouldn't
@@ -109,7 +112,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
         d3.select(selector).selectAll('title').remove();
 
         // remove any d3-tips we've left lying around
-        d3.selectAll('.d3-tip').remove();
+        d3.selectAll(class_selector + '-d3-tip').remove();
 
         // make sure the svg uses 100% of the viewport, so that pan/zoom works
         // as expected and there's no clipping.
@@ -125,6 +128,9 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             data.nodes.forEach(function (node) {
                 if (!(node.type in resource_groups))
                     console.log(node.type)
+                if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
+                    node.resource_name = 'root';
+                }
                 node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
                 nodes[node['label']] = node;
                 svg_nodes.push(node);
@@ -173,7 +179,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
 
             // setup tooltips
             var tip = d3.tip()
-                .attr('class', 'd3-tip')
+                .attr('class', class_selector.slice(1, class_selector.length) + '-d3-tip d3-tip')
                 .offset([-10, 0])
                 .html(render_tooltip);
             svg.call(tip);
@@ -203,7 +209,8 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 var node = d;
                 var title = [ '<div class="sbox-listings">']
                 if (node.modules.length <= 1 && node.modules[0] == 'root') {
-                    title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                    if (node.type)
+                        title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.type + '</span>';
                     title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
                 }
                 else {
@@ -354,15 +361,11 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     if (sticky_node) {
                         unhighlight(sticky_node);
                         tip.hide(sticky_node);
-                    }                    
+                    }
                     sticky_node = d;
                     click_count = 1;
                     highlight(d, true, false);
-                    if (no_tip_p !== undefined) {
-                        console.log(no_tip_p)
-                        console.log('skip tip');
-                    }
-                    else { 
+                    if (no_tip_p === undefined) {
                         tip.show(d)
                             .direction(tipdir(d))
                             .offset(tipoff(d));
@@ -555,36 +558,61 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     tip.hide();
                 }
 
-
                 var render_searchbox_node = function(d) {
                     return searchbox_listing(d);
                 }
                 
                 var select_node = function(d) {
-
+                    if (d === undefined || d.length == 0) {
+                        return true;
+                    }
                     // FIXME: these falses pad out parameters I haven't looked up,
                     // FIXME: but don't seem to be necessary for display
+                    if (sticky_node) {
+                        unhighlight(sticky_node);
+                        sticky_node = null;
+                    }
+                    click_count = 0;
                     node_mousedown(nodes[d], false, false, false, true);
                 }
 
-                if ( $('#graph-search.selectized').length > 0 ) {
-                    $('#graph-search').selectize()[0].selectize.clear();
-                    $('#graph-search').selectize()[0].selectize.clearOptions();
-                    for (var i in svg_nodes)
-                        $('#graph-search').selectize()[0].selectize.addOption(svg_nodes[i]);
+                if ( $(selector + '-search.selectized').length > 0 ) {
+                    $(selector + '-search').selectize()[0].selectize.clear();
+                    $(selector + '-search').selectize()[0].selectize.clearOptions();
+                    for (var i in svg_nodes) {
+                        //console.log(svg_nodes[i]);
+                        $(selector + '-search').selectize()[0].selectize.addOption(svg_nodes[i]);
+                    }
+                    if( state.params.refocus && state.params.refocus.length > 0  ) {
+                        var n = state.params.refocus;
+                    }
+
+                    // because of scoping, we need to change the onChange callback to the new version
+                    // of select_node(), and delete the old callback associations.
+                    $(selector + '-search').selectize()[0].selectize.settings.onChange = select_node;
+                    $(selector + '-search').selectize()[0].selectize.swapOnChange();
+                }
+                else {
+                    $(selector + '-search').selectize({
+                        valueField: 'label',
+                        searchField: ['label'],
+                        maxItems: 1,
+                        create: false,
+                        multiple: false,
+                        maximumSelectionSize: 1,
+                        onChange: select_node,
+                        render: {
+                            option: render_searchbox_node,
+                            item : render_searchbox_node
+                        },
+                        options: svg_nodes
+                    });
                 }
 
-                $('#graph-search').selectize({
-                    valueField: 'label',
-                    searchField: ['label'],
-                    create: false,
-                    onChange: select_node,
-                    render: {
-                        option: render_searchbox_node,
-                        item : render_searchbox_node
-                    },
-                    options: svg_nodes
-                });
+                // without this, selecting an item with <enter> will submit the form
+                // and force a page refresh. not the desired behavior.
+                $(selector + '-search-form').submit(function(){return false;});
+
             } // end if(interactive)
         });   // end json success callback
     });       // end svg scuccess callback
