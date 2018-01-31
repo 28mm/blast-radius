@@ -49,21 +49,21 @@
                     </form>
                 </li>
                 <li class="nav-item">
-                    <button class="btn btn-primary" id="graph-refocus">&nbsp;<i class="fas fa-code-branch"></i></button>
+                    <button class="btn btn-danger" id="graph-refocus" title="prune to selection">&nbsp;<i class="fas fa-code-branch"></i></button>
                 </li>
                 <li class="nav-item">
-                    <button class="btn btn-primary" id="graph-zoom-out">&nbsp;<i class="fas fa-search-minus"></i></button>
+                    <button class="btn btn-primary" id="graph-zoom-out" title="zoom out">&nbsp;<i class="fas fa-search-minus"></i></button>
                 </li>
                 <li class="nav-item">
-                    <button class="btn btn-primary" id="graph-zoom-in">&nbsp;<i class="fas fa-search-plus"></i></button>
+                    <button class="btn btn-primary" id="graph-zoom-in" title="zoom in">&nbsp;<i class="fas fa-search-plus"></i></button>
                 </li>
                 <li class="nav-item">
-                    <button class="btn btn-primary" id="graph-download">&nbsp;<i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-primary" id="graph-download" title="download svg">&nbsp;<i class="fas fa-download"></i></button>
                 </li>
                 <li class="nav-item">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Module Depth
+                        <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="module depth">
+                            <i class="fas fa-puzzle-piece"></i>
                         </button>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="#">1</a>
@@ -73,13 +73,30 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="diagMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-question-circle" aria-hidden="true"></i> Help
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="tooltip options">
+                            <i class="fas fa-magic"></i>
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="diagMenuButton">
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">1</a>
+                            <a class="dropdown-item" href="#">2</a>
+                            <a class="dropdown-item" href="#">3</a>
+                            </div>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <div class="dropdown">
+                        <button class="btn btn-info dropdown-toggle" type="button" id="diagMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="help">
+                            <i class="fas fa-question-circle" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu diagmenu" aria-labelledby="diagMenuButton">
                             <ul>
-                                <li>{{directory}}</li>
+                                <li><b>Project:</b> {{help.cwd}}</li>
+                                <li><b>Terraform:</b> {{help.tf_version}}</li>
+                                <li><b>Terraform Path:</b> {{help.tf_exe}}</li>
+                                <li><a href="https://28mm.github.io/blast-radius-docs">Blast Radius Documentation</a></li>
+                                <li><a href="https://www.github.com/28mm/blast-radius">Blast Raddius GitHub</a></li>
                             </ul>
                         </div>
                     </div>
@@ -88,9 +105,11 @@
         </nav>
 
         <!-- main document body -->
-        <div class="container">
-            <div id="graph"></div><!-- graph svg is appended to div#graph -->
-        </div>
+        <div class="container" height="70"></div><!-- ensure some padding at top -->
+        <!-- no div#container b/c div#graph and child svg need to use all available area for
+             pan/zoom interactions and to avoid clipping                                    -->
+        
+        <div id="graph"></div>
 
     </body>
 

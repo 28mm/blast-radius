@@ -33,6 +33,25 @@ div.container {
   /*overflow: scroll;*/
 }
 
+div.graph {
+  width: 100%;
+  height: 100%;
+}
+
+div.graph svg {
+  width: 100%;
+  height: 100%;
+}
+
+.diagmenu {
+  width: 500px;
+}
+
+.diagmenu ul li {
+  font-family: 'courier new';
+  /*font-size: 14px;*/
+}
+
 /* tooltip stuff */
 .d3-tip {
   line-height: 1.4;

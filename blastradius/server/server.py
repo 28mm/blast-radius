@@ -24,15 +24,7 @@ def index():
     if not which('terraform') or not which('dot') or not os.path.exists('.terraform'):
         return render_template('error.html')
 
-    module_depth = request.args.get('module_depth', default=None, type=int)
-    refocus      = request.args.get('refocus', default='[root] root', type=str)
-    graph_args = {}
-    if module_depth: 
-        graph_args['module_depth'] = module_depth
-    if refocus:
-        graph_args['refocus'] = refocus
-
-    return render_template('index.html', directory=os.getcwd(), **graph_args)
+    return render_template('index.html', help=get_help())
 
 @app.route('/graph.svg')
 def graph_svg():
@@ -78,3 +70,22 @@ def run_tf_graph():
     if completed.returncode != 0:
         raise
     return completed.stdout.decode('utf-8')
+
+def get_help():
+    return { 'tf_version' : get_terraform_version(),
+             'tf_exe'   : get_terraform_exe(),
+             'cwd'        : os.getcwd() }
+
+def get_terraform_version():
+    completed = subprocess.run(['terraform', '--version'], stdout=subprocess.PIPE)
+    if completed.returncode != 0:
+        raise
+    return completed.stdout.decode('utf-8').splitlines()[0].split(' ')[-1]
+    
+def get_terraform_exe():
+    return which('terraform')
+
+
+
+
+

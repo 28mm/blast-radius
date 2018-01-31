@@ -108,6 +108,8 @@ blastradius = function (selector, svg_url, json_url, br_state) {
         // trigger useless tooltips.
         d3.select(selector).selectAll('title').remove();
 
+        d3.select(selector + ' svg').attr('width', '100%').attr('height', '100%');
+
         // Obtain the graph description. Doing this within the
         // d3.xml success callback, to guaruntee the svg/xml
         // has loaded.
