@@ -2,7 +2,9 @@
 // terraform-graph.js 
 //
 
-//
+// enumerate the various kinds of edges that Blast Radius understands.
+// only NORMAL and LAYOUT_SHOWN will show up in the <SVG>, but all four
+// will likely appear in the json representation.
 var edge_types = {
     NORMAL        : 1, // what we talk about when we're talking about edges.
     HIDDEN        : 2, // these are normal edges, but aren't drawn.
@@ -10,8 +12,8 @@ var edge_types = {
     LAYOUT_HIDDEN : 4, // these edges are not drawn, aren't "real" edges, but inform layout.
 }
 
-// Sometimes we have escaped newlines (\n) in
-// json strings. we want <br> instead.
+// Sometimes we have escaped newlines (\n) in json strings. we want <br> instead.
+// FIXME: much better line wrapping is probably possible.
 var replacer = function (key, value) {
     if (typeof value == 'string') {
         return value.replace(/\n/g, '<br>');
@@ -19,9 +21,13 @@ var replacer = function (key, value) {
     return value;
 }
 
-//
-// Utilities
-//
+build_uri = function(url, params) {
+    url += '?'
+    for (var key in params)
+        url += key + '=' + params[key] + '&';
+    console.log(url.slice(0,-1));
+    return url.slice(0,-1);
+}
 
 var to_list = function(obj) {
     var lst = [];
@@ -59,19 +65,36 @@ Queue.prototype.dequeue = function() {
     }
 };
 
-// Takes a unique selector, e.g. "#demo-1", and
+// Takes a unique selector, e.g. "#demo-1", and 
 // appends svg xml from svg_url, and takes graph
 // info from json_url to highlight/annotate it.
-svg_activate = function (selector, svg_url, json_url, scale) {
+blastradius = function (selector, svg_url, json_url, br_state) {
 
-    var container = d3.select(selector);
-    var color     = d3.scaleOrdinal(d3['schemeCategory20']);
+    // TODO: remove scale.
+    scale = null
 
-    var lookup = function (list, key, value) {
-        for (var i in list)
-            if (i in list && key in list[i] && list[i][key] == value)
-                return list[i];
+    // we should have an object to keep track of state with, but if we
+    // don't, just fudge one.
+    if (! br_state) {
+        var br_state = {};
     }
+
+    // if we haven't already got an entry in br_state to manage our
+    // state with, go ahead and create one.
+    if (! br_state[selector]) {
+        br_state[selector] = {};
+    }
+
+    var state     = br_state[selector];
+    var container = d3.select(selector);
+
+    // color assignments (resource_type : rgb) are stateful. If we use a new palette
+    // every time the a subgraph is selected, the color assignments would differ and
+    // become confusing.
+    var color = (state['color'] ? state['color'] : d3.scaleOrdinal(d3['schemeCategory20']));
+    state['color'] = color;
+
+    console.log(state);
 
     // 1st pull down the svg, and append it to the DOM as a child
     // of our selector. If added as <img src="x.svg">, we wouldn't
@@ -175,7 +198,7 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             var child_html = function(d) {
                 var children = [];
                 var edges   = edges_by_source[d.label];
-                console.log(edges);
+                //console.log(edges);
                 for (i in edges) {
                     edge = edges[i];
                     if (edge.edge_type == edge_types.NORMAL || edge.edge_type == edge_types.HIDDEN) {
@@ -441,29 +464,74 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             // blast-radius --serve mode stuff. check for a zoom-in button as a proxy
             // for whether other facilities will be available.
             if (d3.select(selector + '-zoom-in')) {
-                var zin_btn  = document.querySelector(selector + '-zoom-in');
-                var zout_btn = document.querySelector(selector + '-zoom-out');
-                var svg_el   = document.querySelector(selector + ' svg')
-                var panzoom  = svgPanZoom(svg_el);
+                var zin_btn      = document.querySelector(selector + '-zoom-in');
+                var zout_btn     = document.querySelector(selector + '-zoom-out');
+                var refocus_btn  = document.querySelector(selector + '-refocus');
+                var download_btn = document.querySelector(selector + '-download')
+                var svg_el       = document.querySelector(selector + ' svg');
+                var panzoom      = svgPanZoom(svg_el);
 
-                zin_btn.addEventListener('click', function(ev){
-                    ev.preventDefault()
-                    panzoom.zoomIn()
-                });
+                var handle_zin = function(ev){
+                    ev.preventDefault();
+                    panzoom.zoomIn();
+                }
+                zin_btn.addEventListener('click', handle_zin);
 
-                zout_btn.addEventListener('click', function(ev){
-                    ev.preventDefault()
-                    panzoom.zoomOut()
-                });
+                var handle_zout = function(ev){
+                    ev.preventDefault();
+                    panzoom.zoomOut();
+                }
+                zout_btn.addEventListener('click', handle_zout);
+
+                var handle_refocus = function() {
+                    if (sticky_node) {
+                        $(selector + ' svg').remove();
+                        clear_listeners();
+                        if (! state['params'])
+                            state.params = {}
+                        state.params.refocus = encodeURIComponent(sticky_node.label);
+
+                        svg_url  = svg_url.split('?')[0];
+                        json_url = json_url.split('?')[0];
+
+                        blastradius(selector, build_uri(svg_url, state.params), build_uri(json_url, state.params), br_state);
+                    }
+                }
+                refocus_btn.addEventListener('click', handle_refocus);
+
+                var handle_download = function() {
+                    // svg extraction and download as data url borrowed from
+                    // http://bl.ocks.org/curran/7cf9967028259ea032e8
+                    var svg_el        = document.querySelector(selector + ' svg')
+                    var svg_as_xml    = (new XMLSerializer).serializeToString(svg_el);
+                    var svg_data_url  = "data:image/svg+xml," + encodeURIComponent(svg_as_xml);
+                    var dl            = document.createElement("a");
+                    document.body.appendChild(dl);
+                    dl.setAttribute("href", svg_data_url);
+                    dl.setAttribute("download", "blast-radius.svg");
+                    dl.click();
+                }
+                download_btn.addEventListener('click', handle_download);
+
+                var clear_listeners = function() {
+                    zin_btn.removeEventListener('click', handle_zin);
+                    zout_btn.removeEventListener('click', handle_zout);
+                    refocus_btn.removeEventListener('click', handle_refocus);
+                    download_btn.removeEventListener('click', handle_download);
+                    panzoom = null;
+
+                    //
+                    tip.hide();
+                }
+
 
                 var render_searchbox_node = function(d) {
-                    //return title_html(d);
                     return searchbox_listing(d);
                 }
                 
                 var select_node = function(d) {
-                    console.log('!!!!');
-                    console.log(d);
+                    //console.log('!!!!');
+                    //console.log(d);
                     node_mousedown(nodes[d]);
                 }
 
@@ -478,11 +546,9 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     },
                     options: svg_nodes
                 });
-            }
-        });
+            } // end if(interactive)
+        });   // end json success callback
+    });       // end svg scuccess callback
 
-
-    });
-
-};
+}             // end blastradius()
 

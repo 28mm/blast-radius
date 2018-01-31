@@ -9,9 +9,8 @@
 
         <script src="/static/js/d3.v4.js"></script>
         <script src="/static/js/d3-tip.js"></script>
-        <script src="/static/js/terraform-graph.js"></script>
+        <script src="/static/js/blast-radius.js"></script>
         <script src="/static/js/categories.js"></script>
-        <script src="/static/js/blast-radius-ui.js"></script>
         <script src="/static/js/svg-pan-zoom.js"></script>
         <script src="/static/js/selectize.js"></script>
 
@@ -36,6 +35,14 @@
                 <li class="nav-item">
                         <a class="navbar-brand" href="/">blastradius</a>
                 </li>
+                <!-- back forward navigation.
+                <li class="nav-item">
+                    <button class="btn btn-primary" id="graph-prev"><i class="fas fa-caret-left"></i></button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-primary" id="graph-next"><i class="fas fa-caret-right"></i></button>
+                </li>  
+                -->
                 <li class="nav-item">                    
                     <form class="form-inline my-2 my-lg-0">
                         <select style="width: 300px;" id="graph-search"></select>
@@ -51,7 +58,7 @@
                     <button class="btn btn-primary" id="graph-zoom-in">&nbsp;<i class="fas fa-search-plus"></i></button>
                 </li>
                 <li class="nav-item">
-                    <button class="btn btn-primary" onClick="download();">&nbsp;<i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-primary" id="graph-download">&nbsp;<i class="fas fa-download"></i> Download</button>
                 </li>
                 <li class="nav-item">
                     <div class="btn-group">
@@ -88,7 +95,11 @@
     </body>
 
     <script>
-        svg_activate('#graph', '/graph.svg', '/graph.json');
+
+        // br_state['#graph'] maintains state for this instance of blastradius
+        var br_state = { '#graph' : {}}
+        blastradius('#graph', '/graph.svg', '/graph.json', br_state);
+
     </script>
 
 </html>
