@@ -108,6 +108,11 @@ blastradius = function (selector, svg_url, json_url, br_state) {
         // trigger useless tooltips.
         d3.select(selector).selectAll('title').remove();
 
+        // remove any d3-tips we've left lying around
+        d3.selectAll('.d3-tip').remove();
+
+        // make sure the svg uses 100% of the viewport, so that pan/zoom works
+        // as expected and there's no clipping.
         d3.select(selector + ' svg').attr('width', '100%').attr('height', '100%');
 
         // Obtain the graph description. Doing this within the
@@ -148,13 +153,29 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 svg.attr('height', scale).attr('width', scale);
             }
 
+            var render_tooltip = function(d) {
+                var title_cbox  = document.querySelector(selector + '-tooltip-title');
+                var json_cbox   = document.querySelector(selector + '-tooltip-json');
+                var deps_cbox   = document.querySelector(selector + '-tooltip-deps');
+
+                if ((! title_cbox) || (! json_cbox) || (! deps_cbox)) 
+                    return title_html(d) + (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
+
+                var ttip = ''; 
+                if (title_cbox.checked)
+                    ttip += title_html(d);
+                if (json_cbox.checked)
+                    ttip += (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
+                if (deps_cbox.checked)
+                    ttip += child_html(d);
+                return ttip;
+            }
+
             // setup tooltips
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
-                .html(function (d) {
-                    return title_html(d) + (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
-                });
+                .html(render_tooltip);
             svg.call(tip);
 
             // returns <div> element representinga  node's title and module namespace.
@@ -315,7 +336,9 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             var click_count = 0;
             var sticky_node = null;
 
-            var node_mousedown = function(d) {
+            // FIXME: these x,y,z-s pad out parameters I haven't looked up,
+            // FIXME: but don't seem to be necessary for display
+            var node_mousedown = function(d, x, y, z, no_tip_p) {
                 if (sticky_node == d && click_count == 1) {
                     tip.hide(d);
                     highlight(d, true, true);
@@ -335,9 +358,15 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     sticky_node = d;
                     click_count = 1;
                     highlight(d, true, false);
-                    tip.show(d)
-                        .direction(tipdir(d))
-                        .offset(tipoff(d));
+                    if (no_tip_p !== undefined) {
+                        console.log(no_tip_p)
+                        console.log('skip tip');
+                    }
+                    else { 
+                        tip.show(d)
+                            .direction(tipdir(d))
+                            .offset(tipoff(d));
+                    }
                 }
             }
 
@@ -471,7 +500,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 var refocus_btn  = document.querySelector(selector + '-refocus');
                 var download_btn = document.querySelector(selector + '-download')
                 var svg_el       = document.querySelector(selector + ' svg');
-                var panzoom      = svgPanZoom(svg_el);
+                var panzoom      = svgPanZoom(svg_el).disableDblClickZoom();
 
                 var handle_zin = function(ev){
                     ev.preventDefault();
@@ -532,9 +561,17 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 }
                 
                 var select_node = function(d) {
-                    //console.log('!!!!');
-                    //console.log(d);
-                    node_mousedown(nodes[d]);
+
+                    // FIXME: these falses pad out parameters I haven't looked up,
+                    // FIXME: but don't seem to be necessary for display
+                    node_mousedown(nodes[d], false, false, false, true);
+                }
+
+                if ( $('#graph-search.selectized').length > 0 ) {
+                    $('#graph-search').selectize()[0].selectize.clear();
+                    $('#graph-search').selectize()[0].selectize.clearOptions();
+                    for (var i in svg_nodes)
+                        $('#graph-search').selectize()[0].selectize.addOption(svg_nodes[i]);
                 }
 
                 $('#graph-search').selectize({

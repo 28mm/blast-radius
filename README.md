@@ -7,7 +7,7 @@
   * **Document** your infrastructure
   * **Reason** about relationships between resources, and evaluate changes to them.
 
-![Blast Radius Preview](doc/blast-radius-demo.svg)
+![Blast Radius Preview](doc/blastradius-interactive.png)
 
   * **Interact** with this diagram (and many others) [here](https://28mm.github.io/blast-radius-docs/).
 
@@ -37,33 +37,11 @@ Point *Blast Radius* at an `init-ed` *Terraform* project, and connect with your 
 
 You may wish to embed figures produced with *Blast Radius* in other documents. You will need the following:
 
- 1. an `svg` file and `json` document representing the graph and its layout. These are produced with *Blast Radius*, as follows
+  1. an `svg` file and `json` document representing the graph and its layout.
+  2. `javascript` and `css` found in `.../blastradius/server/static`
+  3. a uniquely identified DOM element, where the `<svg>` should appear.
 
-````bash
-[...]$ terraform graph | blast-radius --svg > graph.svg
-[...]$ terraform graph | blast-radius --json > graph.json
-````
-
-  2. `javascript` and `css`. You can find these in the `.../blastradius/server/static` directory. Copy these files to an appropriate location, and ammend the following includes to reflect those locations.
-
-  ````html
-<script src="/static/js/d3.v4.js"></script>
-<script src="/static/js/d3-tip.js"></script>
-<script src="/static/js/terraform-graph.js"></script>
-<script src="/static/js/categories.js"></script>
-<link rel="stylesheet" type="text/css" href="/static/css/style.css">
-  ````
-
-  3. A uniquely identified DOM element, where the `<svg>` should appear, and a call to `svg_activate(...)` somewhere after (usually at the end of the `<html>` document. 
-
-  ````html
-<div id="graph"></div> 
-<script>
-svg_activate('#graph', '/graph.svg', '/graph.json');
-</script>
-````
-
-That's it. Ideas to simplify this process strongly desired. 
+Further details available [here](doc/embedded.md).
 
 # Implementation Details
 

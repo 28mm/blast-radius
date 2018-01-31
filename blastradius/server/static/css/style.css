@@ -47,9 +47,13 @@ div.graph svg {
   width: 500px;
 }
 
-.diagmenu ul li {
+.diagmenu .dropdown-item {
   font-family: 'courier new';
   /*font-size: 14px;*/
+}
+
+.dropdown-menu div label {
+  font-family: 'courier new';
 }
 
 /* tooltip stuff */
