@@ -3,12 +3,14 @@ import json
 import re
 import subprocess
 from collections import OrderedDict
+from collections import deque
 
 # 3rd party libraries 
 import jinja2
 
 # 1st party libraries
 from blastradius.graph import Graph, Node, Edge
+from blastradius.util import OrderedSet
 
 class DotGraph(Graph):
 
@@ -56,15 +58,40 @@ class DotGraph(Graph):
         self.stack('var')
         self.stack('output')
 
-        for n in self.nodes:
-            n.fmt.add(id=n.svg_id, shape='box')
-
-        for e in self.edges:
-            e.fmt.add(id=e.svg_id)
-
         # leftover nodes belong to the root subgraph.
         for n in self.nodes:
             n.cluster = 'root' if not n.cluster else n.cluster
+
+    def get_node_by_name(self, label):
+        '''return node by label (if exists) otherwise simple_name'''
+        for n in self.nodes:
+            if n.label == label:
+                return n
+
+        for n in self.nodes:
+            if n.simple_name == label:
+                return n
+        
+        return None
+
+    #
+    # Output functions (return strings).
+    #
+
+    def dot(self):
+        'returns a dot/graphviz representation of the graph (a string)'
+        return self.dot_template.render({ 'nodes': self.nodes, 'edges': self.edges, 'clusters' : self.clusters, 'EdgeType' : EdgeType })
+
+    def json(self):
+        edges = [ dict(e) for e in self.edges ]
+        nodes = [ dict(n) for n in self.nodes ]
+        return json.dumps({ 'nodes' : nodes, 'edges' : edges }, indent=4, sort_keys=True)
+
+    #
+    # A handful of graph manipulations. These are hampered by the decision 
+    # to not de-serialize the graphs (leaving them as lists of nodes and
+    # edges). This code is garbage, but it mostly works.
+    #
 
     def stack(self, node_type, threshold=2):
         '''if a group of nodes of type 'type' number as many as 'threshold', 
@@ -124,14 +151,22 @@ class DotGraph(Graph):
         self.edges = self.edges + new_edges
 
     def set_module_depth(self, depth):
-        """group resources belonging to modules into a single node, to simplify presentation.
-        WOWEE.... THIS CODE IS PAINFUL TO LOOK AT!"""
+        """
+        group resources belonging to modules into a single node, to simplify 
+        presentation. No claims made for this code. It's garbage!
+       """
 
         depth += 1 # account for [root] module
 
         def is_too_deep(modules):
             if len(modules) >= depth and modules[0] != 'root':
                 return True
+
+        def find_edge(edges, e):
+            for edge in edges:
+                if e.source == edge.source and e.target == edge.target and e.edge_type == edge.edge_type:
+                    return True
+            return False
         
         # find DotNodes at too great a depth.
         too_deep     = [ n for n in self.nodes if is_too_deep(n.modules) ]
@@ -164,7 +199,7 @@ class DotGraph(Graph):
                                 replace = False
                                 break
                         if replace:
-                            new_edges.append(DotEdge(p.label, e.target))
+                            new_edges.append(DotEdge(p.label, e.target, fmt=Format('')))
                         break
             elif is_too_deep(tgt_mods):
                 for p in placeholders:
@@ -175,24 +210,106 @@ class DotGraph(Graph):
                                 replace = False
                                 break
                         if replace:
-                            new_edges.append(DotEdge(e.source, p.label))
+                            new_edges.append(DotEdge(e.source, p.label, fmt=Format('')))
                         break
             else:
                 new_edges.append(e)
-        self.edges = new_edges
 
-        # add placeholder nodes, remove too_deep
-        self.nodes = list(set(placeholders) | (set(self.nodes) - set(too_deep)))
+        # make sure we haven't got any duplicate edges.
+        final_edges = []
+        for e in new_edges:
+            if not find_edge(final_edges, e):
+                final_edges.append(e)
+        self.edges = final_edges
 
-    def dot(self):
-        'returns a dot/graphviz representation of the graph (a string)'
-        return self.dot_template.render({ 'nodes': self.nodes, 'edges': self.edges, 'clusters' : self.clusters, 'EdgeType' : EdgeType })
-
-    def json(self):
-        edges = [ dict(e) for e in self.edges ]
-        nodes = [ dict(n) for n in self.nodes ]
-        return json.dumps({ 'nodes' : nodes, 'edges' : edges }, indent=4, sort_keys=True)
+        # add placeholder nodes, remove nodes beyond specified module_depth.
+        self.nodes = list(OrderedSet(placeholders) | (OrderedSet(self.nodes) - OrderedSet(too_deep)))
     
+
+    def center(self, node):
+        '''
+        prunes graph to include only (1) the given node, (2) its 
+        dependencies, and nodes that depend on it.
+        '''
+        edges_by_source = {}
+        for e in self.edges:
+            if e.source in edges_by_source:
+                edges_by_source[e.source].append(e)
+            else:
+                edges_by_source[e.source] = [ e ]
+
+        edges_by_target = {}
+        for e in self.edges: 
+            if e.target in edges_by_target:
+                edges_by_target[e.target].append(e)
+            else:
+                edges_by_target[e.target] = [ e ]
+
+        edges_to_save = OrderedSet() # edge objects
+        nodes_to_save = OrderedSet() # label strings
+
+        q = deque()
+        if node.label in edges_by_source:
+            q.append(node.label)
+            nodes_to_save.add(node.label)
+            while len(q) > 0:
+                source = q.pop()
+                if source in edges_by_source:
+                    for e in edges_by_source[source]:
+                        q.append(e.target)
+                        edges_to_save.add(e)
+                        nodes_to_save.add(e.target)
+
+        q = deque()
+        if node.label in edges_by_target:
+            q.append(node.label)
+            nodes_to_save.add(node.label)
+            while len(q) > 0:
+                target = q.pop()
+                if target in edges_by_target:
+                    for e in edges_by_target[target]:
+                        q.append(e.source)
+                        edges_to_save.add(e)
+                        nodes_to_save.add(e.source)
+
+        self.edges = list(edges_to_save)
+        self.nodes = [ n for n in self.nodes if n.label in nodes_to_save ]
+
+    def focus(self, node):
+        '''
+        prunes graph to include only the given node and its dependencies.
+        '''
+        edges_by_source = {}
+        for e in self.edges:
+            if e.source in edges_by_source:
+                edges_by_source[e.source].append(e)
+            else:
+                edges_by_source[e.source] = [ e ]
+
+        edges_to_save = OrderedSet() # edge objects
+        nodes_to_save = OrderedSet() # label strings
+
+        q = deque()
+        if node.label in edges_by_source:
+            q.append(node.label)
+            nodes_to_save.add(node.label)
+            while len(q) > 0:
+                source = q.pop()
+                if source in edges_by_source:
+                    for e in edges_by_source[source]:
+                        q.append(e.target)
+                        edges_to_save.add(e)
+                        nodes_to_save.add(e.target)
+
+        self.edges = list(edges_to_save)
+        self.nodes = [ n for n in self.nodes if n.label in nodes_to_save ]
+
+
+    
+    #
+    # Formatting templates.
+    #
+
     dot_template_str = """
 digraph {
     compound = "true"
@@ -298,11 +415,20 @@ class DotNode(Node):
         self.cluster        = None # for stacked resources (usually var/output).
         self.collapsed      = False
 
+        self.fmt.add(id=self.svg_id, shape='box')
+
+
         self.modules = [ m for m in self.module.split('.') if m != 'module' ]
 
     def __iter__(self):
         for key in {'label', 'simple_name', 'type', 'resource_name', 'group', 'svg_id', 'definition', 'cluster', 'module', 'modules'}:
            yield (key, getattr(self, key))
+
+    #
+    # static utilities mostly for converting "labels"--which uniquely identify
+    # DotNodes--to other useful things like a list of parent modules, the isolated
+    # resource name, the resource type, etc.
+    #
 
     @staticmethod
     def _resource_type(label):
@@ -326,9 +452,10 @@ class DotNode(Node):
         return [ m for m in DotNode._module(label).split('.') if m != 'module' ]
 
 
-
 class ModuleNode(DotNode):
-    'stands in for multiple DotNodes at the same module depth...'
+    '''
+    Stands in for multiple DotNodes at the same module depth...
+    '''
     def __init__(self, modules):
         self.label = '[root] ' + 'module.' + '.module.'.join(modules) + '.collapsed.etc'
         self.fmt = Format('')
@@ -343,6 +470,8 @@ class ModuleNode(DotNode):
         self.modules        = [ m for m in self.module.split('.') if m != 'module' ]
         self.collapsed      = True
 
+        self.fmt.add(id=self.svg_id, shape='box')
+
     def is_standin(self, modules):
         'should this ModuleNode standin for the provided DotNode?'
         if len(modules) < len(self.modules):
@@ -354,8 +483,10 @@ class ModuleNode(DotNode):
 
 
 class EdgeType:
-    '''Sometimes we want to hide edges, and sometimes we want to add edges in order
-    to influence layout. '''
+    '''
+    Sometimes we want to hide edges, and sometimes we want to add 
+    edges in order to influence layout.
+    '''
     NORMAL        = 1 # what we talk about when we're talking about edges.
     HIDDEN        = 2 # these are normal edges, but aren't drawn.
     LAYOUT_SHOWN  = 3 # these edges are drawn, but aren't "real" edges
@@ -366,13 +497,17 @@ class EdgeType:
 
 
 class DotEdge(Edge):
-
+    '''
+    Distinguished from a Regular Edge, by its Dot language format string.
+    '''
     def __init__(self, source, target, fmt=None, edge_type=EdgeType.NORMAL):
         self.source = source
         self.target = target
         self.svg_id = 'edge_' + str(Edge.svg_id_counter())
         self.fmt    = fmt
         self.edge_type = edge_type
+
+        self.fmt.add(id=self.svg_id)
 
     def __iter__(self):
         for key in {'source', 'target', 'svg_id', 'edge_type'}: 

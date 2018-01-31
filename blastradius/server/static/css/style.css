@@ -3,103 +3,135 @@ h1, h2, h3, h4, p {
 }
 
 p.explain {
-    font-family: monospace;
-    white-space: pre;
-  }
-  
-  h3.explain {
-    font-family: monospace;
-  }
-  
-  path.link {
-    fill: none;
-    stroke: #666;
-    stroke-width: 1.5px;
-  }
-  
-  circle {
-    stroke: #fff;
-    stroke-width: 1.5px;
-  }
-  
-  text {
-    fill: #000;
-    font: 10px sans-serif;
-    pointer-events: none;
-  }
-  
-  div.container {
-    margin: 30px;
-    /*overflow: scroll;*/
-  }
-  
-  /* tooltip stuff */
-  .d3-tip {
-    line-height: 1.4;
-    font-weight: normal;
-    font-family: 'courier new', 'monaco', fixed-width;
-    font-size: 14px;
-    padding: 6px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    border-radius: 2px;
-    z-index: 91;
-    min-width: 300px;
-    /*max-width: 600px;*/
-  }
-  
-  .d3-tip p {
-    font-weight: normal;
-    line-height: 1.2;
-    font-family: 'courier new', 'monaco', fixed-width;
-    font-size: 11px;
-  }
-  
-  div.title {
-    width: 100%;
-    display: block;
-  }
+  font-family: monospace;
+  white-space: pre;
+}
 
-  span.title {
-          display: inline-block;
-          font-size: 14px;
-          line-height: 17px;
-          color: white;
-          margin: 1px;
-  }
-  
-  span.dep {
-       line-height: 15px;
-       font-size: 12px;
-       color: white;
-       display: inline-block;
-       margin: 1px;
-  }
-  
-  /* Creates a small triangle extender for the tooltip */
-  .d3-tip:after {
-    box-sizing: border-box;
-    display: inline;
-    font-size: 12px;
-    width: 100%;
-    line-height: 1;
-    color: rgba(0, 0, 0, 0.8);
-    content: "\25BC";
-    position: absolute;
-    text-align: center;
-    z-index: 91;
-  }
-  
-  /* Style northward tooltips differently */
-  .d3-tip.n:after {
-    margin: -1px 0 0 0;
-    top: 100%;
-    left: 0;
-    z-index: 91;
-  }
-  
-  g.node text {
-         font-family: 'consolas', 'monaco', 'fixed-width';
-         font-size: 8px;
-  }
-  
+h3.explain {
+  font-family: monospace;
+}
+
+path.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  fill: #000;
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+div.container {
+  margin: 30px;
+  /*overflow: scroll;*/
+}
+
+div.graph {
+  width: 100%;
+  height: 100%;
+}
+
+div.graph svg {
+  width: 100%;
+  height: 100%;
+}
+
+.diagmenu {
+  width: 500px;
+}
+
+.diagmenu .dropdown-item {
+  font-family: 'courier new';
+  /*font-size: 14px;*/
+}
+
+.dropdown-menu div label {
+  font-family: 'courier new';
+}
+
+/* tooltip stuff */
+.d3-tip {
+  line-height: 1.4;
+  font-weight: normal;
+  font-family: 'courier new', 'monaco', fixed-width;
+  font-size: 14px;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  z-index: 91;
+  min-width: 300px;
+  /*max-width: 600px;*/
+}
+
+.d3-tip p {
+  font-weight: normal;
+  line-height: 1.2;
+  font-family: 'courier new', 'monaco', fixed-width;
+  font-size: 11px;
+}
+
+div.title {
+  width: 100%;
+  display: block;
+}
+
+span.title {
+        display: inline-block;
+        font-size: 14px;
+        line-height: 17px;
+        color: white;
+        margin: 1px;
+}
+
+span.sbox-listing {
+  display: inline-block;
+  font-size: 12px;
+  font-family: "Courier New";
+  line-height: 18px;
+  color: black;
+  margin: 1px;
+  padding: 2px;
+}
+
+span.dep {
+      line-height: 15px;
+      font-size: 12px;
+      color: white;
+      display: inline-block;
+      margin: 1px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 12px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+  z-index: 91;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+  z-index: 91;
+}
+
+g.node text {
+        font-family: 'consolas', 'monaco', 'fixed-width';
+        font-size: 8px;
+}

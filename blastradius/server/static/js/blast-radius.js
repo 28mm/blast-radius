@@ -2,7 +2,9 @@
 // terraform-graph.js 
 //
 
-//
+// enumerate the various kinds of edges that Blast Radius understands.
+// only NORMAL and LAYOUT_SHOWN will show up in the <SVG>, but all four
+// will likely appear in the json representation.
 var edge_types = {
     NORMAL        : 1, // what we talk about when we're talking about edges.
     HIDDEN        : 2, // these are normal edges, but aren't drawn.
@@ -10,8 +12,8 @@ var edge_types = {
     LAYOUT_HIDDEN : 4, // these edges are not drawn, aren't "real" edges, but inform layout.
 }
 
-// Sometimes we have escaped newlines (\n) in
-// json strings. we want <br> instead.
+// Sometimes we have escaped newlines (\n) in json strings. we want <br> instead.
+// FIXME: much better line wrapping is probably possible.
 var replacer = function (key, value) {
     if (typeof value == 'string') {
         return value.replace(/\n/g, '<br>');
@@ -19,9 +21,12 @@ var replacer = function (key, value) {
     return value;
 }
 
-//
-// Utilities
-//
+build_uri = function(url, params) {
+    url += '?'
+    for (var key in params)
+        url += key + '=' + params[key] + '&';
+    return url.slice(0,-1);
+}
 
 var to_list = function(obj) {
     var lst = [];
@@ -59,19 +64,40 @@ Queue.prototype.dequeue = function() {
     }
 };
 
-// Takes a unique selector, e.g. "#demo-1", and
+// Takes a unique selector, e.g. "#demo-1", and 
 // appends svg xml from svg_url, and takes graph
 // info from json_url to highlight/annotate it.
-svg_activate = function (selector, svg_url, json_url, scale) {
+blastradius = function (selector, svg_url, json_url, br_state) {
 
-    var container = d3.select(selector);
-    var color     = d3.scaleOrdinal(d3['schemeCategory20']);
+    // TODO: remove scale.
+    scale = null
 
-    var lookup = function (list, key, value) {
-        for (var i in list)
-            if (i in list && key in list[i] && list[i][key] == value)
-                return list[i];
+    // mainly for d3-tips
+    class_selector = '.' + selector.slice(1,selector.length);
+
+
+    // we should have an object to keep track of state with, but if we
+    // don't, just fudge one.
+    if (! br_state) {
+        var br_state = {};
     }
+
+    // if we haven't already got an entry in br_state to manage our
+    // state with, go ahead and create one.
+    if (! br_state[selector]) {
+        br_state[selector] = {};
+    }
+
+    var state     = br_state[selector];
+    var container = d3.select(selector);
+
+    // color assignments (resource_type : rgb) are stateful. If we use a new palette
+    // every time the a subgraph is selected, the color assignments would differ and
+    // become confusing.
+    var color = (state['color'] ? state['color'] : d3.scaleOrdinal(d3['schemeCategory20']));
+    state['color'] = color;
+
+    //console.log(state);
 
     // 1st pull down the svg, and append it to the DOM as a child
     // of our selector. If added as <img src="x.svg">, we wouldn't
@@ -85,6 +111,13 @@ svg_activate = function (selector, svg_url, json_url, scale) {
         // trigger useless tooltips.
         d3.select(selector).selectAll('title').remove();
 
+        // remove any d3-tips we've left lying around
+        d3.selectAll(class_selector + '-d3-tip').remove();
+
+        // make sure the svg uses 100% of the viewport, so that pan/zoom works
+        // as expected and there's no clipping.
+        d3.select(selector + ' svg').attr('width', '100%').attr('height', '100%');
+
         // Obtain the graph description. Doing this within the
         // d3.xml success callback, to guaruntee the svg/xml
         // has loaded.
@@ -95,6 +128,9 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             data.nodes.forEach(function (node) {
                 if (!(node.type in resource_groups))
                     console.log(node.type)
+                if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
+                    node.resource_name = 'root';
+                }
                 node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
                 nodes[node['label']] = node;
                 svg_nodes.push(node);
@@ -123,13 +159,29 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 svg.attr('height', scale).attr('width', scale);
             }
 
+            var render_tooltip = function(d) {
+                var title_cbox  = document.querySelector(selector + '-tooltip-title');
+                var json_cbox   = document.querySelector(selector + '-tooltip-json');
+                var deps_cbox   = document.querySelector(selector + '-tooltip-deps');
+
+                if ((! title_cbox) || (! json_cbox) || (! deps_cbox)) 
+                    return title_html(d) + (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
+
+                var ttip = ''; 
+                if (title_cbox.checked)
+                    ttip += title_html(d);
+                if (json_cbox.checked)
+                    ttip += (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
+                if (deps_cbox.checked)
+                    ttip += child_html(d);
+                return ttip;
+            }
+
             // setup tooltips
             var tip = d3.tip()
-                .attr('class', 'd3-tip')
+                .attr('class', class_selector.slice(1, class_selector.length) + '-d3-tip d3-tip')
                 .offset([-10, 0])
-                .html(function (d) {
-                    return title_html(d) + (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
-                });
+                .html(render_tooltip);
             svg.call(tip);
 
             // returns <div> element representinga  node's title and module namespace.
@@ -151,11 +203,32 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                 return title.join('');
             }
 
+            // returns <div> element representing node's title and module namespace.
+            // intended for use in an interactive searchbox. 
+            var searchbox_listing = function(d) {
+                var node = d;
+                var title = [ '<div class="sbox-listings">']
+                if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                    if (node.type)
+                        title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                    title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                }
+                else {
+                    for (var i in node.modules) {
+                        title[title.length] = '<span class="sbox-listing" style="background: ' + color('(M) ' + node.modules[i]) + ';">' + node.modules[i] + '</span>';
+                    }
+                    title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.type + '</span>';
+                    title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                }
+                title[title.length] = '</div>'
+                return title.join('');
+            }
+
             // returns <span> elements representing a node's direct children 
             var child_html = function(d) {
                 var children = [];
                 var edges   = edges_by_source[d.label];
-                console.log(edges);
+                //console.log(edges);
                 for (i in edges) {
                     edge = edges[i];
                     if (edge.edge_type == edge_types.NORMAL || edge.edge_type == edge_types.HIDDEN) {
@@ -270,7 +343,9 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             var click_count = 0;
             var sticky_node = null;
 
-            var node_mousedown = function(d) {
+            // FIXME: these x,y,z-s pad out parameters I haven't looked up,
+            // FIXME: but don't seem to be necessary for display
+            var node_mousedown = function(d, x, y, z, no_tip_p) {
                 if (sticky_node == d && click_count == 1) {
                     tip.hide(d);
                     highlight(d, true, true);
@@ -286,13 +361,15 @@ svg_activate = function (selector, svg_url, json_url, scale) {
                     if (sticky_node) {
                         unhighlight(sticky_node);
                         tip.hide(sticky_node);
-                    }                    
+                    }
                     sticky_node = d;
                     click_count = 1;
                     highlight(d, true, false);
-                    tip.show(d)
-                        .direction(tipdir(d))
-                        .offset(tipoff(d));
+                    if (no_tip_p === undefined) {
+                        tip.show(d)
+                            .direction(tipdir(d))
+                            .offset(tipoff(d));
+                    }
                 }
             }
 
@@ -417,10 +494,128 @@ svg_activate = function (selector, svg_url, json_url, scale) {
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')
                 .data(edges, function(d) { return d && d.svg_id || d3.select(this).attr("id"); });
-        });
 
+            // blast-radius --serve mode stuff. check for a zoom-in button as a proxy
+            // for whether other facilities will be available.
+            if (d3.select(selector + '-zoom-in')) {
+                var zin_btn      = document.querySelector(selector + '-zoom-in');
+                var zout_btn     = document.querySelector(selector + '-zoom-out');
+                var refocus_btn  = document.querySelector(selector + '-refocus');
+                var download_btn = document.querySelector(selector + '-download')
+                var svg_el       = document.querySelector(selector + ' svg');
+                var panzoom      = svgPanZoom(svg_el).disableDblClickZoom();
 
-    });
+                var handle_zin = function(ev){
+                    ev.preventDefault();
+                    panzoom.zoomIn();
+                }
+                zin_btn.addEventListener('click', handle_zin);
 
-};
+                var handle_zout = function(ev){
+                    ev.preventDefault();
+                    panzoom.zoomOut();
+                }
+                zout_btn.addEventListener('click', handle_zout);
+
+                var handle_refocus = function() {
+                    if (sticky_node) {
+                        $(selector + ' svg').remove();
+                        clear_listeners();
+                        if (! state['params'])
+                            state.params = {}
+                        state.params.refocus = encodeURIComponent(sticky_node.label);
+
+                        svg_url  = svg_url.split('?')[0];
+                        json_url = json_url.split('?')[0];
+
+                        blastradius(selector, build_uri(svg_url, state.params), build_uri(json_url, state.params), br_state);
+                    }
+                }
+                refocus_btn.addEventListener('click', handle_refocus);
+
+                var handle_download = function() {
+                    // svg extraction and download as data url borrowed from
+                    // http://bl.ocks.org/curran/7cf9967028259ea032e8
+                    var svg_el        = document.querySelector(selector + ' svg')
+                    var svg_as_xml    = (new XMLSerializer).serializeToString(svg_el);
+                    var svg_data_url  = "data:image/svg+xml," + encodeURIComponent(svg_as_xml);
+                    var dl            = document.createElement("a");
+                    document.body.appendChild(dl);
+                    dl.setAttribute("href", svg_data_url);
+                    dl.setAttribute("download", "blast-radius.svg");
+                    dl.click();
+                }
+                download_btn.addEventListener('click', handle_download);
+
+                var clear_listeners = function() {
+                    zin_btn.removeEventListener('click', handle_zin);
+                    zout_btn.removeEventListener('click', handle_zout);
+                    refocus_btn.removeEventListener('click', handle_refocus);
+                    download_btn.removeEventListener('click', handle_download);
+                    panzoom = null;
+
+                    //
+                    tip.hide();
+                }
+
+                var render_searchbox_node = function(d) {
+                    return searchbox_listing(d);
+                }
+                
+                var select_node = function(d) {
+                    if (d === undefined || d.length == 0) {
+                        return true;
+                    }
+                    // FIXME: these falses pad out parameters I haven't looked up,
+                    // FIXME: but don't seem to be necessary for display
+                    if (sticky_node) {
+                        unhighlight(sticky_node);
+                        sticky_node = null;
+                    }
+                    click_count = 0;
+                    node_mousedown(nodes[d], false, false, false, true);
+                }
+
+                if ( $(selector + '-search.selectized').length > 0 ) {
+                    $(selector + '-search').selectize()[0].selectize.clear();
+                    $(selector + '-search').selectize()[0].selectize.clearOptions();
+                    for (var i in svg_nodes) {
+                        //console.log(svg_nodes[i]);
+                        $(selector + '-search').selectize()[0].selectize.addOption(svg_nodes[i]);
+                    }
+                    if( state.params.refocus && state.params.refocus.length > 0  ) {
+                        var n = state.params.refocus;
+                    }
+
+                    // because of scoping, we need to change the onChange callback to the new version
+                    // of select_node(), and delete the old callback associations.
+                    $(selector + '-search').selectize()[0].selectize.settings.onChange = select_node;
+                    $(selector + '-search').selectize()[0].selectize.swapOnChange();
+                }
+                else {
+                    $(selector + '-search').selectize({
+                        valueField: 'label',
+                        searchField: ['label'],
+                        maxItems: 1,
+                        create: false,
+                        multiple: false,
+                        maximumSelectionSize: 1,
+                        onChange: select_node,
+                        render: {
+                            option: render_searchbox_node,
+                            item : render_searchbox_node
+                        },
+                        options: svg_nodes
+                    });
+                }
+
+                // without this, selecting an item with <enter> will submit the form
+                // and force a page refresh. not the desired behavior.
+                $(selector + '-search-form').submit(function(){return false;});
+
+            } // end if(interactive)
+        });   // end json success callback
+    });       // end svg scuccess callback
+
+}             // end blastradius()
 
