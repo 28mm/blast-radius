@@ -22,16 +22,35 @@ Install *Blast Radius* with pip, and *Graphviz* through your system's package ma
 
 Point *Blast Radius* at an `init-ed` *Terraform* project, and connect with your browser.
 
-````bash
+```bash
 [...]$ blast-radius --serve /path/to/terraform-project
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-````
-
+```
+## Docker
 *Alternatively*, you can launch *Blast Radius* in a docker container. (In this example, the current working directory contains a *Terraform* project.)
 
 ```bash
 [...]$ docker run -it --rm -p 5000:5000 -v $(pwd):/workdir 28mm/blast-radius
-````
+```
+*Please note*:
+If you organised your terraform directories with stacks and modules, please call *Blast Radius* from the root directory and give the stack's directory as argument (plus the `--serve` argument).
+
+```bash
+[...]$ tree -d
+/-- project
+    |-- modules
+    |   |-- foo
+    |   |-- bar
+    |   `-- dead
+    `-- stacks
+        `-- beef
+             `-- .terraform
+
+[...]$ cd project
+docker run -it --rm -p 5000:5000 -v $(pwd):/workdir 28mm/blast-radius --serve stacks/beef
+```
+
+*Additional note*: terraform saves module links as _absolute_ paths in _.terraform/modules/<uuid>_ remove them before starting blast-radius (`rm -rf stacks/beef/.terraform/modules`).
 
 # Embeded Figures
 
