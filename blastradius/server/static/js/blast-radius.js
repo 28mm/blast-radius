@@ -165,13 +165,13 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 var deps_cbox   = document.querySelector(selector + '-tooltip-deps');
 
                 if ((! title_cbox) || (! json_cbox) || (! deps_cbox)) 
-                    return title_html(d) + (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
+                    return title_html(d) + (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
 
                 var ttip = ''; 
                 if (title_cbox.checked)
                     ttip += title_html(d);
                 if (json_cbox.checked)
-                    ttip += (d.definition.length == 0 ? child_html(d) : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
+                    ttip += (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
                 if (deps_cbox.checked)
                     ttip += child_html(d);
                 return ttip;
@@ -505,6 +505,13 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 var svg_el       = document.querySelector(selector + ' svg');
                 var panzoom      = svgPanZoom(svg_el).disableDblClickZoom();
 
+                console.log('bang');
+                console.log(state);
+                if (state['no_scroll_zoom'] == true) {
+                    console.log('bang');
+                    panzoom.disableMouseWheelZoom();
+                }
+
                 var handle_zin = function(ev){
                     ev.preventDefault();
                     panzoom.zoomIn();
@@ -531,7 +538,11 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                         blastradius(selector, build_uri(svg_url, state.params), build_uri(json_url, state.params), br_state);
                     }
                 }
-                refocus_btn.addEventListener('click', handle_refocus);
+
+                // this feature is disabled for embedded images on static sites...
+                if (refocus_btn) {
+                    refocus_btn.addEventListener('click', handle_refocus);
+                }
 
                 var handle_download = function() {
                     // svg extraction and download as data url borrowed from
