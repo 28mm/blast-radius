@@ -30,10 +30,10 @@ Point *Blast Radius* at an `init-ed` *Terraform* project, and connect with your 
 *Alternatively*, you can launch *Blast Radius* in a docker container. (In this example, the current working directory contains a *Terraform* project.)
 
 ```bash
-[...]$ docker run --privileged -it --rm -p 5000:5000 -v $(pwd):/workdir:ro 28mm/blast-radius
+[...]$ docker run --cap-add=SYS_ADMIN -it --rm -p 5000:5000 -v $(pwd):/workdir:ro 28mm/blast-radius
 ```
 
-*Please note*: because terraform saves module links as _absolute_ paths in _.terraform/modules/<uuid>_ we mount the host's filesystem read-only and force terraform to update the modules path at start. This way we don't interfere with the real project. Sadly docker has to be run with the `--privileged` flag to use the [overlayFS](https://wiki.archlinux.org/index.php/Overlay_filesystem).
+*Please note*: because terraform saves module links as _absolute_ paths in _.terraform/modules/<uuid>_ we mount the host's filesystem read-only and force terraform to update the modules path at start. This way we don't interfere with the real project. Thus docker has to be run with the `--cap-add=SYS_ADMIN` flag to use the [overlayFS](https://wiki.archlinux.org/index.php/Overlay_filesystem) see [Docker's documentation](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities).
 
 *Additional note*:
 If you organised your terraform directories with stacks and modules, please call *Blast Radius* from the root directory and give the stack's directory as argument (plus the `--serve` argument).
@@ -50,7 +50,7 @@ If you organised your terraform directories with stacks and modules, please call
              `-- .terraform
 
 [...]$ cd project
-docker run --privileged -it --rm -p 5000:5000 -v $(pwd):/workdir:ro 28mm/blast-radius --serve stacks/beef
+docker run --cap-add=SYS_ADMIN -it --rm -p 5000:5000 -v $(pwd):/workdir:ro 28mm/blast-radius --serve stacks/beef
 ```
 # Embeded Figures
 
