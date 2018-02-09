@@ -1,6 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
+
+# prepare overlayFS
+# shamelessly taken from https://gist.github.com/detunized/7c8fc4c37b49c5475e68ef9574587eee
+
+mkdir -p /tmp/overlay && \
+mount -t tmpfs tmpfs /tmp/overlay && \
+mkdir -p /tmp/overlay/{upper,work} && \
+mkdir -p /workdir-rw && \
+mount -t overlay overlay -o lowerdir=/workdir,upperdir=/tmp/overlay/upper,workdir=/tmp/overlay/work /workdir-rw
+
+cd /workdir-rw
 
 # if we are given arguments we assume
 #  $1 will be "--serve" and
@@ -16,11 +27,11 @@ if [ -z ${2+x} ];
     if [ -d "$2" ];
       then
         cd $2;
-        terraform init;
-        cd /workdir
+        terraform get --update=true;
+        cd /workdir-rw
     fi
 fi
 
-terraform init
+terraform init -input=false
 
 blast-radius $1 $2 $3
