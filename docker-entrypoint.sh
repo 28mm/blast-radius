@@ -27,7 +27,8 @@ if [ -z ${2+x} ];
     if [ -d "$2" ];
       then
         cd $2;
-        terraform get --update=true;
+        terraform get --update=true
+        terraform init
         cd /workdir-rw
     fi
 fi
