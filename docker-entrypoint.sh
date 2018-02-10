@@ -1,6 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
+
+# prepare overlayFS
+# shamelessly taken from https://gist.github.com/detunized/7c8fc4c37b49c5475e68ef9574587eee
+
+mkdir -p /tmp/overlay && \
+mount -t tmpfs tmpfs /tmp/overlay && \
+mkdir -p /tmp/overlay/{upper,work} && \
+mkdir -p /workdir-rw && \
+mount -t overlay overlay -o lowerdir=/workdir,upperdir=/tmp/overlay/upper,workdir=/tmp/overlay/work /workdir-rw
+
+cd /workdir-rw
 
 # if we are given arguments we assume
 #  $1 will be "--serve" and
@@ -9,18 +20,19 @@ set -e
 # if $2 is no directory just fall back to the default and run
 # terraform init in /workdir
 
-if [ -z ${2+x} ];
-  then
-    echo;
-  else
-    if [ -d "$2" ];
-      then
-        cd $2;
-        terraform init;
-        cd /workdir
-    fi
-fi
+# are we meant to run terraform in a sub-directory?
+[ $# == 2 ] && [ -d "$2" ] && {
+    cd $2
+}
 
-terraform init
+# is terraform already initialized? 
+[ -d '.terraform' ] && terraform get --update=true
 
+# re-initialize anyway.
+terraform init -input=false
+
+# it's possible that we're in a sub-directory. leave.
+cd /workdir-rw
+
+# okay, we should be good to go.
 blast-radius $1 $2 $3
