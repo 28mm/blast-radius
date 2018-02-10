@@ -20,19 +20,19 @@ cd /workdir-rw
 # if $2 is no directory just fall back to the default and run
 # terraform init in /workdir
 
-if [ -z ${2+x} ];
-  then
-    echo;
-  else
-    if [ -d "$2" ];
-      then
-        cd $2;
-        terraform get --update=true
-        terraform init
-        cd /workdir-rw
-    fi
-fi
+# are we meant to run terraform in a sub-directory?
+[ $# == 2 ] && [ -d "$2" ] && {
+    cd $2
+}
 
+# is terraform already initialized? 
+[ -d '.terraform' ] && terraform get --update=true
+
+# re-initialize anyway.
 terraform init -input=false
 
+# it's possible that we're in a sub-directory. leave.
+cd /workdir-rw
+
+# okay, we should be good to go.
 blast-radius $1 $2 $3
