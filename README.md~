@@ -7,7 +7,7 @@
   * **Document** your infrastructure
   * **Reason** about relationships between resources, and evaluate changes to them.
 
-<img src="doc/blastradius-interactive.png">
+![Blast Radius Preview](doc/blastradius-interactive.png)
 
   * **Interact** with this diagram (and many others) [here](https://28mm.github.io/blast-radius-docs/).
 
@@ -52,7 +52,7 @@ If you organised your terraform directories with stacks and modules, please call
 [...]$ cd project
 docker run --cap-add=SYS_ADMIN -it --rm -p 5000:5000 -v $(pwd):/workdir:ro 28mm/blast-radius --serve stacks/beef
 ```
-# Embedded Figures
+# Embeded Figures
 
 You may wish to embed figures produced with *Blast Radius* in other documents. You will need the following:
 
@@ -68,18 +68,5 @@ Further details available [here](doc/embedded.md).
 
 # Further Reading
 
-The development of *Blast Radius* is documented in a series of [blog](https://28mm.github.io) posts: 
-
-  * [part 1](https://28mm.github.io/notes/d3-terraform-graphs): motivations, d3 force-directed layouts vs. vanilla graphviz.
-  * [part 2](https://28mm.github.io/notes/d3-terraform-graphs-2): d3-enhanced graphviz layouts, meaningful coloration, animations.
-  * [part 3](https://28mm.github.io/notes/terraform-graphs-3): limiting horizontal sprawl, supporting modules.
-  * [part 4](https://28mm.github.io/notes/d3-terraform-graphs-4): search, pan/zoom, prune-to-selection, docker.
-
-A catalog of example *Terraform* configurations, and their dependency graphs can be found [here](https://28mm.github.io/blast-radius-docs/).
-
-  * [AWS two-tier architecture](https://28mm.github.io/blast-radius-docs/examples/terraform-provider-aws/two-tier/)
-  * [AWS networking (featuring modules)](https://28mm.github.io/blast-radius-docs/examples/terraform-provider-aws/networking/)
-  * [Google two-tier architecture](https://28mm.github.io/blast-radius-docs/examples/terraform-provider-google/two-tier/)
-  * [Azure load-balancing with 2 vms](https://28mm.github.io/blast-radius-docs/examples/terraform-provider-azurem/2-vms-loadbalancer-lbrules/)
-
-These examples are drawn primarily from the `examples/` directory distributed with various *Terraform* providers, and aren't necessarily ideal. Additional examples, particularly demonstrations of best-practices, or of multi-cloud configurations strongly desired. 
+  * The motivations for *Blast Radius* are documented in a series of [blog](https://28mm.github.io) posts: [part 1](https://28mm.github.io/notes/d3-terraform-graphs), [part 2](https://28mm.github.io/notes/d3-terraform-graphs-2), and [part 3](https://28mm.github.io/notes/terraform-graphs-3).
+  * A catalog of example *Terraform* configurations, and their dependency graphs can be found at [https://28mm.github.io/blast-radius-docs/](https://28mm.github.io/blast-radius-docs/).
