@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='BlastRadius',
-    version='0.1.10',
+    version='0.1.11',
     author='Patrick McMurchie',
     author_email='patrick.mcmurchie@gmail.com',
     packages=find_packages(),
@@ -16,7 +16,7 @@ setup(
     install_requires=[
         "Flask",
         "jinja2",
-        "pyhcl",
+        "pyhcl>=0.3.10",
         "requests",
         "BeautifulSoup4"
     ],
