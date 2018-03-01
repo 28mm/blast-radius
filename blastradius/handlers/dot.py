@@ -403,15 +403,16 @@ class Format:
 class DotNode(Node):
 
     def __init__(self, label, fmt=None):
-        self.label          = label # node name exactly as it appears in tf graph output.
+
+        self.label          = DotNode._label_fixup(label)
         self.fmt            = fmt if fmt else Format('') # graphviz formatting.
-        self.simple_name    = re.sub(r'\[root\]\s+', '', label) # strip root module notation.
-        self.type           = DotNode._resource_type(label) # e.g. var, aws_instance, output...
-        self.resource_name  = DotNode._resource_name(label) #
+        self.simple_name    = re.sub(r'\[root\]\s+', '', self.label) # strip root module notation.
+        self.type           = DotNode._resource_type(self.label) # e.g. var, aws_instance, output...
+        self.resource_name  = DotNode._resource_name(self.label) #
         self.svg_id         = 'node_' + str(Node.svg_id_counter()) #
         self.definition     = {} # 
         self.group          = 20000 # for coloration. placeholder. replaced in javascript.
-        self.module         = DotNode._module(label) # for module groupings. 'root' or 'module.foo.module.bar'
+        self.module         = DotNode._module(self.label) # for module groupings. 'root' or 'module.foo.module.bar'
         self.cluster        = None # for stacked resources (usually var/output).
         self.collapsed      = False
 
@@ -431,6 +432,11 @@ class DotNode(Node):
     #
 
     @staticmethod
+    def _label_fixup(label):
+        # fix the resources belonging to removed modules by naming them "removed."
+        return re.sub(r'\s+\(removed\)', r'.removed (removed)', label)
+
+    @staticmethod
     def _resource_type(label):
         m = re.match(r'(\[root\]\s+)*((?P<modprefix>\S+)\.)*(?P<type>\S+)\.\S+', label)
         return m.groupdict()['type'] if m else ''
@@ -442,10 +448,13 @@ class DotNode(Node):
 
     @staticmethod
     def _module(label):
-        if not re.match(r'(\[root\]\s+)*module\..*', label):
-            return 'root'
-        m = re.match(r'(\[root\]\s+)*(?P<module>\S+)\.(?P<type>\S+)\.\S+', label)
-        return m.groupdict()['module']
+        try:
+            if not re.match(r'(\[root\]\s+)*module\..*', label):
+                return 'root'
+            m = re.match(r'(\[root\]\s+)*(?P<module>\S+)\.(?P<type>\S+)\.\S+', label)
+            return m.groupdict()['module']
+        except:
+            raise Exception("None: ", label)
 
     @staticmethod
     def _label_to_modules(label):
@@ -501,8 +510,8 @@ class DotEdge(Edge):
     Distinguished from a Regular Edge, by its Dot language format string.
     '''
     def __init__(self, source, target, fmt=None, edge_type=EdgeType.NORMAL):
-        self.source = source
-        self.target = target
+        self.source = DotNode._label_fixup(source)
+        self.target = DotNode._label_fixup(target)
         self.svg_id = 'edge_' + str(Edge.svg_id_counter())
         self.fmt    = fmt
         self.edge_type = edge_type
