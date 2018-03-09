@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='BlastRadius',
-    version='0.1.11',
+    version='0.1.12',
     author='Patrick McMurchie',
     author_email='patrick.mcmurchie@gmail.com',
     packages=find_packages(),
@@ -13,6 +13,7 @@ setup(
     license='LICENSE.txt',
     description='Interactive visualizations of Terraform dependency graphs',
     long_description=open('README.md').read(),
+    python_requires='>=3.5.0',
     install_requires=[
         "Flask",
         "jinja2",
