@@ -21,7 +21,7 @@ def main():
 
     parser = parser = argparse.ArgumentParser(description='blast-radius: Interactive Terraform Graph Visualizations')
     parser.add_argument('directory', type=str, help='terraform configuration directory', default=os.getcwd(), nargs='?')
-    parser.add_argument('port', type=int, help='specify a port other than the default 5000', default=os.getenv('BLAST_RADIUS_PORT',5000), nargs='?')
+    parser.add_argument('--port', type=int, help='specify a port other than the default 5000', default=os.getenv('BLAST_RADIUS_PORT',5000))
     
     output_group = parser.add_mutually_exclusive_group()
     output_group.add_argument('--json', action='store_const', const=True, default=False, help='print a json representation of the Terraform graph')
