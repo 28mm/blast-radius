@@ -42,8 +42,11 @@ class Terraform:
                 # 'github.com' special behavior.
                 elif re.match(r'github\.com.*', source):
                     continue
-                # points to module registry.
+                # points to legacy TFE module registry.
                 elif re.match(r'hashicorp.*', source):
+                    continue
+                # points to new TFE module registry
+                elif re.match(r'app\.terraform\.io', source):
                     continue
                 # fixme path join. eek.
                 self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)
