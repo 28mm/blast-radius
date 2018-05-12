@@ -48,6 +48,11 @@ class Terraform:
                 # points to new TFE module registry
                 elif re.match(r'app\.terraform\.io', source):
                     continue
+                # bitbucket public and private repos
+                elif re.match(r'bitbucket\.org.*', source):
+                    continue
+                elif re.match(r'git\:\:.*', source):
+                    continue
                 # fixme path join. eek.
                 self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)
 
