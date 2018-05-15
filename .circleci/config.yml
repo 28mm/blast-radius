@@ -13,8 +13,7 @@ jobs:
             apk add --no-cache \
               py-pip=9.0.0-r1
             pip install \
-              docker-compose==1.12.0 \
-              awscli==1.11.76
+              docker-compose==1.12.0
       - restore_cache:
           keys:
             - v1-{{ .Branch }}
@@ -49,5 +48,3 @@ jobs:
               docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
               docker push 28mm/blast-radius
             fi
-
-
