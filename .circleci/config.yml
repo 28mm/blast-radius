@@ -46,7 +46,8 @@ jobs:
           name: Push application Docker image
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-	      docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+              docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
               docker push 28mm/blast-radius
             fi
+
 
