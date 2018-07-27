@@ -4,7 +4,7 @@ import io
 import os
 import re
 
-# 3rd party libraries 
+# 3rd party libraries
 import hcl    # hashicorp configuration language (.tf)
 
 class Terraform:
@@ -53,6 +53,9 @@ class Terraform:
                     continue
                 elif re.match(r'git\:\:.*', source):
                     continue
+                # AWS S3 buckets
+                elif re.match(r's3.*\.amazonaws\.com', source):
+                    continue
                 # fixme path join. eek.
                 self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)
 
@@ -62,13 +65,13 @@ class Terraform:
         # FIXME 'data' resources (incorrectly) handled as modules, necessitating
         # the try/except block here.
         if len(node.modules) > module_depth and node.modules[0] != 'root':
-            try: 
+            try:
                 tf = self.modules[ node.modules[module_depth] ]
                 return tf.get_def(node, module_depth=module_depth+1)
             except:
                 return ''
 
-        try: 
+        try:
             # non resource types
             types = { 'var'  : lambda x: self.config['variable'][x.resource_name],
             'provider'     : lambda x: self.config['provider'][x.resource_name],
@@ -81,7 +84,7 @@ class Terraform:
                 return types[node.type](node)
 
             # resources are a little different _many_ possible types,
-            # nested within the 'resource' field. 
+            # nested within the 'resource' field.
             else:
                 return self.config['resource'][node.type][node.resource_name]
         except:
