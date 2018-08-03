@@ -63,6 +63,9 @@ class Terraform:
                 # Public Terraform Module Registry
                 elif re.match(r'^[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+', source):
                     continue
+                # AWS S3 buckets
+                elif re.match(r's3.*\.amazonaws\.com', source):
+                    continue
                 # fixme path join. eek.
                 self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)
 
