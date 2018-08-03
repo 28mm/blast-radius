@@ -42,9 +42,6 @@ class Terraform:
                 # 'github.com' special behavior.
                 elif re.match(r'github\.com.*', source):
                     continue
-                # points to legacy TFE module registry.
-                elif re.match(r'hashicorp.*', source):
-                    continue
                 # points to new TFE module registry
                 elif re.match(r'app\.terraform\.io', source):
                     continue
