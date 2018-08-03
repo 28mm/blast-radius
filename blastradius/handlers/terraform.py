@@ -51,7 +51,14 @@ class Terraform:
                 # bitbucket public and private repos
                 elif re.match(r'bitbucket\.org.*', source):
                     continue
-                elif re.match(r'git\:\:.*', source):
+                # git::https or git::ssh sources
+                elif re.match(r'^git::', source):
+                    continue
+                # git:// sources
+                elif re.match(r'^git:\/\/', source):
+                    continue
+                # Generic Mercurial repos
+                elif re.match(r'^hg::', source):
                     continue
                 # Public Terraform Module Registry
                 elif re.match(r'^[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+', source):
