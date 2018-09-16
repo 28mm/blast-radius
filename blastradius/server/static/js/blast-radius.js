@@ -393,7 +393,6 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     return;
                 }
                 else if (! sticky_node) {
-                    console.log("node_mouseout: not sticky_node");
                     unhighlight(d);
                 }
                 else {
