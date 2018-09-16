@@ -373,10 +373,17 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 }
             }
 
-            var node_mouseover = function(d) {
+            var node_mouseleave = function(d) {
+                tip.hide(d);
+            }
+
+            var node_mouseenter = function(d) {
                 tip.show(d)
                     .direction(tipdir(d))
                     .offset(tipoff(d));
+            }
+
+            var node_mouseover = function(d) {
                 if (! sticky_node)
                     highlight(d, true, false);
             }
@@ -386,11 +393,10 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     return;
                 }
                 else if (! sticky_node) {
+                    console.log("node_mouseout: not sticky_node");
                     unhighlight(d);
-                    tip.hide(d);
                 }
                 else {
-                    tip.hide(d);
                     if (click_count == 2)
                         highlight(sticky_node, true, true);
                     else
@@ -448,6 +454,8 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 .data(svg_nodes, function (d) {
                     return (d && d.svg_id) || d3.select(this).attr("id");
                 })
+                .on('mouseenter', node_mouseenter)
+                .on('mouseleave', node_mouseleave)
                 .on('mouseover', node_mouseover)
                 .on('mouseout', node_mouseout)
                 .on('mousedown', node_mousedown)
