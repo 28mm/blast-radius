@@ -21,7 +21,7 @@ FROM ubuntu:17.10
 ENV TF_VERSION "0.11.7"
 
 #expose blast-radius port
-EXPOSE 5000
+EXPOSE 5000 5001 5002
 
 #install graphviz and py dependencies
 RUN apt-get update \
