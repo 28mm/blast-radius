@@ -16,7 +16,7 @@ cd /workdir-rw
 # if we are given arguments we assume
 #  $1 will be "--port" or "--serve" and
 #  $2 will be the actual port or directory to server. Please explicitly state serve and custom port if it is NOT 5000 to work with serve together.
-#  $3 will be "--serve" with "--port" as $2 and
+#  $3 will be "--serve" with "--port" as $2 and with port offset of 1 or 2 i.e. 5001 and 5002
 #  $4 the actual stack to run tf in with "--port" as $2
 # so we have to init terraform in the given directory $2 or $4
 # if $1 and $3 is no port and directory just fall back to the default and run i.e. without parameters
