@@ -18,7 +18,7 @@
 FROM ubuntu:17.10
 
 #define default terraform version in environment var
-ENV TF_VERSION "0.11.7"
+ENV TF_VERSION "0.11.10"
 
 #expose blast-radius port
 EXPOSE 5000
