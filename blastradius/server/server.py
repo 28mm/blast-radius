@@ -21,10 +21,14 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     # we need terraform, graphviz, and an init-ed terraform project.
-    if not which('terraform') or not which('dot') or not os.path.exists('.terraform'):
+    if not which('terraform') and not which('terraform.exe'):
         return render_template('error.html')
-
-    return render_template('index.html', help=get_help())
+    elif not which('dot') and not which('dot.exe'):
+        return render_template('error.html')
+    elif not os.path.exists('.terraform'):
+        return render_template('error.html')
+    else:
+        return render_template('index.html', help=get_help())
 
 @app.route('/graph.svg')
 def graph_svg():
