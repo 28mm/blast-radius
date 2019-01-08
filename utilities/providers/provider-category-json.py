@@ -64,7 +64,7 @@ def main():
 
     resources = { **resources, **defaults }
 
-    print(json.dumps(resources, indent=4))
+    print(json.dumps(resources, indent=4, sort_keys=True))
 
 
 if __name__ == '__main__':
