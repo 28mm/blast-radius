@@ -15,10 +15,10 @@
 #Implementation notes
 # Using ubuntu (rather than alpine) base image due to problems with graphviz fonts on alpine
 
-FROM ubuntu:17.10
+FROM ubuntu:18.04
 
 #define default terraform version in environment var
-ENV TF_VERSION "0.11.13"
+ENV TF_VERSION "0.12.0"
 
 #expose blast-radius port
 EXPOSE 5000
