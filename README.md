@@ -110,6 +110,26 @@ $ docker run --rm -it -p 5000:5000 \
     28mm/blast-radius --serve stacks/beef
 ```
 
+## Additional notes for Docker usage
+
+You can specify `DO_TF_INIT=true` in the docker command line as an environment variable (`-e DO_TF_INIT=true`) if you want `terraform init` to be applied (default is not to run `terraform init`).
+
+You can salso pecify `TF_DATA_DIR` in the docker command line as an environment variable (`-e TF_DATA_DIR=$(pwd)/.terraform`) if you want terraform to use an alternate state repository.
+
+If you have several other variables to specify for your terraform command, like `AWS_PROFILE` or dedicated variable files, you can do so as follows:
+
+```sh
+$ docker run --rm -it -p 5000:5000 \
+    -v $(pwd):/data:ro \
+    --security-opt apparmor:unconfined \
+    --cap-add=SYS_ADMIN \
+    -e TF_DATA_DIR=/data-rw/.terraform.dev \
+    -e AWS_PROFILE=dev \
+    -v $HOME/.aws/:/root/.aws/:ro,Z \
+    -v $w/$s/terraform-dev.tfvars:/data-rw/terraform.tfvars:Z \
+    28mm/blast-radius
+```
+
 ## Embedded Figures
 
 You may wish to embed figures produced with *Blast Radius* in other documents.

@@ -20,13 +20,14 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    tf_data_dir = os.getenv('TF_DATA_DIR')
     # we need terraform, graphviz, and an init-ed terraform project.
     if not which('terraform') and not which('terraform.exe'):
-        return render_template('error.html')
+        return render_template('error.html', error='No terraform executable found')
     elif not which('dot') and not which('dot.exe'):
-        return render_template('error.html')
-    elif not os.path.exists('.terraform'):
-        return render_template('error.html')
+        return render_template('error.html', error='No dot executable found')
+    elif not (tf_data_dir is not None and os.path.exists(tf_data_dir)) and not os.path.exists('.terraform'):
+        return render_template('error.html', error='No .terraform or TF_DATA_DIR={} directory found'.format(tf_data_dir))
     else:
         return render_template('index.html', help=get_help())
 
