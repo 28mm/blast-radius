@@ -1,38 +1,39 @@
-#!/bin/bash
-
+#!/bin/sh
 set -e
 
-# prepare overlayFS
-# shamelessly taken from https://gist.github.com/detunized/7c8fc4c37b49c5475e68ef9574587eee
+# If command starts with an option, prepend the blast-radius.
+if [ "${1}" != "blast-radius" ]; then
+  if [ -n "${1}" ]; then
+    set -- blast-radius "$@"
+  fi
+fi
 
+# Unless overwritten, use the following arguments
+TF_CLI_ARGS_get=${TF_CLI_ARGS_get:-update=true}
+TF_CLI_ARGS_init=${TF_CLI_ARGS_init:-input=false}
+
+# Inside the container
+# Need to create the upper and work dirs inside a tmpfs.
+# Otherwise OverlayFS complains about AUFS folders.
+# Source: https://gist.github.com/detunized/7c8fc4c37b49c5475e68ef9574587eee
 mkdir -p /tmp/overlay && \
 mount -t tmpfs tmpfs /tmp/overlay && \
-mkdir -p /tmp/overlay/{upper,work} && \
-mkdir -p /workdir-rw && \
-mount -t overlay overlay -o lowerdir=/workdir,upperdir=/tmp/overlay/upper,workdir=/tmp/overlay/work /workdir-rw
+mkdir -p /tmp/overlay/upper && \
+mkdir -p /tmp/overlay/work && \
+mkdir -p /data-rw && \
+mount -t overlay overlay -o lowerdir=/data,upperdir=/tmp/overlay/upper,workdir=/tmp/overlay/work /data-rw
 
-cd /workdir-rw
+# change to the overlayFS
+cd /data-rw
 
-# if we are given arguments we assume
-#  $1 will be "--serve" and
-#  $2 the actual stack to run tf in
-# so we have to init terraform in the given directory $2
-# if $2 is no directory just fall back to the default and run
-# terraform init in /workdir
+# Is Terraform already initialized? Ensure modules are all downloaded.
+[ -d '.terraform' ] && terraform get
 
-# are we meant to run terraform in a sub-directory?
-[ $# == 2 ] && [ -d "$2" ] && {
-    cd $2
-}
-
-# is terraform already initialized? 
-[ -d '.terraform' ] && terraform get --update=true
-
-# re-initialize anyway.
-terraform init -input=false
+# Reinitialize for some reason
+terraform init
 
 # it's possible that we're in a sub-directory. leave.
-cd /workdir-rw
+cd /data-rw
 
-# okay, we should be good to go.
-blast-radius $1 $2 $3
+# Let's go!
+exec "$@"

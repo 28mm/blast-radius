@@ -1,24 +1,25 @@
-from setuptools import setup
-from setuptools import find_packages
+from setuptools import setup, find_packages
+from os import path
+
+here = path.abspath(path.dirname(__file__))
+
+# Get the long description from the README file
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
+# Implements parse_requirements as standalone functionality
+with open("requirements.txt") as f:
+    reqs = [l.strip('\n') for l in f if l.strip('\n') and not l.startswith('#')]
 
 setup(
-    name='BlastRadius',
+    name='blastradius',
     version='0.1.25',
+    description='Interactive Terraform graph visualizations',
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     author='Patrick McMurchie',
     author_email='patrick.mcmurchie@gmail.com',
-    packages=find_packages(),
-    include_package_data=True,
+    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     scripts=['bin/blast-radius'],
-    url='http://pypi.python.org/pypi/BlastRadius/',
-    license='LICENSE.txt',
-    description='Interactive visualizations of Terraform dependency graphs',
-    long_description=open('README.md').read(),
-    python_requires='>=3.5.0',
-    install_requires=[
-        "Flask",
-        "jinja2",
-        "pyhcl>=0.3.10",
-        "requests",
-        "BeautifulSoup4"
-    ],
+    install_requires=reqs,
 )
