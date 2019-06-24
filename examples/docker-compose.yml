@@ -8,10 +8,10 @@ services:
     security_opt:
       - apparmor:unconfined
     environment:
-      - TF_CLI_CONFIG_FILE=/data/.terraformrc
+      - TF_CLI_CONFIG_FILE=/root/.terraformrc
       - TF_WORKSPACE=dev
     ports:
       - "5000:5000"
     volumes:
-      - "$HOME/.terraformrc:/data/.terraformrc"
+      - "$HOME/.terraformrc:/root/.terraformrc"
       - ".:/data:ro"

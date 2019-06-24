@@ -8,9 +8,9 @@ if [ "${1}" != "blast-radius" ]; then
   fi
 fi
 
-# Unless overwritten, use the following arguments
-TF_CLI_ARGS_get=${TF_CLI_ARGS_get:-update=true}
-TF_CLI_ARGS_init=${TF_CLI_ARGS_init:-input=false}
+# Assert CLI args are overwritten, otherwise set them to preferred defaults
+export TF_CLI_ARGS_get=${TF_CLI_ARGS_get:'-update'}
+export TF_CLI_ARGS_init=${TF_CLI_ARGS_init:'-input=false'}
 
 # Inside the container
 # Need to create the upper and work dirs inside a tmpfs.
