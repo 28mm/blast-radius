@@ -2,7 +2,7 @@ version: '3.7'
 services:
 
   blastradius:
-    image: blast-radius
+    image: 28mm/blast-radius
     cap_add:
       - SYS_ADMIN
     security_opt:
