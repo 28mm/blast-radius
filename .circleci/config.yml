@@ -20,7 +20,7 @@ jobs:
     - checkout
     - *setup_remote_docker
     - *docker_login
-    - run: docker build -t $IMAGE_NAME .
+    - run: docker build --build-arg TF_VERSION=$TF_VERSION -t $IMAGE_NAME .
     - run: docker save -o image.tar $IMAGE_NAME
     - persist_to_workspace:
         root: .
