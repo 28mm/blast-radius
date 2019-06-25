@@ -20,8 +20,8 @@ jobs:
     - checkout
     - *setup_remote_docker
     - *docker_login
-    - run: docker build --build-arg TF_VERSION=$TF_VERSION -t $IMAGE_NAME .
-    - run: docker save -o image.tar $IMAGE_NAME
+    - run: docker build --build-arg TF_VERSION=$TF_VERSION -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+    - run: docker save -o image.tar $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
     - persist_to_workspace:
         root: .
         paths:
@@ -34,10 +34,10 @@ jobs:
     - *setup_remote_docker
     - *docker_login
     - run: docker load -i /tmp/workspace/image.tar
-    - run: docker tag $IMAGE_NAME $IMAGE_NAME:$TF_VERSION
+    - run: docker tag $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$TF_VERSION
     - run: |-
-        docker push $IMAGE_NAME:latest
-        docker push $IMAGE_NAME:$TF_VERSION
+        docker push $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:latest
+        docker push $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$TF_VERSION
 
 workflows:
   version: 2
