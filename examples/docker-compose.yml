@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+
+  blastradius:
+    image: 28mm/blast-radius
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    environment:
+      - TF_CLI_CONFIG_FILE=/root/.terraformrc
+      - TF_WORKSPACE=dev
+    ports:
+      - "5000:5000"
+    volumes:
+      - "$HOME/.terraformrc:/root/.terraformrc"
+      - ".:/data:ro"

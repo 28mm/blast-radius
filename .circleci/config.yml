@@ -1,50 +1,52 @@
-version: 2
+version: 2.1
+aliases:
+- &setup_remote_docker
+    setup_remote_docker:
+      version: 18.09.3
+      docker_layer_caching: true
+- &docker_login
+    run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
+executors:
+  buildpack:
+    environment:
+      IMAGE_NAME: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+      TF_VERSION: 0.12.2
+    docker:
+      - image: circleci/buildpack-deps
 jobs:
   build:
-    working_directory: /build
-    docker:
-      - image: docker:17.05.0-ce-git
+    executor: buildpack
     steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --no-cache \
-              py-pip=9.0.0-r1
-            pip install \
-              docker-compose==1.12.0
-      - restore_cache:
-          keys:
-            - v1-{{ .Branch }}
-          paths:
-            - /caches/app.tar
-      - run:
-          name: Load Docker image layer cache
-          command: |
-            set +o pipefail
-            docker load -i /caches/app.tar | true
-      - run:
-          name: Build application Docker image
-          command: |
-            docker build --cache-from=app -t 28mm/blast-radius .
-      - run:
-          name: Save Docker image layer cache
-          command: |
-            mkdir -p /caches
-            docker save -o /caches/app.tar 28mm/blast-radius
-      - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
-          paths:
-            - /caches/app.tar
-      - run:
-          name: Run tests
-          command: |
-            true
-      - deploy:
-          name: Push application Docker image
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-              docker push 28mm/blast-radius
-            fi
+    - checkout
+    - *setup_remote_docker
+    - *docker_login
+    - run: docker build --build-arg TF_VERSION=$TF_VERSION -t $IMAGE_NAME .
+    - run: docker save -o image.tar $IMAGE_NAME
+    - persist_to_workspace:
+        root: .
+        paths:
+          - ./image.tar
+  release:
+    executor: buildpack
+    steps:
+    - attach_workspace:
+        at: /tmp/workspace
+    - *setup_remote_docker
+    - *docker_login
+    - run: docker load -i /tmp/workspace/image.tar
+    - run: docker tag $IMAGE_NAME $IMAGE_NAME:$TF_VERSION
+    - run: |-
+        docker push $IMAGE_NAME:latest
+        docker push $IMAGE_NAME:$TF_VERSION
+
+workflows:
+  version: 2
+  builder:
+    jobs:
+    - build
+    - release:
+        requires:
+          - build
+        filters:
+          branches:
+            only: master

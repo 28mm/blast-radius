@@ -56,7 +56,7 @@ def graph_json():
     module_depth = request.args.get('module_depth', default=None, type=int)
     refocus      = request.args.get('refocus', default=None, type=str)
     if module_depth is not None and module_depth >= 0:
-        dot.set_module_depth(module_depth) 
+        dot.set_module_depth(module_depth)
 
     tf = Terraform(os.getcwd())
     for node in dot.nodes:
@@ -72,7 +72,7 @@ def graph_json():
 def run_tf_graph():
     completed = subprocess.run(['terraform', 'graph'], stdout=subprocess.PIPE)
     if completed.returncode != 0:
-        raise
+        raise Exception('Execution error', completed.stderr)
     return completed.stdout.decode('utf-8')
 
 def get_help():
@@ -85,7 +85,7 @@ def get_terraform_version():
     if completed.returncode != 0:
         raise
     return completed.stdout.decode('utf-8').splitlines()[0].split(' ')[-1]
-    
+
 def get_terraform_exe():
     return which('terraform')
 
