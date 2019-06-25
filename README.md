@@ -75,7 +75,7 @@ independently. To do this, certain runtime privileges are required --
 specifically `--cap-add=SYS_ADMIN`.
 
 For more information on how this works and what it means for your host, check
-our the [runtime privileges][privileges] documentation.
+out the [runtime privileges][privileges] documentation.
 
 #### Docker & Subdirectories
 
