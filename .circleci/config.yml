@@ -10,7 +10,7 @@ executors:
   buildpack:
     environment:
       IMAGE_NAME: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-      TF_VERSION: 0.12.2
+      TF_VERSION: 0.12.3
     docker:
       - image: circleci/buildpack-deps
 jobs:
