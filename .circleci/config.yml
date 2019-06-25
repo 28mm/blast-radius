@@ -19,7 +19,6 @@ jobs:
     steps:
     - checkout
     - *setup_remote_docker
-    - *docker_login
     - run: docker build --build-arg TF_VERSION=$TF_VERSION -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
     - run: docker save -o image.tar $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
     - persist_to_workspace:
