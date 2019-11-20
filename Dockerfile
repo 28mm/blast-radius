@@ -1,4 +1,4 @@
-ARG TF_VERSION=0.12.3
+ARG TF_VERSION=0.12.12
 ARG PYTHON_VERSION=3.7
 
 FROM hashicorp/terraform:$TF_VERSION AS terraform
