@@ -119,7 +119,7 @@ You will need the following:
 2. `javascript` and `css` found in `.../blastradius/server/static`
 3. A uniquely identified DOM element, where the `<svg>` should appear.
 
-You can read more details in the [documentation](docs/embedeed.md)
+You can read more details in the [documentation](doc/embedeed.md)
 
 ## Implementation Details
 
