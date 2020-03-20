@@ -20,6 +20,12 @@ clean:
 dist:
 	-python3 setup.py sdist
 
+
+# install hcl2json binary
+.PHONY: install-dep
+install-dep:
+	-go get github.com/tmccombs/hcl2json
+
 # build docker image
 .PHONY: docker
 docker:

@@ -3,6 +3,8 @@ from glob import iglob
 import io
 import os
 import re
+import subprocess
+import json
 
 # 3rd party libraries
 import hcl    # hashicorp configuration language (.tf)
@@ -16,14 +18,20 @@ class Terraform:
 
         # handle the root module first...
         self.directory = directory if directory else os.getcwd()
-        #print(self.directory)
+        
         self.config_str = ''
         iterator = iglob( self.directory + '/*.tf')
+        data = {}
         for fname in iterator:
-            with open(fname, 'r', encoding='utf-8') as f:
-                self.config_str += f.read() + ' '
-        config_io = io.StringIO(self.config_str)
-        self.config = hcl.load(config_io)
+            out=subprocess.getoutput(["hcl2json {}".format(fname)])
+            file_data = json.loads(out)
+            for key in file_data:
+                if not key in data.keys():
+                    data.update(file_data)
+                else:
+                    for k,v in file_data[key].items():
+                        data[key][k]=v
+        self.config = data
 
         # then any submodules it may contain, skipping any remote modules for
         # the time being.

@@ -22,6 +22,7 @@ Use _Blast Radius_ to:
 
 * [Graphviz](https://www.graphviz.org/)
 * [Python](https://www.python.org/) 3.7 or newer
+* [Go](https://golang.org/) 1.12.16 or newer
 
 > __Note:__ For macOS you can `brew install graphviz`
 
