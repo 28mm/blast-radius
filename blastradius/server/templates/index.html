@@ -1,153 +1,226 @@
 <html>
-    <head>
-        <title>Blast Radius (Terraform Graph Tools)</title>
-        <meta charset="utf-8">
 
-        <script src="/static/js/jquery.slim.min.js"></script>
-        <script src="/static/js/bootstrap.min.js"></script>
-        <script src="/static/js/fontawesome-all.min.js"></script>
+<head>
+    <title>Blast Radius (Terraform Graph Tools)</title>
+    <meta charset="utf-8">
 
-        <script src="/static/js/d3.v4.js"></script>
-        <script src="/static/js/d3-tip.js"></script>
-        <script src="/static/js/blast-radius.js"></script>
-        <script src="/static/js/categories.js"></script>
-        <script src="/static/js/svg-pan-zoom.js"></script>
-        <script src="/static/js/selectize.js"></script>
+    <script src="/static/js/jquery.slim.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/fontawesome-all.min.js"></script>
 
-        <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="/static/css/selectize.css">
-        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-        <style>
-        .navbar-nav > li {
-            padding-left:6px;
-        }
-        .navbar-brand {
-            font-family: 'courier new';
-        }
-        </style>
-    </head>
-    
-    <body>
-
-        <!-- navigation and controls -->
-        <nav class="navbar fixed-top navbar-expand bg-light">
-            <ul class="navbar-nav">
-                <!--<li class="nav-item">
-                        <a class="navbar-brand" href="/">blastradius</a>
-                </li>-->
-                <!-- back forward navigation.
-                <li class="nav-item">
-                    <button class="btn btn-primary" id="graph-prev"><i class="fas fa-caret-left"></i></button>
-                </li>
-                <li class="nav-item">
-                    <button class="btn btn-primary" id="graph-next"><i class="fas fa-caret-right"></i></button>
-                </li>  
-                -->
-                <li class="nav-item">                    
-                    <form class="form-inline my-2 my-lg-0" id="graph-search-form" >
-                        <select style="width: 400px;" id="graph-search"></select>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <button class="btn btn-danger" id="graph-refocus" title="prune to selection">&nbsp;<i class="fas fa-code-branch"></i></button>
-                </li>
-                <li class="nav-item">
-                    <button class="btn btn-primary" id="graph-zoom-out" title="zoom out">&nbsp;<i class="fas fa-search-minus"></i></button>
-                </li>
-                <li class="nav-item">
-                    <button class="btn btn-primary" id="graph-zoom-in" title="zoom in">&nbsp;<i class="fas fa-search-plus"></i></button>
-                </li>
-                <li class="nav-item">
-                    <button class="btn btn-primary" id="graph-download" title="download svg">&nbsp;<i class="fas fa-download"></i></button>
-                </li>
-                <!--<li class="nav-item">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="module depth">
-                            <i class="fas fa-puzzle-piece"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">1</a>
-                            <a class="dropdown-item" href="#">2</a>
-                            <a class="dropdown-item" href="#">3</a>
-                            </div>
-                    </div>
-                </li>-->
-                <li class="nav-item">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="tooltip options">
-                            <i class="fas fa-magic"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <div class="dropdown-item">
-                                <label><b>Tooltip Options</b></label>
-                            </div>
+    <script src="/static/js/d3.v4.js"></script>
+    <script src="/static/js/d3-tip.js"></script>
+    <script src="/static/js/blast-radius.js"></script>
+    <script src="/static/js/blast-radius-ext.js"></script>
+    <script src="/static/js/categories.js"></script>
+    <script src="/static/js/svg-pan-zoom.js"></script>
+    <script src="/static/js/selectize.js"></script>
 
 
-                            <div class="dropdown-divider"></div>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/selectize.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+</head>
 
-                            <!-- Resource Name-->
-                            <div class="dropdown-item form-check">
-                                <label class="form-check-label">
-                                  <input class="form-check-input" type="checkbox" value="" id="graph-tooltip-title" checked>
-                                  Resource Name
-                                </label>
-                              </div>
+<body>
 
-                              <!-- JSON-->
-                              <div class="dropdown-item form-check">
-                                <label class="form-check-label">
-                                  <input class="form-check-input" type="checkbox" value="" id="graph-tooltip-json" checked>
-                                  JSON Definition
-                                </label>
-                              </div>
+    <!-- navigation and controls -->
+    <nav class="navbar fixed-top navbar-expand bg-light">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <form class="form-inline my-2 my-lg-0" id="graph-search-form">
+                    <select style="width: 400px;" id="graph-search"></select>
+                </form>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-danger" id="graph-refocus" title="prune to selection">&nbsp;<i
+                        class="fas fa-code-branch"></i></button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-primary" id="graph-zoom-out" title="zoom out">&nbsp;<i
+                        class="fas fa-search-minus"></i></button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-primary" id="graph-zoom-in" title="zoom in">&nbsp;<i
+                        class="fas fa-search-plus"></i></button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-primary" id="graph-download" title="download svg">&nbsp;<i
+                        class="fas fa-download"></i></button>
+            </li>
+            <li class="nav-item">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false" title="tooltip options">
+                        <i class="fas fa-magic"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-item">
+                            <label><b>Tooltip Options</b></label>
+                        </div>
 
-                              <!-- Immediate Dependencies-->
-                              <div class="dropdown-item form-check">
-                                    <label class="form-check-label">
-                                      <input class="form-check-input" type="checkbox" value="" id="graph-tooltip-deps" checked>
-                                      Dependencies
-                                    </label>
-                                  </div>
-                            </div>
-                    </div>
-                </li>
 
-                <li class="nav-item">
-                    <div class="dropdown">
-                        <button class="btn btn-info dropdown-toggle" type="button" id="diagMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="help">
-                            <i class="fas fa-question-circle" aria-hidden="true"></i>
-                        </button>
-                        <div class="dropdown-menu diagmenu" aria-labelledby="diagMenuButton">
-                                <div class="dropdown-item">
-                                    <label><b>Help &amp; Diagnostics</b></label>
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <div class="dropdown-item"><b>Project:</b> {{help.cwd}}</div>
-                                <div class="dropdown-item"><b>Terraform:</b> {{help.tf_version}}</div>
-                                <div class="dropdown-item"><b>Terraform Path:</b> {{help.tf_exe}}</div>
-                                <div class="dropdown-item"><a href="https://28mm.github.io/blast-radius-docs">Blast Radius Documentation</a></div>
-                                <div class="dropdown-item"><a href="https://www.github.com/28mm/blast-radius">Blast Radius GitHub</a></div>
+                        <div class="dropdown-divider"></div>
+
+                        <!-- Resource Name-->
+                        <div class="dropdown-item form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" value="" id="graph-tooltip-title"
+                                    checked>
+                                Resource Name
+                            </label>
+                        </div>
+
+                        <!-- JSON-->
+                        <div class="dropdown-item form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" value="" id="graph-tooltip-json"
+                                    checked>
+                                JSON Definition
+                            </label>
+                        </div>
+
+                        <!-- Immediate Dependencies-->
+                        <div class="dropdown-item form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" value="" id="graph-tooltip-deps"
+                                    checked>
+                                Dependencies
+                            </label>
                         </div>
                     </div>
-                </li>
-            </ul>
-        </nav>
+                </div>
+            </li>
 
-        <!-- main document body -->
-        <div class="container" height="70"></div><!-- ensure some padding at top -->
-        <!-- no div#container b/c div#graph and child svg need to use all available area for
+            <li class="nav-item">
+                <div class="dropdown">
+                    <button class="btn btn-info dropdown-toggle" type="button" id="diagMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="help">
+                        <i class="fas fa-question-circle" aria-hidden="true"></i>
+                    </button>
+                    <div class="dropdown-menu diagmenu" aria-labelledby="diagMenuButton">
+                        <div class="dropdown-item">
+                            <label><b>Help &amp; Diagnostics</b></label>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item"><b>Project:</b> {{help.cwd}}</div>
+                        <div class="dropdown-item"><b>Terraform:</b> {{help.tf_version}}</div>
+                        <div class="dropdown-item"><b>Terraform Path:</b> {{help.tf_exe}}</div>
+                        <div class="dropdown-item"><a href="https://28mm.github.io/blast-radius-docs">Blast Radius
+                                Documentation</a></div>
+                        <div class="dropdown-item"><a href="https://www.github.com/28mm/blast-radius">Blast Radius
+                                GitHub</a></div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false" title="tooltip options">
+                        <i class="fas fa-file"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-item">
+                            <label><b>Graph</b></label>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        
+                        <!-- Resource Name-->
+                        <div class="dropdown-item form-check">
+                            <label>
+                                <input type="radio" name="graph-type" value="" id="graph-radio" onclick="Showgraph()"
+                                    checked="true">
+                                Blast-radius
+                            </label>
+                        </div>
+
+                        <!-- Resource Name-->
+                        <div class="dropdown-item form-check">
+                            <label>
+                                <input type="radio" name="graph-type" value="" id="graph-radio-new"
+                                    onclick="Showgraph()">
+                                Blast-radius-extended
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </nav>
+
+    <!-- main document body -->
+    <div class="container" height="70"></div><!-- ensure some padding at top -->
+    <!-- no div#container b/c div#graph and child svg need to use all available area for
              pan/zoom interactions and to avoid clipping                                    -->
-        
-        <div id="graph"></div>
 
-    </body>
+    <div id="graph">
+        <div>
+            <table>
+                <tr>
+                    <td><div class="square" style= "background-color: #00CCFF"></div></td>
+                    <td>tf state</td>
+                </tr>
+                <tr>
+                  <td><div class="square" style= "background-color: #ffff00"></div></td>
+                  <td>plan</td>
+                </tr>
+                <tr>
+                    <td><div class="square" style= "background-color: #708090"></div></td>
+                    <td>not applied</td>
+                </tr>
+                <tr>
+                  <td><div class="square" style= "background-color: #ff0000"></div></td>
+                  <td>apply failed</td>
+                </tr>
+                <tr>
+                  <td><div class="square" style= "background-color: #00ff40"></div></td>
+                  <td>apply success</td>
+                </tr>
+              </table>
+        </div>
 
-    <script>
 
-        // br_state['#graph'] maintains state for this instance of blastradius
-        var br_state = { '#graph' : {}}
-        blastradius('#graph', '/graph.svg', '/graph.json', br_state);
+    </div>
+    <div id="mySidenav" class="sidenav">
+        <button class="closebtn" onclick="closeNav()" color="grey">&times;</button>
+        <div class="test"></div>
+    </div>
+</body>
 
-    </script>
+<script>
 
+    // br_state['#graph'] maintains state for this instance of blastradius
+    var br_state = { '#graph': {} }
+
+    var id1 = document.getElementById("graph-radio");
+    var id2 = document.getElementById("graph-radio-new");
+
+    (function () {
+        // your page initialization code here
+        // the DOM will be available here
+        if (id1.checked) {
+            blastradius('#graph', '/graph.svg', '/graph.json', br_state);
+        }
+        else if (id2.checked) {
+            blastradiusnew('#graph', '/graphnew.svg', '/graph.json', br_state);
+        }
+    })();
+
+    function Showgraph() {
+        var id1 = document.getElementById("graph-radio");
+        var id2 = document.getElementById("graph-radio-new");
+        if (id1.checked) {
+
+            blastradius('#graph', '/graph.svg', '/graph.json', br_state);
+        }
+        else if (id2.checked) {
+            blastradiusnew('#graph', '/graphnew.svg', '/graph.json', br_state);
+        }
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+</script>
 </html>

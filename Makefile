@@ -9,11 +9,25 @@
 CATEGORIES_JSON = ./blastradius/server/static/js/categories.json
 CATEGORIES_JS   = ./blastradius/server/static/js/categories.js
 
+GOPATH = $(CURDIR)/blastradius
+export GOPATH
+
 .PHONY: clean
 clean:
 	-find . -type d -name __pycache__ -exec rm -r {} \+
 	-rm $(CATEGORIES_JSON)
 	-rm $(CATEGORIES_JS)
+	-rm -rf hcl2json
+
+# install
+.PHONY: install
+install: hcl2json
+	pipenv install
+
+# build hcl2json binary
+.PHONY: hcl2json
+hcl2json:
+	-go get github.com/tmccombs/hcl2json
 
 # build pypi package
 .PHONY: dist

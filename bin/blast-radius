@@ -9,6 +9,7 @@ import sys
 import argparse
 import os
 import itertools
+import subprocess
 
 # 1st party libraries
 from blastradius.handlers.dot import DotGraph, Format, DotNode
@@ -16,6 +17,13 @@ from blastradius.handlers.plan import Plan
 from blastradius.handlers.apply import Apply
 from blastradius.handlers.terraform import Terraform
 from blastradius.server.server import app
+
+
+def run_tf_graph():
+    completed = subprocess.run(['terraform', 'graph'], stdout=subprocess.PIPE)
+    if completed.returncode != 0:
+        raise Exception('Execution error', completed.stderr)
+    return completed.stdout.decode('utf-8')
 
 def main():
 
@@ -27,10 +35,13 @@ def main():
     output_group.add_argument('--json', action='store_const', const=True, default=False, help='print a json representation of the Terraform graph')
     output_group.add_argument('--dot', action='store_const', const=True, default=False, help='print the graphviz/dot representation of the Terraform graph')
     output_group.add_argument('--svg', action='store_const', const=True, default=False, help='print the svg representation of the Terraform graph')
+    output_group.add_argument('--newsvg', action='store_const', const=True, default=False, help='print the modified svg representation of the Terraform graph')
     output_group.add_argument('--serve', action='store_const', const=True, default=False, help='spins up a webserver with an interactive Terraform graph')
     
     parser.add_argument('--graph', type=str, help='`terraform graph` output (defaults to stdin)', default=sys.stdin)
-
+    parser.add_argument('--planjson', type=str, help='`terraform plan json` output')
+    parser.add_argument('--applyjson', type=str, help='`terraform graph` output (defaults to stdin)', default=sys.stdin)
+    
     # options to limit, re-focus, and re-center presentation of larger graphs.
     constraint_group = parser.add_mutually_exclusive_group()
     constraint_group.add_argument('--module-depth', type=int, help='hide module details', required=False)
@@ -38,9 +49,9 @@ def main():
     constraint_group.add_argument('--center', type=str, help='', required=False)
 
     # TODO present changes, and animate `terraform apply'
-    #parser.add_argument('--plan', type=str, help='terraform plan output', default=None)
+    parser.add_argument('--plan', type=str, help='terraform plan output', default=None)
     #parser.add_argument('--state', type=str, help='tfstate file', default=None)
-    #parser.add_argument('--apply', type=str, help='terraform apply log', default=None)
+    parser.add_argument('--apply', type=str, help='terraform apply log', default=None)
 
     args = parser.parse_args()
 
@@ -49,11 +60,23 @@ def main():
         app.run(host='0.0.0.0',port=args.port)
         sys.exit(0)
     
-    elif args.json or args.dot or args.svg:
+    # argument for plan info
+    elif args.plan:
+        plan = Plan(args.planjson)
+        print(plan.json())
+    
+    # argument for apply info
+    elif args.apply:
+        apply = Apply(args.applyjson)
+        print(apply.json())
+    
+    elif args.json or args.dot or args.svg or args.newsvg:
         if args.graph is sys.stdin:
-            dot = DotGraph('', file_contents=sys.stdin.read())
+            dot = DotGraph('','', file_contents=sys.stdin.read())
+        elif args.newsvg:                      #for extended blasradius svg
+            dot = DotGraph('ext','', file_contents=run_tf_graph())
         else:
-            dot = DotGraph(args.graph)
+            dot = DotGraph('',args.graph)
 
         # we might not want to show every node in the depedency graph
         # specifying --module-depth is an easy way to limit detail
@@ -87,6 +110,8 @@ def main():
         elif args.dot:
             print(dot.dot())
         elif args.svg:
+            print(dot.svg())
+        elif args.newsvg:
             print(dot.svg())
     else:
         parser.print_help()

@@ -32,6 +32,10 @@ cd /data-rw
 # Reinitialize for some reason
 terraform init
 
+terraform plan --out tfplan.binary
+
+terraform show -json tfplan.binary > tfplan.json
+
 # it's possible that we're in a sub-directory. leave.
 cd /data-rw
 

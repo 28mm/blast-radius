@@ -1,437 +1,267 @@
 {
-    "nodes": [
-        {
-            "simple_name": "aws_elb.web",
-            "definition": {},
-            "svg_id": "node_0",
-            "group": 20000,
-            "label": "[root] aws_elb.web",
-            "resource_name": "web",
-            "type": "aws_elb",
-            "def": {
-                "name": "terraform-example-elb",
-                "subnets": [
-                    "${aws_subnet.default.id}"
-                ],
-                "security_groups": [
-                    "${aws_security_group.elb.id}"
-                ],
-                "instances": [
-                    "${aws_instance.web.id}"
-                ],
-                "listener": {
-                    "instance_port": 80,
-                    "instance_protocol": "http",
-                    "lb_port": 80,
-                    "lb_protocol": "http"
-                }
-            }
-        },
-        {
-            "simple_name": "aws_instance.web",
-            "definition": {},
-            "svg_id": "node_1",
-            "group": 20000,
-            "label": "[root] aws_instance.web",
-            "resource_name": "web",
-            "type": "aws_instance",
-            "def": {
-                "connection": {
-                    "user": "ubuntu"
-                },
-                "instance_type": "t2.micro",
-                "ami": "${lookup(var.aws_amis, var.aws_region)}",
-                "key_name": "${aws_key_pair.auth.id}",
-                "vpc_security_group_ids": [
-                    "${aws_security_group.default.id}"
-                ],
-                "subnet_id": "${aws_subnet.default.id}",
-                "provisioner": {
-                    "remote-exec": {
-                        "inline": [
-                            "sudo apt-get -y update",
-                            "sudo apt-get -y install nginx",
-                            "sudo service nginx start"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "simple_name": "aws_internet_gateway.default",
-            "definition": {},
-            "svg_id": "node_2",
-            "group": 20000,
-            "label": "[root] aws_internet_gateway.default",
-            "resource_name": "default",
-            "type": "aws_internet_gateway",
-            "def": {
-                "vpc_id": "${aws_vpc.default.id}"
-            }
-        },
-        {
-            "simple_name": "aws_key_pair.auth",
-            "definition": {},
-            "svg_id": "node_3",
-            "group": 20000,
-            "label": "[root] aws_key_pair.auth",
-            "resource_name": "auth",
-            "type": "aws_key_pair",
-            "def": {
-                "key_name": "${var.key_name}",
-                "public_key": "${file(var.public_key_path)}"
-            }
-        },
-        {
-            "simple_name": "aws_route.internet_access",
-            "definition": {},
-            "svg_id": "node_4",
-            "group": 20000,
-            "label": "[root] aws_route.internet_access",
-            "resource_name": "internet_access",
-            "type": "aws_route",
-            "def": {
-                "route_table_id": "${aws_vpc.default.main_route_table_id}",
-                "destination_cidr_block": "0.0.0.0/0",
-                "gateway_id": "${aws_internet_gateway.default.id}"
-            }
-        },
-        {
-            "simple_name": "aws_security_group.default",
-            "definition": {},
-            "svg_id": "node_5",
-            "group": 20000,
-            "label": "[root] aws_security_group.default",
-            "resource_name": "default",
-            "type": "aws_security_group",
-            "def": {
-                "name": "terraform_example",
-                "description": "Used in the terraform",
-                "vpc_id": "${aws_vpc.default.id}",
-                "ingress": [
-                    {
-                        "from_port": 22,
-                        "to_port": 22,
-                        "protocol": "tcp",
-                        "cidr_blocks": [
-                            "0.0.0.0/0"
-                        ]
-                    },
-                    {
-                        "from_port": 80,
-                        "to_port": 80,
-                        "protocol": "tcp",
-                        "cidr_blocks": [
-                            "10.0.0.0/16"
-                        ]
-                    }
-                ],
-                "egress": {
-                    "from_port": 0,
-                    "to_port": 0,
-                    "protocol": "-1",
-                    "cidr_blocks": [
-                        "0.0.0.0/0"
-                    ]
-                }
-            }
-        },
-        {
-            "simple_name": "aws_security_group.elb",
-            "definition": {},
-            "svg_id": "node_6",
-            "group": 20000,
-            "label": "[root] aws_security_group.elb",
-            "resource_name": "elb",
-            "type": "aws_security_group",
-            "def": {
-                "name": "terraform_example_elb",
-                "description": "Used in the terraform",
-                "vpc_id": "${aws_vpc.default.id}",
-                "ingress": {
-                    "from_port": 80,
-                    "to_port": 80,
-                    "protocol": "tcp",
-                    "cidr_blocks": [
-                        "0.0.0.0/0"
-                    ]
-                },
-                "egress": {
-                    "from_port": 0,
-                    "to_port": 0,
-                    "protocol": "-1",
-                    "cidr_blocks": [
-                        "0.0.0.0/0"
-                    ]
-                }
-            }
-        },
-        {
-            "simple_name": "aws_subnet.default",
-            "definition": {},
-            "svg_id": "node_7",
-            "group": 20000,
-            "label": "[root] aws_subnet.default",
-            "resource_name": "default",
-            "type": "aws_subnet",
-            "def": {
-                "vpc_id": "${aws_vpc.default.id}",
-                "cidr_block": "10.0.1.0/24",
-                "map_public_ip_on_launch": true
-            }
-        },
-        {
-            "simple_name": "aws_vpc.default",
-            "definition": {},
-            "svg_id": "node_8",
-            "group": 20000,
-            "label": "[root] aws_vpc.default",
-            "resource_name": "default",
-            "type": "aws_vpc",
-            "def": {
-                "cidr_block": "10.0.0.0/16"
-            }
-        },
-        {
-            "simple_name": "provider.aws",
-            "definition": {},
-            "svg_id": "node_9",
-            "group": 20000,
-            "label": "[root] provider.aws",
-            "resource_name": "aws",
-            "type": "provider",
-            "def": []
-        },
-        {
-            "simple_name": "var.aws_amis",
-            "definition": {},
-            "svg_id": "node_10",
-            "group": 20000,
-            "label": "[root] var.aws_amis",
-            "resource_name": "aws_amis",
-            "type": "var",
-            "def": {
-                "default": {
-                    "eu-west-1": "ami-674cbc1e",
-                    "us-east-1": "ami-1d4e7a66",
-                    "us-west-1": "ami-969ab1f6",
-                    "us-west-2": "ami-8803e0f0"
-                }
-            }
-        },
-        {
-            "simple_name": "var.key_name",
-            "definition": {},
-            "svg_id": "node_11",
-            "group": 20000,
-            "label": "[root] var.key_name",
-            "resource_name": "key_name",
-            "type": "var",
-            "def": {
-                "description": "Desired name of AWS key pair"
-            }
-        },
-        {
-            "simple_name": "var.public_key_path",
-            "definition": {},
-            "svg_id": "node_12",
-            "group": 20000,
-            "label": "[root] var.public_key_path",
-            "resource_name": "public_key_path",
-            "type": "var",
-            "def": {
-                "description": "Path to the SSH public key to be used for authentication.\nEnsure this keypair is added to your local SSH agent so provisioners can\nconnect.\n\nExample: ~/.ssh/terraform.pub"
-            }
-        },
-        {
-            "simple_name": "meta.count-boundary (count boundary fixup)",
-            "definition": {},
-            "svg_id": "node_13",
-            "group": 20000,
-            "label": "[root] meta.count-boundary (count boundary fixup)",
-            "resource_name": "count-boundary",
-            "type": "meta",
-            "def": []
-        },
-        {
-            "simple_name": "output.address",
-            "definition": {},
-            "svg_id": "node_14",
-            "group": 20000,
-            "label": "[root] output.address",
-            "resource_name": "address",
-            "type": "output",
-            "def": []
-        },
-        {
-            "simple_name": "provider.aws (close)",
-            "definition": {},
-            "svg_id": "node_15",
-            "group": 20000,
-            "label": "[root] provider.aws (close)",
-            "resource_name": "aws",
-            "type": "provider",
-            "def": []
-        },
-        {
-            "simple_name": "var.aws_region",
-            "definition": {},
-            "svg_id": "node_16",
-            "group": 20000,
-            "label": "[root] var.aws_region",
-            "resource_name": "aws_region",
-            "type": "var",
-            "def": {
-                "description": "AWS region to launch servers.",
-                "default": "us-west-2"
-            }
-        },
-        {
-            "simple_name": "provisioner.remote-exec (close)",
-            "definition": {},
-            "svg_id": "node_17",
-            "group": 20000,
-            "label": "[root] provisioner.remote-exec (close)",
-            "resource_name": "remote-exec",
-            "type": "provisioner",
-            "def": []
-        },
-        {
-            "simple_name": "root",
-            "definition": {},
-            "svg_id": "node_18",
-            "group": 20000,
-            "label": "[root] root",
-            "resource_name": "",
-            "type": "",
-            "def": []
-        }
-    ],
     "edges": [
         {
-            "target": "[root] aws_instance.web",
-            "source": "[root] aws_elb.web",
-            "svg_id": "edge_0"
+            "edge_type": 1,
+            "source": "[root] ibm_kp_key.test",
+            "svg_id": "edge_0",
+            "target": "[root] ibm_resource_instance.kp_instance"
         },
         {
-            "target": "[root] aws_security_group.elb",
-            "source": "[root] aws_elb.web",
-            "svg_id": "edge_1"
+            "edge_type": 1,
+            "source": "[root] ibm_resource_instance.kp_instance",
+            "svg_id": "edge_1",
+            "target": "[root] provider.ibm"
         },
         {
-            "target": "[root] aws_key_pair.auth",
-            "source": "[root] aws_instance.web",
-            "svg_id": "edge_2"
+            "edge_type": 1,
+            "source": "[root] meta.count-boundary (EachMode fixup)",
+            "svg_id": "edge_2",
+            "target": "[root] ibm_kp_key.test"
         },
         {
-            "target": "[root] aws_security_group.default",
-            "source": "[root] aws_instance.web",
-            "svg_id": "edge_3"
+            "edge_type": 1,
+            "source": "[root] provider.ibm (close)",
+            "svg_id": "edge_3",
+            "target": "[root] ibm_kp_key.test"
         },
         {
-            "target": "[root] aws_subnet.default",
-            "source": "[root] aws_instance.web",
-            "svg_id": "edge_4"
-        },
-        {
-            "target": "[root] var.aws_amis",
-            "source": "[root] aws_instance.web",
-            "svg_id": "edge_5"
-        },
-        {
-            "target": "[root] aws_vpc.default",
-            "source": "[root] aws_internet_gateway.default",
-            "svg_id": "edge_6"
-        },
-        {
-            "target": "[root] provider.aws",
-            "source": "[root] aws_key_pair.auth",
-            "svg_id": "edge_7"
-        },
-        {
-            "target": "[root] var.key_name",
-            "source": "[root] aws_key_pair.auth",
-            "svg_id": "edge_8"
-        },
-        {
-            "target": "[root] var.public_key_path",
-            "source": "[root] aws_key_pair.auth",
-            "svg_id": "edge_9"
-        },
-        {
-            "target": "[root] aws_internet_gateway.default",
-            "source": "[root] aws_route.internet_access",
-            "svg_id": "edge_10"
-        },
-        {
-            "target": "[root] aws_vpc.default",
-            "source": "[root] aws_security_group.default",
-            "svg_id": "edge_11"
-        },
-        {
-            "target": "[root] aws_vpc.default",
-            "source": "[root] aws_security_group.elb",
-            "svg_id": "edge_12"
-        },
-        {
-            "target": "[root] aws_vpc.default",
-            "source": "[root] aws_subnet.default",
-            "svg_id": "edge_13"
-        },
-        {
-            "target": "[root] provider.aws",
-            "source": "[root] aws_vpc.default",
-            "svg_id": "edge_14"
-        },
-        {
-            "target": "[root] aws_route.internet_access",
-            "source": "[root] meta.count-boundary (count boundary fixup)",
-            "svg_id": "edge_15"
-        },
-        {
-            "target": "[root] output.address",
-            "source": "[root] meta.count-boundary (count boundary fixup)",
-            "svg_id": "edge_16"
-        },
-        {
-            "target": "[root] aws_elb.web",
-            "source": "[root] output.address",
-            "svg_id": "edge_17"
-        },
-        {
-            "target": "[root] aws_elb.web",
-            "source": "[root] provider.aws (close)",
-            "svg_id": "edge_18"
-        },
-        {
-            "target": "[root] aws_route.internet_access",
-            "source": "[root] provider.aws (close)",
-            "svg_id": "edge_19"
-        },
-        {
-            "target": "[root] var.aws_region",
-            "source": "[root] provider.aws",
-            "svg_id": "edge_20"
-        },
-        {
-            "target": "[root] aws_instance.web",
-            "source": "[root] provisioner.remote-exec (close)",
-            "svg_id": "edge_21"
-        },
-        {
-            "target": "[root] meta.count-boundary (count boundary fixup)",
+            "edge_type": 1,
             "source": "[root] root",
-            "svg_id": "edge_22"
+            "svg_id": "edge_4",
+            "target": "[root] meta.count-boundary (EachMode fixup)"
         },
         {
-            "target": "[root] provider.aws (close)",
+            "edge_type": 1,
             "source": "[root] root",
-            "svg_id": "edge_23"
+            "svg_id": "edge_5",
+            "target": "[root] provider.ibm (close)"
+        }
+    ],
+    "nodes": [
+        {
+            "apply": null,
+            "cluster": "root",
+            "definition": {
+                "key_name": "ckey1",
+                "key_protect_id": "${ibm_resource_instance.kp_instance.guid}",
+                "standard_key": false
+            },
+            "group": 20000,
+            "label": "[root] ibm_kp_key.test",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {
+                "address": "ibm_kp_key.test",
+                "change": {
+                    "actions": [
+                        "create"
+                    ],
+                    "after": {
+                        "encrypted_nonce": null,
+                        "iv_value": null,
+                        "key_name": "ckey1",
+                        "standard_key": false,
+                        "timeouts": null
+                    },
+                    "after_unknown": {
+                        "crn": true,
+                        "id": true,
+                        "key_id": true,
+                        "key_protect_id": true,
+                        "payload": true,
+                        "resource_controller_url": true,
+                        "resource_crn": true,
+                        "resource_group_name": true,
+                        "resource_name": true,
+                        "resource_status": true
+                    },
+                    "before": null
+                },
+                "mode": "managed",
+                "name": "test",
+                "provider_name": "ibm",
+                "schema_version": 0,
+                "type": "ibm_kp_key",
+                "values": {
+                    "encrypted_nonce": null,
+                    "iv_value": null,
+                    "key_name": "ckey1",
+                    "standard_key": false,
+                    "timeouts": null
+                }
+            },
+            "resource_name": "test",
+            "simple_name": "ibm_kp_key.test",
+            "svg_id": "node_0",
+            "type": "ibm_kp_key"
         },
         {
-            "target": "[root] provisioner.remote-exec (close)",
-            "source": "[root] root",
-            "svg_id": "edge_24"
+            "apply": {
+                "instances": [
+                    {
+                        "attributes": {
+                            "crn": "crn:v1:bluemix:public:kms:us-east:a/b9687c7011984685a20a8d25dfbea11b:98eebade-9330-4933-a67e-ff04c28a2fb0::",
+                            "guid": "98eebade-9330-4933-a67e-ff04c28a2fb0",
+                            "id": "crn:v1:bluemix:public:kms:us-east:a/b9687c7011984685a20a8d25dfbea11b:98eebade-9330-4933-a67e-ff04c28a2fb0::",
+                            "location": "us-east",
+                            "name": "tid",
+                            "parameters": null,
+                            "plan": "tiered-pricing",
+                            "resource_controller_url": "https://cloud.ibm.com/services/",
+                            "resource_crn": "crn:v1:bluemix:public:kms:us-east:a/b9687c7011984685a20a8d25dfbea11b:98eebade-9330-4933-a67e-ff04c28a2fb0::",
+                            "resource_group_id": "ef0169d5f6ff45a8866ce5ff857aa7d1",
+                            "resource_group_name": "",
+                            "resource_name": "tid",
+                            "resource_status": "active",
+                            "service": "kms",
+                            "service_endpoints": null,
+                            "status": "active",
+                            "tags": null,
+                            "timeouts": null
+                        },
+                        "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6NjAwMDAwMDAwMDAwLCJ1cGRhdGUiOjYwMDAwMDAwMDAwMH19",
+                        "schema_version": 0
+                    }
+                ],
+                "mode": "managed",
+                "name": "kp_instance",
+                "provider": "provider.ibm",
+                "type": "ibm_resource_instance"
+            },
+            "cluster": "root",
+            "definition": {
+                "location": "us-east",
+                "name": "tid",
+                "plan": "tiered-pricing",
+                "service": "kms"
+            },
+            "group": 20000,
+            "label": "[root] ibm_resource_instance.kp_instance",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {
+                "address": "ibm_resource_instance.kp_instance",
+                "change": {
+                    "actions": [
+                        "create"
+                    ],
+                    "after": {
+                        "location": "us-east",
+                        "name": "tid",
+                        "parameters": null,
+                        "plan": "tiered-pricing",
+                        "resource_group_id": null,
+                        "service": "kms",
+                        "service_endpoints": null,
+                        "tags": null,
+                        "timeouts": null
+                    },
+                    "after_unknown": {
+                        "crn": true,
+                        "guid": true,
+                        "id": true,
+                        "resource_controller_url": true,
+                        "resource_crn": true,
+                        "resource_group_name": true,
+                        "resource_name": true,
+                        "resource_status": true,
+                        "status": true
+                    },
+                    "before": null
+                },
+                "mode": "managed",
+                "name": "kp_instance",
+                "provider_name": "ibm",
+                "schema_version": 0,
+                "type": "ibm_resource_instance",
+                "values": {
+                    "location": "us-east",
+                    "name": "tid",
+                    "parameters": null,
+                    "plan": "tiered-pricing",
+                    "resource_group_id": null,
+                    "service": "kms",
+                    "service_endpoints": null,
+                    "tags": null,
+                    "timeouts": null
+                }
+            },
+            "resource_name": "kp_instance",
+            "simple_name": "ibm_resource_instance.kp_instance",
+            "svg_id": "node_1",
+            "type": "ibm_resource_instance"
+        },
+        {
+            "apply": {},
+            "cluster": "root",
+            "definition": {
+                "ibmcloud_api_key": "BEhDmmepkTNxWCToEuxiLugho-TIDAIRxAiSQOUcJof-"
+            },
+            "group": 20000,
+            "label": "[root] provider.ibm",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {},
+            "resource_name": "ibm",
+            "simple_name": "provider.ibm",
+            "svg_id": "node_2",
+            "type": "provider"
+        },
+        {
+            "apply": {},
+            "cluster": "root",
+            "definition": "",
+            "group": 20000,
+            "label": "[root] meta.count-boundary (EachMode fixup)",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {},
+            "resource_name": "count-boundary",
+            "simple_name": "meta.count-boundary (EachMode fixup)",
+            "svg_id": "node_3",
+            "type": "meta"
+        },
+        {
+            "apply": {},
+            "cluster": "root",
+            "definition": {
+                "ibmcloud_api_key": "BEhDmmepkTNxWCToEuxiLugho-TIDAIRxAiSQOUcJof-"
+            },
+            "group": 20000,
+            "label": "[root] provider.ibm (close)",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {},
+            "resource_name": "ibm",
+            "simple_name": "provider.ibm (close)",
+            "svg_id": "node_4",
+            "type": "provider"
+        },
+        {
+            "apply": {},
+            "cluster": "root",
+            "definition": "",
+            "group": 20000,
+            "label": "[root] root",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {},
+            "resource_name": "",
+            "simple_name": "root",
+            "svg_id": "node_5",
+            "type": ""
         }
     ]
 }

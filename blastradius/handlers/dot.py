@@ -1,9 +1,17 @@
 # standard libraries
+from __future__ import print_function
 import json
 import re
 import subprocess
 from collections import OrderedDict
 from collections import deque
+
+
+import sys
+import graphviz
+import jinja2
+
+
 
 # 3rd party libraries 
 import jinja2
@@ -11,15 +19,20 @@ import jinja2
 # 1st party libraries
 from blastradius.graph import Graph, Node, Edge
 from blastradius.util import OrderedSet
+from blastradius.handlers.plan import Plan
+from blastradius.handlers.apply import Apply
 
 class DotGraph(Graph):
 
-    def __init__(self, filename, file_contents=None):
+    def __init__(self,flag,filename, file_contents=None):
         self.filename = filename
         self.nodes    = []
         self.edges    = []
         self.clusters = OrderedDict()
         self.clusters['root'] = True # Used like an ordered Set.
+        self.plan = Plan()
+        self.apply = Apply()
+        self.flag = flag
         
         if file_contents:
             self.contents = file_contents
@@ -44,17 +57,65 @@ class DotGraph(Graph):
                         e = DotEdge(d['src'], d['dst'], fmt=fmt)
                         self.edges.append(e)
                     elif 'node' in m.groupdict():
-                        self.nodes.append(DotNode(d['node'], fmt=fmt))
-                    break
-        
+                       
+                        sp = d['node'].split(" ")
+                    
+                        res = sp[1].replace("data.","")
+
+                        type = sp[1].split(".")[0]
+                        if type == "data":
+                            #process data source:
+                            apply_data = None
+                            plan_data = None
+                            if ("not applied" in self.apply.apply_resource_info):
+                                apply_data = "not yet applied"
+                                plan_data = "data-source"
+                                self.nodes.append(DotNode(d['node'], plan_data, apply_data,fmt=fmt ))
+                                break
+
+                            else:
+                                for i in self.apply.apply_resource_info:
+                                    if i['type']+"."+i['name'] == res:
+                                        apply_data = i
+                                        plan_data = "data-source"
+                                        self.nodes.append(DotNode(d['node'], plan_data, apply_data,fmt=fmt ))
+                                        break
+                        else:
+                            if type == "provider":
+                                apply_data = {}
+                                plan_data = {}
+                                self.nodes.append(DotNode(d['node'], plan_data, apply_data,fmt=fmt ))
+                            else:
+                                apply_data = None
+                                plan_data = None
+                                if ("not applied" in self.apply.apply_resource_info):
+                                    apply_data = "not yet applied"
+                                else:
+                                    for i in self.apply.apply_resource_info:
+                                        if i['type']+"."+i['name'] == res:
+                                            apply_data = i
+                                            break
+
+                                for i in self.plan.resource_info:
+                                    data = i["address"].split("[")
+                                    if data[0] == res:
+                                        plan_data = i
+                                        break
+                                self.nodes.append(DotNode(d['node'], plan_data, apply_data,fmt=fmt ))
+                        
         # terraform graph output doesn't always make explicit node declarations;
         # sometimes they're a side-effect of edge definitions. Capture them.
         for e in self.edges:
             if e.source not in [ n.label for n in self.nodes ]:
-                self.nodes.append(DotNode(e.source))
+                plan_data = {}
+                apply_data = {}
+                self.nodes.append(DotNode(e.source, plan_data,apply_data))
+            
             if e.target not in [ n.label for n in self.nodes ]:
-                self.nodes.append(DotNode(e.target))
-
+                plan_data = {}
+                apply_data = {}
+                self.nodes.append(DotNode(e.target, plan_data,apply_data))
+        
         self.stack('var')
         self.stack('output')
 
@@ -80,7 +141,11 @@ class DotGraph(Graph):
 
     def dot(self):
         'returns a dot/graphviz representation of the graph (a string)'
-        return self.dot_template.render({ 'nodes': self.nodes, 'edges': self.edges, 'clusters' : self.clusters, 'EdgeType' : EdgeType })
+        
+        if self.flag == "ext":
+            return self.dot_template_ext.render({ 'nodes': self.nodes, 'edges': self.edges, 'clusters' : self.clusters, 'EdgeType' : EdgeType })
+        else :
+            return self.dot_template.render({ 'nodes': self.nodes, 'edges': self.edges, 'clusters' : self.clusters, 'EdgeType' : EdgeType })
 
     def json(self):
         edges = [ dict(e) for e in self.edges ]
@@ -225,7 +290,6 @@ class DotGraph(Graph):
         # add placeholder nodes, remove nodes beyond specified module_depth.
         self.nodes = list(OrderedSet(placeholders) | (OrderedSet(self.nodes) - OrderedSet(too_deep)))
     
-
     def center(self, node):
         '''
         prunes graph to include only (1) the given node, (2) its 
@@ -303,20 +367,93 @@ class DotGraph(Graph):
 
         self.edges = list(edges_to_save)
         self.nodes = [ n for n in self.nodes if n.label in nodes_to_save ]
-
-
     
     #
     # Formatting templates.
     #
 
-    dot_template_str = """
-digraph {
+    dot_template_str_ext = """
+    digraph {
     compound = "true"
     graph [fontname = "courier new",fontsize=8];
     node [fontname = "courier new",fontsize=8];
     edge [fontname = "courier new",fontsize=8];
+    
+    {# just the root module #}
+    {% for cluster in clusters %}
+        subgraph "{{cluster}}" {
+            style=invis;
+            {% for node in nodes %}
+                {% if node.cluster == cluster and node.module == 'root' %}
+                    {% if node.type %}
+                        {% if node.type == 'var' or node.type == 'provider' or node.type == 'meta' or node.type == 'provider' or node.type == 'output'%}
+                            "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                            <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD></TR>
+                            <TR><TD>{{node.resource_name}}</TD></TR>
+                            </TABLE>>];
+                        {% else %}
+                            "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                                {% if node.plan.change %}
+                                    {% if node.plan.change.actions[0] == "create" %}
+                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2">+</TD><TD rowspan="2"></TD></TR>
+                                    {% elif  node.plan.change.actions[0] == "delete" and node.plan.change.actions[1] == "create"%}
+                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2">-/+</TD><TD rowspan="2"></TD></TR>
+                                    {% elif  node.plan.change.actions[0] == "delete"%}
+                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2">-</TD><TD rowspan="2"></TD></TR>
+                                    {% elif  node.plan.change.actions[0] == "update"%}
+                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2">#</TD><TD rowspan="2"></TD></TR>
+                                    {% else %}
+                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2"></TD><TD rowspan="2"></TD></TR>
+                                    {% endif %}
+                                {% else %}
+                                    <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2"></TD><TD rowspan="2"></TD></TR>
+                                {% endif %}
+                            <TR><TD>{{node.resource_name}}</TD></TR></TABLE>>];
+                        {% endif %}
+                    {% else %}
+                        "{{node.label}}" [{{node.fmt}}]
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        }
+    {% endfor %}
 
+    {# non-root modules #}
+    {% for node in nodes %}
+        {% if node.module != 'root' %}
+
+            {% if node.collapsed %}
+                "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                {% for module in node.modules %}<TR><TD>(M) {{module}}</TD></TR>{% endfor %}
+                <TR><TD>(collapsed)</TD></TR>
+                <TR><TD>...</TD></TR>
+               </TABLE>>];
+            {% else %}
+            "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                {% for module in node.modules %}<TR><TD>(M) {{module}}</TD></TR>{% endfor %}
+                <TR><TD>{{node.type}}</TD></TR>
+                <TR><TD>{{node.resource_name}}</TD></TR>
+                </TABLE>>];
+            {% endif %}
+        {% endif %}
+
+    {% endfor %}
+
+        {% for edge in edges %}
+            {% if edge.edge_type == EdgeType.NORMAL %}"{{edge.source}}" -> "{{edge.target}}" {% if edge.fmt %} [{{edge.fmt}}] {% endif %}{% endif %}
+            {% if edge.edge_type == EdgeType.LAYOUT_SHOWN %}"{{edge.source}}" -> "{{edge.target}}" {% if edge.fmt %} [{{edge.fmt}}] {% endif %}{% endif %}
+            {% if edge.edge_type == EdgeType.LAYOUT_HIDDEN %}"{{edge.source}}" -> "{{edge.target}}" [style="invis"]{% endif %}
+        {% endfor %}
+}
+"""
+
+    dot_template_str = """
+    digraph {
+    compound = "true"
+    graph [fontname = "courier new",fontsize=8];
+    node [fontname = "courier new",fontsize=8];
+    edge [fontname = "courier new",fontsize=8];
+    
     {# just the root module #}
     {% for cluster in clusters %}
         subgraph "{{cluster}}" {
@@ -327,7 +464,9 @@ digraph {
                     "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
                             <TR><TD>{{node.type}}</TD></TR>
                             <TR><TD>{{node.resource_name}}</TD></TR>
+                            
                         </TABLE>>];
+                      
                     {% else %}
                         "{{node.label}}" [{{node.fmt}}]
                     {% endif %}
@@ -365,6 +504,7 @@ digraph {
 }
 """
     dot_template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(dot_template_str)
+    dot_template_ext = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(dot_template_str_ext)
         
 
 class Format:
@@ -402,7 +542,7 @@ class Format:
 
 class DotNode(Node):
 
-    def __init__(self, label, fmt=None):
+    def __init__(self, label, data,apply_data,fmt=None):
 
         self.label          = DotNode._label_fixup(label)
         self.fmt            = fmt if fmt else Format('') # graphviz formatting.
@@ -415,14 +555,14 @@ class DotNode(Node):
         self.module         = DotNode._module(self.label) # for module groupings. 'root' or 'module.foo.module.bar'
         self.cluster        = None # for stacked resources (usually var/output).
         self.collapsed      = False
-
+        self.plan          = data
+        self.apply         = apply_data
         self.fmt.add(id=self.svg_id, shape='box')
-
-
+        
         self.modules = [ m for m in self.module.split('.') if m != 'module' ]
 
     def __iter__(self):
-        for key in {'label', 'simple_name', 'type', 'resource_name', 'group', 'svg_id', 'definition', 'cluster', 'module', 'modules'}:
+        for key in {'label', 'simple_name', 'type', 'resource_name', 'group', 'svg_id', 'definition', 'cluster', 'module', 'modules', 'plan', 'apply'}:
            yield (key, getattr(self, key))
 
     #
@@ -521,5 +661,3 @@ class DotEdge(Edge):
     def __iter__(self):
         for key in {'source', 'target', 'svg_id', 'edge_type'}: 
             yield (key, getattr(self, key))
-
-

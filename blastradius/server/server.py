@@ -33,7 +33,26 @@ def index():
 @app.route('/graph.svg')
 def graph_svg():
     Graph.reset_counters()
-    dot = DotGraph('', file_contents=run_tf_graph())
+    dot = DotGraph('','', file_contents=run_tf_graph())
+
+    module_depth = request.args.get('module_depth', default=None, type=int)
+    refocus      = request.args.get('refocus', default=None, type=str)
+
+    if module_depth is not None and module_depth >= 0:
+        dot.set_module_depth(module_depth)
+
+    if refocus is not None:
+        node = dot.get_node_by_name(refocus)
+        if node:
+            dot.center(node)
+
+    return dot.svg()
+
+
+@app.route('/graphnew.svg')
+def graphnew_svg():
+    Graph.reset_counters()
+    dot = DotGraph('ext','',file_contents=run_tf_graph())
 
     module_depth = request.args.get('module_depth', default=None, type=int)
     refocus      = request.args.get('refocus', default=None, type=str)
@@ -52,7 +71,7 @@ def graph_svg():
 @app.route('/graph.json')
 def graph_json():
     Graph.reset_counters()
-    dot = DotGraph('', file_contents=run_tf_graph())
+    dot = DotGraph('','',file_contents=run_tf_graph())
     module_depth = request.args.get('module_depth', default=None, type=int)
     refocus      = request.args.get('refocus', default=None, type=str)
     if module_depth is not None and module_depth >= 0:
@@ -88,8 +107,3 @@ def get_terraform_version():
 
 def get_terraform_exe():
     return which('terraform')
-
-
-
-
-

@@ -135,3 +135,74 @@ g.node text {
         font-family: 'consolas', 'monaco', 'fixed-width';
         font-size: 8px;
 }
+
+.navbar-nav>li {
+  padding-left: 6px;
+}
+
+.navbar-brand {
+  font-family: 'courier new';
+}
+
+body {
+  font-family: "Lato", sans-serif;
+}
+.sidenav {
+height: 100%;
+width: 0;
+position: fixed;
+z-index: 1;
+top: 0;
+right: 0;
+background-color: #D3D3D3;
+
+transition: 0.5s;
+padding-top: 60px;
+color: #000;
+overflow: auto;
+}
+
+.sidenav a {
+padding: 8px 8px 8px 32px;
+text-decoration: none;
+font-size: 25px;
+color: #818181;
+display: block;
+transition: 0.3s;
+
+}
+
+.sidenav a:hover {
+color: #f1f1f1;
+}
+
+.square {
+height: 10px;
+width: 10px;
+
+}
+
+.sidenav .closebtn {
+
+position: absolute;
+top: 60;
+right: 20px;
+font-size: 16px;
+margin-right: 0px;
+color: grey;
+}
+
+
+table, td {
+/* /* position: absolute; */
+margin-top: 60;
+margin-left: 20; 
+border: 1px solid black;
+}
+
+
+@media screen and (max-height: 450px) {
+.sidenav {padding-top: 15px;}
+.sidenav a {font-size: 18px;}
+}
+

@@ -67,7 +67,8 @@ Queue.prototype.dequeue = function() {
 // Takes a unique selector, e.g. "#demo-1", and 
 // appends svg xml from svg_url, and takes graph
 // info from json_url to highlight/annotate it.
-blastradius = function (selector, svg_url, json_url, br_state) {
+
+blastradiusnew = function (selector, svg_url, json_url,br_state) {
 
     // TODO: remove scale.
     scale = null
@@ -90,6 +91,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
 
     var state     = br_state[selector];
     var container = d3.select(selector);
+    
 
     // color assignments (resource_type : rgb) are stateful. If we use a new palette
     // every time the a subgraph is selected, the color assignments would differ and
@@ -97,15 +99,15 @@ blastradius = function (selector, svg_url, json_url, br_state) {
     var color = (state['color'] ? state['color'] : d3.scaleOrdinal(d3['schemeCategory20']));
     state['color'] = color;
 
-    //console.log(state);
+    // console.log(color);
 
     // 1st pull down the svg, and append it to the DOM as a child
     // of our selector. If added as <img src="x.svg">, we wouldn't
     // be able to manipulate x.svg with d3.js, or other DOM fns. 
     d3.xml(svg_url, function (error, xml) {
 
-        d3.select(selector).selectAll("svg").remove(); 
-        
+        d3.select(selector).selectAll("svg").remove();
+
         container.node()
             .appendChild(document.importNode(xml.documentElement, true));
 
@@ -123,6 +125,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
         // Obtain the graph description. Doing this within the
         // d3.xml success callback, to guaruntee the svg/xml
         // has loaded.
+        
         d3.json(json_url, function (error, data) {
             var edges = data.edges;
             var svg_nodes = [];
@@ -157,42 +160,70 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             }
 
             var svg = container.select('svg');
+            
             if (scale != null) {
                 svg.attr('height', scale).attr('width', scale);
             }
-
-            var render_tooltip = function(d) {
-                var title_cbox  = document.querySelector(selector + '-tooltip-title');
-                var json_cbox   = document.querySelector(selector + '-tooltip-json');
-                var deps_cbox   = document.querySelector(selector + '-tooltip-deps');
-
-                if ((! title_cbox) || (! json_cbox) || (! deps_cbox)) 
-                    return title_html(d) + (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
-
+            
+            
+            x=svg.selectAll('g.node');
+            console.log('g.node')
+            
+            var render_plan = function(d) {
+                var plan_title = "plan info"
                 var ttip = ''; 
-                if (title_cbox.checked)
-                    ttip += title_html(d);
-                if (json_cbox.checked)
-                    ttip += (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
-                if (deps_cbox.checked)
-                    ttip += child_html(d);
+                ttip += title_html(d);
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + plan_title + '</span><br><br>'+(d.plan.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.plan, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>') ;
+                ttip += child_html(d);
+                
+               
                 return ttip;
             }
 
-            // setup tooltips
-            var tip = d3.tip()
-                .attr('class', class_selector.slice(1, class_selector.length) + '-d3-tip d3-tip')
-                .offset([-10, 0])
-                .html(render_tooltip);
-            svg.call(tip);
+            var render_apply = function(d) {
+                var apply_title = "apply info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                if (d.apply == "not yet applied" )
+                {
+                    ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + apply_title + '</span><br><br>'+("<p class='explain'>" + "not yet applied" + "</p><br>"+ '<hr style="background-color:black"/>');
+  
+                }
+                else {
+                    if( d.apply == null || d.apply.instances[0] == null)
+                    {
+                        ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + apply_title + '</span><br><br>'+("<p class='explain'>" + "resource apply failed" + "</p><br>"+ '<hr style="background-color:black"/>');
+  
+                    }
+                    else
+                    {
+                         ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + apply_title + '</span><br><br>'+(d.apply.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.apply, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>');
+                    }
+                }
+                ttip += child_html(d);
+                
+               
+                return ttip;
+            }
 
-            // returns <div> element representinga  node's title and module namespace.
+            var render_tfstate = function(d) {
+                var title = "tf state info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + title + '</span><br><br>' +(d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>');
+                ttip += child_html(d);
+                return ttip;
+            }
+      
             var title_html = function(d) {
                 var node = d;
                 var title = [ '<div class="header">']
+                var head = "resource name"
+                title[title.length] = '<span class="title" style="background:' + color("#ffbf00") + ';">' + head + '</span><br><br>';
                 if (node.modules.length <= 1 && node.modules[0] == 'root') {
                     title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.type + '</span>';
                     title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                    
                 }
                 else {
                     for (var i in node.modules) {
@@ -230,7 +261,9 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             var child_html = function(d) {
                 var children = [];
                 var edges   = edges_by_source[d.label];
+                var foot = "child nodes";
                 //console.log(edges);
+                children[children.length] = '<span class="title" style="background:' + color("#ffbf00") + ';">' + foot + '</span><br><br>';
                 for (i in edges) {
                     edge = edges[i];
                     if (edge.edge_type == edge_types.NORMAL || edge.edge_type == edge_types.HIDDEN) {
@@ -251,7 +284,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 }
                 return children.join('');
             }
-
+           
             var get_downstream_nodes = function (node) {
                 var children    = {};
                 children[node.label] = node;
@@ -348,72 +381,58 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             // FIXME: these x,y,z-s pad out parameters I haven't looked up,
             // FIXME: but don't seem to be necessary for display
             var node_mousedown = function(d, x, y, z, no_tip_p) {
-                if (sticky_node == d && click_count == 1) {
-                    tip.hide(d);
+                
+                if ( sticky_node == d && click_count == 1) {
+                   
                     highlight(d, true, true);
                     click_count += 1;
                 }
                 else if (sticky_node == d && click_count == 2) {
                     unhighlight(d);
-                    tip.hide(d);
-                    sticky_node = null;
+                   
+                   sticky_node = null;
                     click_count = 0;
                 }
                 else {
                     if (sticky_node) {
                         unhighlight(sticky_node);
-                        tip.hide(sticky_node);
+                      
                     }
                     sticky_node = d;
                     click_count = 1;
                     highlight(d, true, false);
-                    if (no_tip_p === undefined) {
-                        tip.show(d)
-                            .direction(tipdir(d))
-                            .offset(tipoff(d));
-                    }
                 }
             }
+            
+            var plan_click = function(d) {
+               openNav()
 
-            var node_mouseleave = function(d) {
-                tip.hide(d);
+               var renderInfo = render_plan(d);
+               $('div.test').html(renderInfo);
+               
             }
 
-            var node_mouseenter = function(d) {
-                tip.show(d)
-                    .direction(tipdir(d))
-                    .offset(tipoff(d));
+            var tfstate_click = function(d) {
+                openNav()
+ 
+                var renderInfo = render_tfstate(d);
+                $('div.test').html(renderInfo);
+                
+             }
+
+            var apply_click = function(d) {
+                openNav()
+ 
+                var renderInfo = render_apply(d);
+                $('div.test').html(renderInfo);
+                
+             }
+            
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "350px";
+                
             }
-
-            var node_mouseover = function(d) {
-                if (! sticky_node)
-                    highlight(d, true, false);
-            }
-
-            var node_mouseout = function(d) {
-                if (sticky_node == d) {
-                    return;
-                }
-                else if (! sticky_node) {
-                    unhighlight(d);
-                }
-                else {
-                    if (click_count == 2)
-                        highlight(sticky_node, true, true);
-                    else
-                        highlight(sticky_node, true, false);
-                }
-
-            }
-
-            var tipdir = function(d) {
-                return 'n';
-            }
-
-            var tipoff = function(d) {
-                return [-10, 0];
-            }
-
+    
             var highlight = function (d, downstream, upstream) {
 
                 var highlight_nodes = [];
@@ -450,28 +469,87 @@ blastradius = function (selector, svg_url, json_url, br_state) {
 
             }
 
-            // colorize nodes, and add mouse candy.
-            svg.selectAll('g.node')
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseenter', node_mouseenter)
-                .on('mouseleave', node_mouseleave)
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .attr('fill', function (d) { return color(d.group); })
-                .select('polygon:nth-last-of-type(2)')
+
+            node = svg.selectAll('g.node')
+                   .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+
+            
+            node.attr('fill', function (d) { return color(d.group); })
+                .select('polygon:nth-of-type(1)')
+                .on('click', node_mousedown)
                 .style('fill', (function (d) {
                     if (d)
                         return color(d.group);
+                        
                     else
                         return '#000';
                 }));
 
-            // colorize modules
+            
+            node.select('polygon:nth-of-type(2)')
+                .on('click',tfstate_click)
+                .style('fill', (function (d) {
+                    if (d)
+                      
+                        return "#00CCFF";
+                        
+                    else
+                        return '#000';
+                }));
+
+            
+            node.attr('fill', function (d) { return color(d.group); })
+                .select('polygon:nth-child(3n+4)')
+                .on('click',(function (d) {
+                    
+                      if (d.type == "var" || d.type == "provider" || d.type == "meta" || d.type == "output")
+                        return "";
+                        
+                      else
+                        return plan_click(d);
+                    
+                }))
+                .style('fill', (function (d) {
+                    if (d)
+                    {
+                    if (d.type == "var" || d.type == "provider" || d.type == "meta" || d.type == "output")
+                        
+                        return "fff";
+                    else
+                       return "#ffff00";
+
+                    }
+                        
+                    else
+                        return '#000';
+                }));
+  
+            
+            node.select('polygon:nth-of-type(4)')
+                .on('click',apply_click)
+                .style('fill', (function (d) {
+                    if (d)
+                    {
+                     if(d.apply == "not yet applied")
+                      {
+                          return "#808080";
+                      }
+                     else if(d.apply == null || d.apply.instances[0] == null )
+                      {
+                        return "#ff0000";
+                      }
+                      else{
+                        return "#00ff40";
+                      }
+                    }   
+                    else
+                        return '#000';
+                }));
+
             svg.selectAll('polygon')
-            .each(function(d, i) {
+                .each(function(d, i) {
                 if (d != undefined)
                     return undefined;
                 sibling = this.nextElementSibling;
@@ -488,9 +566,6 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 .data(svg_nodes, function (d) {
                     return (d && d.svg_id) || d3.select(this).attr("id");
                 })
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
                 .select('polygon')
                 .attr('fill', function (d) { return color(d.group); })
                 .style('fill', (function (d) {
@@ -506,15 +581,16 @@ blastradius = function (selector, svg_url, json_url, br_state) {
 
             // blast-radius --serve mode stuff. check for a zoom-in button as a proxy
             // for whether other facilities will be available.
+            var refocus_btn  = document.querySelector(selector + '-refocus');
             if (d3.select(selector + '-zoom-in')) {
                 var zin_btn      = document.querySelector(selector + '-zoom-in');
                 var zout_btn     = document.querySelector(selector + '-zoom-out');
-                var refocus_btn  = document.querySelector(selector + '-refocus');
+                // var refocus_btn  = document.querySelector(selector + '-refocus');
                 var download_btn = document.querySelector(selector + '-download')
                 var svg_el       = document.querySelector(selector + ' svg');
                 var panzoom      = svgPanZoom(svg_el).disableDblClickZoom();
 
-                console.log('bang');
+                
                 console.log(state);
                 if (state['no_scroll_zoom'] == true) {
                     console.log('bang');
@@ -534,7 +610,9 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 zout_btn.addEventListener('click', handle_zout);
 
                 var handle_refocus = function() {
+                    console.log('handle_refocus', sticky_node)
                     if (sticky_node) {
+                        
                         $(selector + ' svg').remove();
                         clear_listeners();
                         if (! state['params'])
@@ -544,12 +622,14 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                         svg_url  = svg_url.split('?')[0];
                         json_url = json_url.split('?')[0];
 
-                        blastradius(selector, build_uri(svg_url, state.params), build_uri(json_url, state.params), br_state);
+                        blastradiusnew(selector, build_uri(svg_url, state.params), build_uri(json_url, state.params), br_state);
                     }
                 }
 
+
                 // this feature is disabled for embedded images on static sites...
                 if (refocus_btn) {
+                    console.log('refocus_btn.addEventListener');
                     refocus_btn.addEventListener('click', handle_refocus);
                 }
 
@@ -562,7 +642,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     var dl            = document.createElement("a");
                     document.body.appendChild(dl);
                     dl.setAttribute("href", svg_data_url);
-                    dl.setAttribute("download", "blast-radius.svg");
+                    dl.setAttribute("download", "blast-radius-new.svg");
                     dl.click();
                 }
                 download_btn.addEventListener('click', handle_download);
@@ -573,7 +653,6 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     refocus_btn.removeEventListener('click', handle_refocus);
                     download_btn.removeEventListener('click', handle_download);
                     panzoom = null;
-                    tip.hide();
                 }
 
                 var render_searchbox_node = function(d) {
@@ -591,6 +670,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                         sticky_node = null;
                     }
                     click_count = 0;
+                    // console.log(d)
                     node_mousedown(nodes[d], false, false, false, true);
                 }
 
@@ -598,13 +678,13 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     $(selector + '-search').selectize()[0].selectize.clear();
                     $(selector + '-search').selectize()[0].selectize.clearOptions();
                     for (var i in svg_nodes) {
-                        //console.log(svg_nodes[i]);
+                        
                         $(selector + '-search').selectize()[0].selectize.addOption(svg_nodes[i]);
                     }
-                    if( state.params.refocus && state.params.refocus.length > 0  ) {
+                    if( state && state.params && state.params.refocus && state.params.refocus.length > 0  ) {
                         var n = state.params.refocus;
                     }
-
+                    console.log(svg_nodes);
                     // because of scoping, we need to change the onChange callback to the new version
                     // of select_node(), and delete the old callback associations.
                     $(selector + '-search').selectize()[0].selectize.settings.onChange = select_node;
@@ -629,11 +709,10 @@ blastradius = function (selector, svg_url, json_url, br_state) {
 
                 // without this, selecting an item with <enter> will submit the form
                 // and force a page refresh. not the desired behavior.
-                $(selector + '-search-form').submit(function(){return false;});
+                // $(selector + '-search-form').submit(function(){return false;});
 
             } // end if(interactive)
         });   // end json success callback
     });       // end svg scuccess callback
 
 }             // end blastradius()
-
