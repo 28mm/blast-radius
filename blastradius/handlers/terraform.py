@@ -17,13 +17,18 @@ class Terraform:
         # handle the root module first...
         self.directory = directory if directory else os.getcwd()
         #print(self.directory)
-        self.config_str = ''
+        
+        self.config = {}
         iterator = iglob( self.directory + '/*.tf')
         for fname in iterator:
             with open(fname, 'r', encoding='utf-8') as f:
-                self.config_str += f.read() + '\n'
-        config_io = io.StringIO(self.config_str)
-        self.config = hcl.load(config_io)
+                try:
+                    raw = io.StringIO(f.read())
+                    parsed = hcl.load(raw)
+                    self.config.update(parsed)
+                except Exception as e:
+                    raise RuntimeError('Exception occurred while parsing ' + fname) from e
+
 
         # then any submodules it may contain, skipping any remote modules for
         # the time being.
