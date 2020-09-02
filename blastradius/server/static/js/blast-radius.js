@@ -122,19 +122,24 @@ blastradius = function (selector, svg_url, json_url, br_state) {
         // d3.xml success callback, to guaruntee the svg/xml
         // has loaded.
         d3.json(json_url, function (error, data) {
-            var edges = data.edges;
-            var svg_nodes = [];
-            var nodes = {};
-            data.nodes.forEach(function (node) {
-                if (!(node.type in resource_groups))
-                    console.log(node.type)
-                if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
-                    node.resource_name = 'root';
-                }
-                node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
-                nodes[node['label']] = node;
-                svg_nodes.push(node);
-            });
+            if (!error) {
+                console.log("An error occurred on the server")
+                var edges = data.edges;
+                var svg_nodes = [];
+                var nodes = {};
+                data.nodes.forEach(function (node) {
+                    if (!(node.type in resource_groups))
+                        console.log(node.type)
+                    if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
+                        node.resource_name = 'root';
+                    }
+                    node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
+                    nodes[node['label']] = node;
+                    svg_nodes.push(node);
+                });
+            } else {
+                edges = []
+            }
 
             // convenient to access edges by their source.
             var edges_by_source = {}
@@ -449,23 +454,25 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             }
 
             // colorize nodes, and add mouse candy.
-            svg.selectAll('g.node')
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseenter', node_mouseenter)
-                .on('mouseleave', node_mouseleave)
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .attr('fill', function (d) { return color(d.group); })
-                .select('polygon:nth-last-of-type(2)')
-                .style('fill', (function (d) {
-                    if (d)
-                        return color(d.group);
-                    else
-                        return '#000';
-                }));
+            if (svg_nodes) {
+                svg.selectAll('g.node')
+                    .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+                    .on('mouseenter', node_mouseenter)
+                    .on('mouseleave', node_mouseleave)
+                    .on('mouseover', node_mouseover)
+                    .on('mouseout', node_mouseout)
+                    .on('mousedown', node_mousedown)
+                    .attr('fill', function (d) { return color(d.group); })
+                    .select('polygon:nth-last-of-type(2)')
+                    .style('fill', (function (d) {
+                        if (d)
+                            return color(d.group);
+                        else
+                            return '#000';
+                    }));
+            }
 
             // colorize modules
             svg.selectAll('polygon')
@@ -481,22 +488,24 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             });
 
             // hack to make mouse events and coloration work on the root node again.
-            var root = nodes['[root] root'];
-            svg.selectAll('g.node#' + root.svg_id)
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .select('polygon')
-                .attr('fill', function (d) { return color(d.group); })
-                .style('fill', (function (d) {
-                    if (d)
-                        return color(d.group);
-                    else
-                        return '#000';
-                }));
+            if (nodes) {
+                var root = nodes['[root] root'];
+                svg.selectAll('g.node#' + root.svg_id)
+                    .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+                    .on('mouseover', node_mouseover)
+                    .on('mouseout', node_mouseout)
+                    .on('mousedown', node_mousedown)
+                    .select('polygon')
+                    .attr('fill', function (d) { return color(d.group); })
+                    .style('fill', (function (d) {
+                        if (d)
+                            return color(d.group);
+                        else
+                            return '#000';
+                    }));
+            }
 
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')
