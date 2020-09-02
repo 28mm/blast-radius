@@ -68,8 +68,7 @@ class Terraform:
                 # AWS S3 buckets
                 elif re.match(r's3.*\.amazonaws\.com', source):
                     continue
-                # fixme path join. eek.
-                self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)
+                self.modules[name] = Terraform(directory=os.path.join(self.directory, source), settings=mod)
 
 
     def get_def(self, node, module_depth=0):
