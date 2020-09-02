@@ -138,6 +138,12 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     svg_nodes.push(node);
                 });
             } else {
+                let div = document.createElement("div")
+                div.setAttribute("role", "alert")
+                div.classList = ["alert alert-danger"]
+                div.textContent = "A server exception has occurred. The graph is still usable but without all features enabled such as filtering content"
+                document.getElementsByClassName("navbar")[0].appendChild(div)
+                
                 edges = []
             }
 
