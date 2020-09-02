@@ -521,8 +521,6 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 var svg_el       = document.querySelector(selector + ' svg');
                 var panzoom      = svgPanZoom(svg_el).disableDblClickZoom();
 
-                console.log('bang');
-                console.log(state);
                 if (state['no_scroll_zoom'] == true) {
                     console.log('bang');
                     panzoom.disableMouseWheelZoom();
