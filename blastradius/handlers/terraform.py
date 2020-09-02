@@ -5,7 +5,7 @@ import os
 import re
 
 # 3rd party libraries
-import hcl    # hashicorp configuration language (.tf)
+import hcl2 as hcl    # hashicorp configuration language (.tf)
 
 class Terraform:
     """Finds terraform/hcl files (*.tf) in CWD or a supplied directory, parses
@@ -21,7 +21,7 @@ class Terraform:
         iterator = iglob( self.directory + '/*.tf')
         for fname in iterator:
             with open(fname, 'r', encoding='utf-8') as f:
-                self.config_str += f.read() + ' '
+                self.config_str += f.read() + '\n'
         config_io = io.StringIO(self.config_str)
         self.config = hcl.load(config_io)
 
@@ -29,10 +29,10 @@ class Terraform:
         # the time being.
         self.modules = {}
         if 'module' in self.config:
-            for name, mod in self.config['module'].items():
+            for name, mod in [(k, v) for x in self.config['module'] for (k, v) in x.items()]:
                 if 'source' not in mod:
                     continue
-                source = mod['source']
+                source = mod['source'][0]
                 # '//' used to refer to a subdirectory in a git repo
                 if re.match(r'.*\/\/.*', source):
                     continue
