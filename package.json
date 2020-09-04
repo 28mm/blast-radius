@@ -1,0 +1,40 @@
+{
+  "name": "28mm-blastradius",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf node_modules package-lock.json && npm i",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nishubharti/blast-radius.git"
+  },
+  "keywords": [
+    "blastradius",
+    "terrafom",
+    "reasoning",
+    "graph",
+    "interactive",
+    "visualization"
+  ],
+  "author": "VishwaKumar Patil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nishubharti/blast-radius/issues"
+  },
+  "homepage": "https://github.com/nishubharti/blast-radius#readme",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.13.0",
+    "d3": "^4.11.0",
+    "d3-tip": "^0.9.1",
+    "jquery": "^3.2.1",
+    "selectize": "^0.12.6",
+    "svg-pan-zoom": "^3.5.2"
+  },
+  "devDependencies": {
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  }
+}

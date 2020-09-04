@@ -25,7 +25,6 @@ RUN ls
 WORKDIR /src
 COPY . .
 RUN pip install -e .
-
 WORKDIR /data
 
 ENTRYPOINT ["/bin/docker-entrypoint.sh"]
