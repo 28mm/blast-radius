@@ -3,6 +3,7 @@
 <head>
     <title>Blast Radius (Terraform Graph Tools)</title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="/static/js/jquery.slim.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
@@ -142,6 +143,15 @@
                                 Blast-radius-extended
                             </label>
                         </div>
+
+                        <!-- Resource Name-->
+                        <div class="dropdown-item form-check">
+                            <label>
+                                <input type="radio" name="graph-type" value="" id="graph-radio-simple"
+                                    onclick="Showgraph()">
+                                Blast-radius-simple
+                            </label>
+                        </div>
                     </div>
                 </div>
             </li>
@@ -167,17 +177,17 @@
                 </tr>
                 <tr>
                     <td><div class="square" style= "background-color: #708090"></div></td>
-                    <td>not applied</td>
+                    <td>action not applied</td>
                 </tr>
                 <tr>
                   <td><div class="square" style= "background-color: #ff0000"></div></td>
-                  <td>apply failed</td>
+                  <td>failed</td>
                 </tr>
                 <tr>
                   <td><div class="square" style= "background-color: #00ff40"></div></td>
-                  <td>apply success</td>
+                  <td>success</td>
                 </tr>
-              </table>
+            </table>
         </div>
 
 
@@ -195,6 +205,7 @@
 
     var id1 = document.getElementById("graph-radio");
     var id2 = document.getElementById("graph-radio-new");
+    var id3 = document.getElementById("graph-radio-simple");
 
     (function () {
         // your page initialization code here
@@ -205,11 +216,15 @@
         else if (id2.checked) {
             blastradiusnew('#graph', '/graphnew.svg', '/graph.json', br_state);
         }
+        else if (id3.checked) {
+            blastradiusnew('#graph', '/graphnew.svg', '/graph.json', br_state);
+        }
     })();
 
     function Showgraph() {
         var id1 = document.getElementById("graph-radio");
         var id2 = document.getElementById("graph-radio-new");
+        var id3 = document.getElementById("graph-radio-simple");
         if (id1.checked) {
 
             blastradius('#graph', '/graph.svg', '/graph.json', br_state);
@@ -217,10 +232,15 @@
         else if (id2.checked) {
             blastradiusnew('#graph', '/graphnew.svg', '/graph.json', br_state);
         }
+        else if (id3.checked) {
+            blastradiusnew('#graph', '/graphsimple.svg', '/graph.json', br_state);
+        }
     }
 
     function closeNav() {
         document.getElementById("mySidenav").style.width = "0";
     }
+
+    
 </script>
 </html>

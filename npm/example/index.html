@@ -193,6 +193,7 @@
             '#graph': {
                 disableSvgZoom: true,
                 disableTooltip: true,
+                disableSvgHover: true,
                 htmlCallback: function (html) {
                     var panel = document.querySelector('#side-panel');
                     panel.innerHTML = html;
@@ -201,7 +202,7 @@
             }
         }
 
-        blastradius('#graph', './demo-1/simple-demo-1.svg', './demo-1/simple-demo-1.json', br_state);
+        blastradius('#graph', './demo-1/demo-1.svg', './demo-1/demo-1.json', br_state);
 
         var demo1 = document.querySelector('#demo-1');
         var demo2 = document.querySelector('#demo-2');
@@ -210,7 +211,7 @@
 
         demo1.addEventListener('click', function (event) {
             // blastradius('#graph', './demo-1/demonew-1.svg', './demo-1/demo-1.json', br_state);
-            blastradius('#graph', './demo-1/simple-demo-1.svg', './demo-1/simple-demo-1.json', br_state);
+            blastradius('#graph', './demo-1/demo-1.svg', './demo-1/demo-1.json', br_state);
         })
         demo2.addEventListener('click', function (event) {
             // blastradius('#graph', './demo-2/demonew-2.svg', './demo-2/demo-2.json', br_state);
@@ -221,7 +222,7 @@
             blastradius('#graph', './demo-3/simple-demo-3.svg', './demo-3/simple-demo-3.json', br_state);
         })
         demo4.addEventListener('click', function (event) {
-            blastradius('#graph', './demo-4/demo-4.svg', './demo-4/demo-4.json', br_state);
+            blastradius('#graph', './demo-4/simple-demo-4.svg', './demo-4/simple-demo-4.json', br_state);
         })
     })()
 </script>

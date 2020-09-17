@@ -134,7 +134,7 @@ var blastradius = function (selector, svg_url, json_url, br_state) {
     var color = (state['color'] ? d3.scaleOrdinal(state['color']) : d3.scaleOrdinal(d3['schemeCategory20']));
     var disableSvgZoom = state['disableSvgZoom'] ? state['disableSvgZoom'] : false;
     var disableTooltip = state['disableTooltip'] ? state['disableTooltip'] : false;
-
+    var disableSvgHover = state['disableSvgHover'] ? state['disableSvgHover'] : false;
     // 1st pull down the svg, and append it to the DOM as a child
     // of our selector. If added as <img src="x.svg">, we wouldn't
     // be able to manipulate x.svg with d3.js, or other DOM fns. 
@@ -321,6 +321,27 @@ var blastradius = function (selector, svg_url, json_url, br_state) {
                 ttip += child_html(d);
                 return ttip;
             }
+
+            var cost_html = function(d) {
+                var cost_title = "cost info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + cost_title + '</span><br><br>'+(d.cost.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.cost, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>') ;
+                ttip += child_html(d);
+                
+               
+                return ttip;
+            }
+
+            var policy_html = function(d) {
+                var policy_title = "policy info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + policy_title + '</span><br><br>'+(d.policy.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.policy, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>');
+                ttip += child_html(d);  
+                return ttip;
+            }
+
 
             var get_downstream_nodes = function (node) {
                 var children = {};
@@ -536,6 +557,17 @@ var blastradius = function (selector, svg_url, json_url, br_state) {
                 state.htmlCallback && state.htmlCallback(html);
             }
 
+            var costnode_click = function (d) {
+                var html = cost_html(d);
+                state.htmlCallback && state.htmlCallback(html);
+            }
+            var policynode_click = function (d) {
+                var html = policy_html(d);
+                state.htmlCallback && state.htmlCallback(html);
+            }
+
+            
+
             var gnodes = svg.selectAll('g.node')
                 .data(svg_nodes, function (d) {
                     return (d && d.svg_id) || d3.select(this).attr("id");
@@ -543,7 +575,7 @@ var blastradius = function (selector, svg_url, json_url, br_state) {
 
             gnodes.each(function (d, i) {
                 var _self = this;
-                var selectorMain, selectorTFState, selectorPlan, selectorApply;
+                var selectorMain, selectorTFState, selectorPlan, selectorApply,selectorCost,selectorPolicy;
 
                 var polysize = d3.select(_self).selectAll('polygon').size();
 
@@ -557,19 +589,23 @@ var blastradius = function (selector, svg_url, json_url, br_state) {
 
                 if (polysize == 3) {
                     selectorMain = "polygon:nth-last-of-type(3)";
-                    selectorTFState = "polygon:nth-last-of-type(2)";
+                    selectorTFState = "polygon:nth-last-of-type(1)";
                 }
 
-                if (polysize == 5) {
-                    selectorMain = "polygon:nth-last-of-type(5)";
-                    selectorTFState = "polygon:nth-last-of-type(4)";
-                    selectorPlan = "polygon:nth-last-of-type(3)";
-                    selectorApply = "polygon:nth-last-of-type(2)";
+
+                if (polysize == 7) {
+                    selectorMain = "polygon:nth-last-of-type(7)";
+                    selectorTFState = "polygon:nth-last-of-type(5)";
+                    selectorPlan = "polygon:nth-last-of-type(4)";
+                    selectorApply = "polygon:nth-last-of-type(3)";
+                    selectorCost = "polygon:nth-last-of-type(2)";
+                    selectorPolicy = "polygon:nth-last-of-type(1)";
                 }
 
                 if (selectorMain !== undefined) {
                     d3.select(_self)
-                        .selectAll(selectorMain)
+                        .select(selectorMain)
+                        .on('click', node_mousedown)
                         .style('fill', (function (i) {
                             return color(d.group);
                         }));
@@ -624,15 +660,62 @@ var blastradius = function (selector, svg_url, json_url, br_state) {
                                 return '#000';
                         }));
                 }
+
+                if (!selectorCost !== undefined) {
+                    d3.select(_self)
+                        .select(selectorCost)
+                        .on('click',costnode_click)
+                        .style('fill', (function (d) {
+                            if (d){
+                                if(d.cost == "no cost available" || d.cost == null)
+                                {
+                                    return "#808080";
+                                }
+                                else{
+                                    return "#fff";
+                                }
+                            }
+                            else
+                                return '#000';
+                        }));
+                }
+
+                if (!selectorPolicy !== undefined) {
+                    d3.select(_self)
+                        .select(selectorPolicy)
+                        .on('click',policynode_click)
+                        .style('fill', (function (d) {
+                            if (d){
+                                if(d.policy == "no policy available" || d.policy == null)
+                                {
+                                    return "#808080";
+                                }
+                                else if(d.policy != null && d.policy.decision == "failed" )
+                                {
+                                      return "#ff0000";
+                                }
+                                else{
+                                      return "#00ff40";
+                                }
+                
+                            }   
+                            else
+                                        return '#000';
+                            }));
+                }
             });
 
+
             // colorize nodes, and add mouse candy.
+            if (!disableSvgHover) {
             gnodes
                 .on('mouseenter', node_mouseenter)
                 .on('mouseleave', node_mouseleave)
                 .on('mouseover', node_mouseover)
                 .on('mouseout', node_mouseout)
                 .on('mousedown', node_mousedown);
+
+            }
 
             // colorize modules
             svg.selectAll('polygon')

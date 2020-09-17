@@ -21,6 +21,9 @@ from blastradius.graph import Graph, Node, Edge
 from blastradius.util import OrderedSet
 from blastradius.handlers.plan import Plan
 from blastradius.handlers.apply import Apply
+from blastradius.handlers.cost import Cost
+from blastradius.handlers.policy import Policy
+
 
 class DotGraph(Graph):
 
@@ -33,7 +36,10 @@ class DotGraph(Graph):
         self.plan = Plan()
         self.apply = Apply()
         self.flag = flag
-        
+        self.cost = Cost()
+        self.policy = Policy()
+        self.totalcost = ""
+
         if file_contents:
             self.contents = file_contents
         else:
@@ -67,10 +73,12 @@ class DotGraph(Graph):
                             #process data source:
                             apply_data = None
                             plan_data = None
+                            policy_data = "no policy available"
+                            cost_data = "no cost available"
                             if ("not applied" in self.apply.apply_resource_info):
                                 apply_data = "not yet applied"
                                 plan_data = "data-source"
-                                self.nodes.append(DotNode(d['node'], plan_data, apply_data,fmt=fmt ))
+                                self.nodes.append(DotNode(d['node'], plan_data, apply_data,"cost data to be displayed here","policy data to be displayed here",fmt=fmt ))
                                 break
 
                             else:
@@ -78,16 +86,21 @@ class DotGraph(Graph):
                                     if i['type']+"."+i['name'] == res:
                                         apply_data = i
                                         plan_data = "data-source"
-                                        self.nodes.append(DotNode(d['node'], plan_data, apply_data,fmt=fmt ))
+                                        self.nodes.append(DotNode(d['node'], plan_data, apply_data,"cost data to be displayed here","policy data to be displayed here",fmt=fmt ))
                                         break
                         else:
                             if type == "provider":
                                 apply_data = {}
                                 plan_data = {}
-                                self.nodes.append(DotNode(d['node'], plan_data, apply_data,fmt=fmt ))
+                                policy_data = {}
+                                cost_data = {}
+                                self.nodes.append(DotNode(d['node'], plan_data, apply_data,"cost data to be displayed here","policy data to be displayed here",fmt=fmt ))
                             else:
                                 apply_data = None
                                 plan_data = None
+                                policy_data = "no policy available"
+                                cost_data = "no cost available"
+                                total_cost = None
                                 if ("not applied" in self.apply.apply_resource_info):
                                     apply_data = "not yet applied"
                                 else:
@@ -101,7 +114,33 @@ class DotGraph(Graph):
                                     if data[0] == res:
                                         plan_data = i
                                         break
-                                self.nodes.append(DotNode(d['node'], plan_data, apply_data,fmt=fmt ))
+  
+                                if ("not available" in self.policy.resource_policy_info):
+                                    policy_data = "no policy available"
+                                
+                                else:
+                                    for i in self.policy.resource_policy_info:
+                                        data = i["type"]+"."+i["name"]
+                                        if data == res:
+                                            policy_data = i
+                                            break
+                                
+                                if ("not available" in self.cost.resource_cost_info):
+                                    cost_data = "no cost available"
+
+                                else:
+                                    for i in range(len(self.cost.resource_cost_info)):
+                                        currency = self.cost.resource_cost_info[i]["currency"]
+                                        self.totalcost = str(self.cost.resource_cost_info[i]["totalcost"]) + " " +currency
+                                        for _, val in enumerate(self.cost.resource_cost_info[i]["Lineitem"]):  
+                                            data = val["terraformItemId"]+"."+val["id"]
+                                            if data == res:
+                                                val["lineitemtotal"] = str(val["lineitemtotal"]) + " "+ currency
+                                                cost_data = val
+                                                break
+
+                                # self.totalcost = total_cost
+                                self.nodes.append(DotNode(d['node'], plan_data, apply_data,cost_data,policy_data,fmt=fmt ))
                         
         # terraform graph output doesn't always make explicit node declarations;
         # sometimes they're a side-effect of edge definitions. Capture them.
@@ -109,12 +148,16 @@ class DotGraph(Graph):
             if e.source not in [ n.label for n in self.nodes ]:
                 plan_data = {}
                 apply_data = {}
-                self.nodes.append(DotNode(e.source, plan_data,apply_data))
+                policy_data = {}
+                cost_data = {}
+                self.nodes.append(DotNode(e.source, plan_data,apply_data,cost_data,policy_data))
             
             if e.target not in [ n.label for n in self.nodes ]:
                 plan_data = {}
                 apply_data = {}
-                self.nodes.append(DotNode(e.target, plan_data,apply_data))
+                policy_data = {}
+                cost_data = {}
+                self.nodes.append(DotNode(e.target, plan_data,apply_data,cost_data,policy_data))
         
         self.stack('var')
         self.stack('output')
@@ -122,6 +165,7 @@ class DotGraph(Graph):
         # leftover nodes belong to the root subgraph.
         for n in self.nodes:
             n.cluster = 'root' if not n.cluster else n.cluster
+
 
     def get_node_by_name(self, label):
         '''return node by label (if exists) otherwise simple_name'''
@@ -143,14 +187,14 @@ class DotGraph(Graph):
         'returns a dot/graphviz representation of the graph (a string)'
         
         if self.flag == "ext":
-            return self.dot_template_ext.render({ 'nodes': self.nodes, 'edges': self.edges, 'clusters' : self.clusters, 'EdgeType' : EdgeType })
+            return self.dot_template_ext.render({ 'nodes': self.nodes, 'edges': self.edges, 'clusters' : self.clusters, 'EdgeType' : EdgeType,'totalcost': self.totalcost })
         else :
             return self.dot_template.render({ 'nodes': self.nodes, 'edges': self.edges, 'clusters' : self.clusters, 'EdgeType' : EdgeType })
 
     def json(self):
         edges = [ dict(e) for e in self.edges ]
         nodes = [ dict(n) for n in self.nodes ]
-        return json.dumps({ 'nodes' : nodes, 'edges' : edges }, indent=4, sort_keys=True)
+        return json.dumps({ 'nodes' : nodes, 'edges' : edges,'totalcost' : self.totalcost }, indent=4, sort_keys=True)
 
     #
     # A handful of graph manipulations. These are hampered by the decision 
@@ -388,30 +432,42 @@ class DotGraph(Graph):
                     {% if node.type %}
                         {% if node.type == 'var' or node.type == 'provider' or node.type == 'meta' or node.type == 'provider' or node.type == 'output'%}
                             "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-                            <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD></TR>
+                            <TR><TD>{{node.type}}</TD></TR>
                             <TR><TD>{{node.resource_name}}</TD></TR>
+                            <TR><TD></TD></TR>
                             </TABLE>>];
                         {% else %}
                             "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                                <TR><TD colspan="3">{{node.type}}</TD></TR>
+                                <TR><TD colspan="3">{{node.resource_name}}</TD></TR>
                                 {% if node.plan.change %}
                                     {% if node.plan.change.actions[0] == "create" %}
-                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2">+</TD><TD rowspan="2"></TD></TR>
+                                        
+                                        <TR><TD>state</TD><TD>+</TD><TD>apply</TD></TR>
                                     {% elif  node.plan.change.actions[0] == "delete" and node.plan.change.actions[1] == "create"%}
-                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2">-/+</TD><TD rowspan="2"></TD></TR>
+                                        <TR><TD>state</TD><TD>-/+</TD><TD></TD></TR>
                                     {% elif  node.plan.change.actions[0] == "delete"%}
-                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2">-</TD><TD rowspan="2"></TD></TR>
+                                        <TR><TD>state</TD><TD>-</TD><TD">apply</TD></TR>
                                     {% elif  node.plan.change.actions[0] == "update"%}
-                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2">#</TD><TD rowspan="2"></TD></TR>
+                                        <TR><TD>state</TD><TD>#</TD><TD>apply</TD></TR>
                                     {% else %}
-                                        <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2"></TD><TD rowspan="2"></TD></TR>
+                                        <TR><TD>state</TD><TD></TD><TD>apply</TD></TR>
                                     {% endif %}
                                 {% else %}
-                                    <TR><TD>{{node.type}}</TD><TD rowspan="2"></TD><TD rowspan="2"></TD><TD rowspan="2"></TD></TR>
+                                    <TR><TD>state</TD><TD></TD><TD></TD></TR>
                                 {% endif %}
-                            <TR><TD>{{node.resource_name}}</TD></TR></TABLE>>];
+                            <TR><TD colspan="3">{{node.cost.lineitemtotal}}</TD></TR>
+                            <TR><TD colspan="3">controls</TD></TR></TABLE>>];
                         {% endif %}
                     {% else %}
+                       {% if totalcost != "" %}
+                        "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                            <TR><TD>{{node.label}}</TD></TR>
+                            <TR><TD>{{totalcost}}</TD></TR>
+                            </TABLE>>];
+                        {% else %}
                         "{{node.label}}" [{{node.fmt}}]
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endfor %}
@@ -542,7 +598,7 @@ class Format:
 
 class DotNode(Node):
 
-    def __init__(self, label, data,apply_data,fmt=None):
+    def __init__(self, label, plan_data,apply_data,cost_data,policy_data,fmt=None):
 
         self.label          = DotNode._label_fixup(label)
         self.fmt            = fmt if fmt else Format('') # graphviz formatting.
@@ -555,14 +611,16 @@ class DotNode(Node):
         self.module         = DotNode._module(self.label) # for module groupings. 'root' or 'module.foo.module.bar'
         self.cluster        = None # for stacked resources (usually var/output).
         self.collapsed      = False
-        self.plan          = data
+        self.plan          = plan_data
         self.apply         = apply_data
+        self.cost          = cost_data
+        self.policy          = policy_data
         self.fmt.add(id=self.svg_id, shape='box')
         
         self.modules = [ m for m in self.module.split('.') if m != 'module' ]
 
     def __iter__(self):
-        for key in {'label', 'simple_name', 'type', 'resource_name', 'group', 'svg_id', 'definition', 'cluster', 'module', 'modules', 'plan', 'apply'}:
+        for key in {'label', 'simple_name', 'type', 'resource_name', 'group', 'svg_id', 'definition', 'cluster', 'module', 'modules', 'plan', 'apply','cost','policy'}:
            yield (key, getattr(self, key))
 
     #

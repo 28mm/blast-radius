@@ -180,6 +180,26 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                 return ttip;
             }
 
+            var render_cost = function(d) {
+                var cost_title = "cost info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + cost_title + '</span><br><br>'+(d.cost.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.cost, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>') ;
+                ttip += child_html(d);
+                
+               
+                return ttip;
+            }
+
+            var render_policy = function(d) {
+                var policy_title = "policy info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + policy_title + '</span><br><br>'+(d.policy.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.policy, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>');
+                ttip += child_html(d);  
+                return ttip;
+            }
+
             var render_apply = function(d) {
                 var apply_title = "apply info"
                 var ttip = ''; 
@@ -187,13 +207,11 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                 if (d.apply == "not yet applied" )
                 {
                     ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + apply_title + '</span><br><br>'+("<p class='explain'>" + "not yet applied" + "</p><br>"+ '<hr style="background-color:black"/>');
-  
                 }
                 else {
                     if( d.apply == null || d.apply.instances[0] == null)
                     {
                         ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + apply_title + '</span><br><br>'+("<p class='explain'>" + "resource apply failed" + "</p><br>"+ '<hr style="background-color:black"/>');
-  
                     }
                     else
                     {
@@ -201,8 +219,6 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                     }
                 }
                 ttip += child_html(d);
-                
-               
                 return ttip;
             }
 
@@ -427,6 +443,22 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                 $('div.test').html(renderInfo);
                 
              }
+
+             var cost_click = function(d) {
+                openNav()
+ 
+                var renderInfo = render_cost(d);
+                $('div.test').html(renderInfo);
+                
+             }
+
+             var policy_click = function(d) {
+                openNav()
+ 
+                var renderInfo = render_policy(d);
+                $('div.test').html(renderInfo);
+                
+             }
             
             function openNav() {
                 document.getElementById("mySidenav").style.width = "350px";
@@ -476,6 +508,8 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                     })
 
             
+
+            
             node.attr('fill', function (d) { return color(d.group); })
                 .select('polygon:nth-of-type(1)')
                 .on('click', node_mousedown)
@@ -488,8 +522,12 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                 }));
 
             
-            node.select('polygon:nth-of-type(2)')
-                .on('click',tfstate_click)
+            node.select('polygon:nth-of-type(3)')
+                .on('click',(function (d) {
+                    
+                      return tfstate_click(d);
+                  
+            }))
                 .style('fill', (function (d) {
                     if (d)
                       
@@ -501,7 +539,7 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
 
             
             node.attr('fill', function (d) { return color(d.group); })
-                .select('polygon:nth-child(3n+4)')
+                .select('polygon:nth-of-type(4)')
                 .on('click',(function (d) {
                     
                       if (d.type == "var" || d.type == "provider" || d.type == "meta" || d.type == "output")
@@ -527,7 +565,7 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                 }));
   
             
-            node.select('polygon:nth-of-type(4)')
+            node.select('polygon:nth-of-type(5)')
                 .on('click',apply_click)
                 .style('fill', (function (d) {
                     if (d)
@@ -536,7 +574,7 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                       {
                           return "#808080";
                       }
-                     else if(d.apply == null || d.apply.instances[0] == null )
+                     else if(d.apply == null || d.apply.instances == null )
                       {
                         return "#ff0000";
                       }
@@ -548,6 +586,48 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                         return '#000';
                 }));
 
+            
+            node.select('polygon:nth-of-type(6)')
+                    .on('click',cost_click)
+                    .style('fill', (function (d) {
+                        if (d)
+                      
+                        if(d.cost == "no cost available" || d.cost == null)
+                        {
+                          return "#808080";
+                        }
+                        else{
+                          return "#fff";
+                        }
+                        
+                        else
+                            return '#000';
+                    }));
+            
+            
+            node.select('polygon:nth-of-type(7)')
+
+                    .on('click',policy_click)
+                    .style('fill', (function (d) {
+                            if (d){
+                                if(d.policy == "no policy available" || d.policy == null)
+                                {
+                                  return "#808080";
+                                }
+                                else if(d.policy != null && d.policy.decision == "failed" )
+                                {
+                                  return "#ff0000";
+                                }
+                                else{
+                                  return "#00ff40";
+                                }
+            
+                            }   
+                                else
+                                    return '#000';
+                            }));
+                    
+                    
             svg.selectAll('polygon')
                 .each(function(d, i) {
                 if (d != undefined)
@@ -709,7 +789,7 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
 
                 // without this, selecting an item with <enter> will submit the form
                 // and force a page refresh. not the desired behavior.
-                // $(selector + '-search-form').submit(function(){return false;});
+                $(selector + '-search-form').submit(function(){return false;});
 
             } // end if(interactive)
         });   // end json success callback

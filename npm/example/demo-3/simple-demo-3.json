@@ -2,398 +2,736 @@
     "edges": [
         {
             "edge_type": 1,
-            "source": "[root] ibm_cos_bucket.flex-us-south",
+            "source": "[root] ibm_is_instance.testacc_instance1",
             "svg_id": "edge_0",
-            "target": "[root] ibm_iam_authorization_policy.policy"
+            "target": "[root] provider.ibm"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_cos_bucket.flex-us-south",
+            "source": "[root] ibm_is_lb.lb",
             "svg_id": "edge_1",
-            "target": "[root] ibm_kp_key.test"
+            "target": "[root] provider.ibm"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_cos_bucket.flex-us-south",
+            "source": "[root] ibm_is_subnet.testacc_subnet",
             "svg_id": "edge_2",
-            "target": "[root] ibm_resource_instance.cos_instance"
+            "target": "[root] ibm_is_vpc.testacc_vpc"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_iam_authorization_policy.policy",
+            "source": "[root] ibm_is_volume.testacc_volume",
             "svg_id": "edge_3",
             "target": "[root] provider.ibm"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_kp_key.test",
+            "source": "[root] ibm_is_vpc.testacc_vpc",
             "svg_id": "edge_4",
-            "target": "[root] ibm_resource_instance.kp_instance"
+            "target": "[root] provider.ibm"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_kp_key.test",
+            "source": "[root] ibm_is_vpn_gateway.testacc_vpn_gateway",
             "svg_id": "edge_5",
-            "target": "[root] var.key_name"
-        },
-        {
-            "edge_type": 1,
-            "source": "[root] ibm_resource_instance.cos_instance",
-            "svg_id": "edge_6",
             "target": "[root] provider.ibm"
-        },
-        {
-            "edge_type": 1,
-            "source": "[root] ibm_resource_instance.cos_instance",
-            "svg_id": "edge_7",
-            "target": "[root] var.cos_name"
-        },
-        {
-            "edge_type": 2,
-            "source": "[root] ibm_resource_instance.cos_instance",
-            "svg_id": "edge_8",
-            "target": "[root] var.location"
-        },
-        {
-            "edge_type": 2,
-            "source": "[root] ibm_resource_instance.cos_instance",
-            "svg_id": "edge_9",
-            "target": "[root] var.pln"
-        },
-        {
-            "edge_type": 1,
-            "source": "[root] ibm_resource_instance.kp_instance",
-            "svg_id": "edge_10",
-            "target": "[root] provider.ibm"
-        },
-        {
-            "edge_type": 1,
-            "source": "[root] ibm_resource_instance.kp_instance",
-            "svg_id": "edge_11",
-            "target": "[root] var.kp_name"
         },
         {
             "edge_type": 1,
             "source": "[root] meta.count-boundary (EachMode fixup)",
+            "svg_id": "edge_6",
+            "target": "[root] ibm_is_instance.testacc_instance1"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] meta.count-boundary (EachMode fixup)",
+            "svg_id": "edge_7",
+            "target": "[root] ibm_is_lb.lb"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] meta.count-boundary (EachMode fixup)",
+            "svg_id": "edge_8",
+            "target": "[root] ibm_is_subnet.testacc_subnet"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] meta.count-boundary (EachMode fixup)",
+            "svg_id": "edge_9",
+            "target": "[root] ibm_is_volume.testacc_volume"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] meta.count-boundary (EachMode fixup)",
+            "svg_id": "edge_10",
+            "target": "[root] ibm_is_vpn_gateway.testacc_vpn_gateway"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] provider.ibm (close)",
+            "svg_id": "edge_11",
+            "target": "[root] ibm_is_instance.testacc_instance1"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] provider.ibm (close)",
             "svg_id": "edge_12",
-            "target": "[root] ibm_cos_bucket.flex-us-south"
+            "target": "[root] ibm_is_lb.lb"
         },
         {
             "edge_type": 1,
             "source": "[root] provider.ibm (close)",
             "svg_id": "edge_13",
-            "target": "[root] ibm_cos_bucket.flex-us-south"
+            "target": "[root] ibm_is_subnet.testacc_subnet"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] provider.ibm (close)",
+            "svg_id": "edge_14",
+            "target": "[root] ibm_is_volume.testacc_volume"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] provider.ibm (close)",
+            "svg_id": "edge_15",
+            "target": "[root] ibm_is_vpn_gateway.testacc_vpn_gateway"
         },
         {
             "edge_type": 1,
             "source": "[root] root",
-            "svg_id": "edge_14",
+            "svg_id": "edge_16",
             "target": "[root] meta.count-boundary (EachMode fixup)"
         },
         {
             "edge_type": 1,
             "source": "[root] root",
-            "svg_id": "edge_15",
-            "target": "[root] provider.ibm (close)"
-        },
-        {
-            "edge_type": 3,
-            "source": "[root] var.cos_name",
-            "svg_id": "edge_16",
-            "target": "[root] var.location"
-        },
-        {
-            "edge_type": 3,
-            "source": "[root] var.location",
             "svg_id": "edge_17",
-            "target": "[root] var.pln"
+            "target": "[root] provider.ibm (close)"
         }
     ],
     "nodes": [
         {
-            "apply": {
-                "instances": [],
-                "mode": "managed",
-                "name": "flex-us-south",
-                "provider": "provider.ibm",
-                "type": "ibm_cos_bucket"
-            },
+            "apply": null,
             "cluster": "root",
+            "cost": {
+                "depends": [
+                    {
+                        "cost": 11.807999999999998,
+                        "quantity": 1,
+                        "title": "is.volume"
+                    }
+                ],
+                "estimateType": "",
+                "features": null,
+                "id": "testacc_instance1",
+                "lineitemtotal": "74.04 USD",
+                "planID": "66380d42-d4a9-4627-88fa-7b6631e5bd63",
+                "quantity": 1,
+                "shortDescription": "",
+                "terraformItemId": "ibm_is_instance",
+                "title": "Virtual Server"
+            },
             "definition": {
-                "bucket_name": "abuck3",
-                "key_protect": "${ibm_kp_key.test.id}",
-                "region_location": "us-south",
-                "resource_instance_id": "${ibm_resource_instance.cos_instance.id}",
-                "storage_class": "flex"
+                "image": "7eb4e35b-4257-56f8-d7da-326d85452591",
+                "keys": [
+                    "eac87f33-0c00-4da7-aa66-dc2d972148bd"
+                ],
+                "name": "testinstance",
+                "primary_network_interface": {
+                    "port_speed": "1000",
+                    "subnet": "70be8eae-134c-436e-a86e-04849f84cb34"
+                },
+                "profile": "b-2x8",
+                "vpc": "01eda778-b822-43a2-816d-d30713df5e13",
+                "zone": "us-south-1"
             },
             "group": 20000,
-            "label": "[root] ibm_cos_bucket.flex-us-south",
+            "label": "[root] ibm_is_instance.testacc_instance1",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": {
-                "address": "ibm_cos_bucket.flex-us-south",
+                "address": "ibm_is_instance.testacc_instance1",
                 "change": {
                     "actions": [
                         "create"
                     ],
                     "after": {
-                        "bucket_name": "abuck3",
-                        "cross_region_location": null,
-                        "region_location": "us-south",
-                        "single_site_location": null,
-                        "storage_class": "flex",
-                        "timeouts": null
+                        "generation": null,
+                        "image": "7eb4e35b-4257-56f8-d7da-326d85452591",
+                        "keys": [
+                            "eac87f33-0c00-4da7-aa66-dc2d972148bd"
+                        ],
+                        "name": "testinstance",
+                        "network_interfaces": [],
+                        "primary_network_interface": [
+                            {
+                                "port_speed": 1000,
+                                "subnet": "70be8eae-134c-436e-a86e-04849f84cb34"
+                            }
+                        ],
+                        "profile": "b-2x8",
+                        "timeouts": null,
+                        "user_data": null,
+                        "volumes": null,
+                        "vpc": "01eda778-b822-43a2-816d-d30713df5e13",
+                        "zone": "us-south-1"
                     },
                     "after_unknown": {
-                        "crn": true,
+                        "boot_volume": true,
+                        "gpu": true,
                         "id": true,
-                        "key_protect": true,
-                        "resource_instance_id": true,
-                        "s3_endpoint_private": true,
-                        "s3_endpoint_public": true
+                        "keys": [
+                            false
+                        ],
+                        "memory": true,
+                        "network_interfaces": [],
+                        "primary_network_interface": [
+                            {
+                                "id": true,
+                                "name": true,
+                                "primary_ipv4_address": true,
+                                "security_groups": true
+                            }
+                        ],
+                        "resource_controller_url": true,
+                        "resource_crn": true,
+                        "resource_group": true,
+                        "resource_group_name": true,
+                        "resource_name": true,
+                        "resource_status": true,
+                        "status": true,
+                        "tags": true,
+                        "vcpu": true,
+                        "volume_attachments": true
                     },
                     "before": null
                 },
                 "mode": "managed",
-                "name": "flex-us-south",
+                "name": "testacc_instance1",
                 "provider_name": "ibm",
                 "schema_version": 0,
-                "type": "ibm_cos_bucket",
+                "type": "ibm_is_instance",
                 "values": {
-                    "bucket_name": "abuck3",
-                    "cross_region_location": null,
-                    "region_location": "us-south",
-                    "single_site_location": null,
-                    "storage_class": "flex",
-                    "timeouts": null
+                    "generation": null,
+                    "image": "7eb4e35b-4257-56f8-d7da-326d85452591",
+                    "keys": [
+                        "eac87f33-0c00-4da7-aa66-dc2d972148bd"
+                    ],
+                    "name": "testinstance",
+                    "network_interfaces": [],
+                    "primary_network_interface": [
+                        {
+                            "port_speed": 1000,
+                            "subnet": "70be8eae-134c-436e-a86e-04849f84cb34"
+                        }
+                    ],
+                    "profile": "b-2x8",
+                    "timeouts": null,
+                    "user_data": null,
+                    "volumes": null,
+                    "vpc": "01eda778-b822-43a2-816d-d30713df5e13",
+                    "zone": "us-south-1"
                 }
             },
-            "resource_name": "flex-us-south",
-            "simple_name": "ibm_cos_bucket.flex-us-south",
+            "policy": "no policy available",
+            "resource_name": "testacc_instance1",
+            "simple_name": "ibm_is_instance.testacc_instance1",
             "svg_id": "node_0",
-            "type": "ibm_cos_bucket"
+            "type": "ibm_is_instance"
         },
         {
             "apply": null,
             "cluster": "root",
-            "definition": "",
+            "cost": {
+                "depends": [
+                    {
+                        "cost": 0,
+                        "quantity": 1,
+                        "title": "is.floating-ip"
+                    }
+                ],
+                "estimateType": "",
+                "features": null,
+                "id": "lb",
+                "lineitemtotal": "0 USD",
+                "planID": "6092eed9-b0a4-4933-86dd-5532b22274dc",
+                "quantity": 1,
+                "shortDescription": "",
+                "terraformItemId": "ibm_is_lb",
+                "title": "Load Balancer"
+            },
+            "definition": {
+                "name": "loadbalancer1",
+                "subnets": [
+                    "04813493-15d6-4150-9948-6cc646cb67f2"
+                ]
+            },
             "group": 20000,
-            "label": "[root] ibm_iam_authorization_policy.policy",
+            "label": "[root] ibm_is_lb.lb",
             "module": "root",
             "modules": [
                 "root"
             ],
-            "plan": null,
-            "resource_name": "policy",
-            "simple_name": "ibm_iam_authorization_policy.policy",
+            "plan": {
+                "address": "ibm_is_lb.lb",
+                "change": {
+                    "actions": [
+                        "create"
+                    ],
+                    "after": {
+                        "name": "loadbalancer1",
+                        "subnets": [
+                            "04813493-15d6-4150-9948-6cc646cb67f2"
+                        ],
+                        "timeouts": null,
+                        "type": "public"
+                    },
+                    "after_unknown": {
+                        "hostname": true,
+                        "id": true,
+                        "operating_status": true,
+                        "private_ips": true,
+                        "public_ips": true,
+                        "resource_controller_url": true,
+                        "resource_group": true,
+                        "resource_group_name": true,
+                        "resource_name": true,
+                        "status": true,
+                        "subnets": [
+                            false
+                        ],
+                        "tags": true
+                    },
+                    "before": null
+                },
+                "mode": "managed",
+                "name": "lb",
+                "provider_name": "ibm",
+                "schema_version": 0,
+                "type": "ibm_is_lb",
+                "values": {
+                    "name": "loadbalancer1",
+                    "subnets": [
+                        "04813493-15d6-4150-9948-6cc646cb67f2"
+                    ],
+                    "timeouts": null,
+                    "type": "public"
+                }
+            },
+            "policy": "no policy available",
+            "resource_name": "lb",
+            "simple_name": "ibm_is_lb.lb",
             "svg_id": "node_1",
-            "type": "ibm_iam_authorization_policy"
+            "type": "ibm_is_lb"
         },
         {
             "apply": {
-                "instances": [],
+                "instances": [
+                    {
+                        "attributes": {
+                            "available_ipv4_address_count": null,
+                            "id": "d4f8ab01-34b3-4f61-84d7-31b02db999a6",
+                            "ip_version": "ipv4",
+                            "ipv4_cidr_block": "10.240.0.0/24",
+                            "ipv6_cidr_block": null,
+                            "name": "testsubnet",
+                            "network_acl": "ae34aaf3-67cd-4ea9-9691-3e0b884ed287",
+                            "public_gateway": "",
+                            "resource_controller_url": "https://cloud.ibm.com/vpc/network/subnets",
+                            "resource_crn": "crn:v1:bluemix:public:is:us-south-1:a/faf6addbf6bf476896f5e342a5bdd702::subnet:d4f8ab01-34b3-4f61-84d7-31b02db999a6",
+                            "resource_group": null,
+                            "resource_group_name": null,
+                            "resource_name": "testsubnet",
+                            "resource_status": "available",
+                            "status": "available",
+                            "timeouts": null,
+                            "total_ipv4_address_count": 256,
+                            "vpc": "c1a6b21d-3493-4087-a691-90b631428a13",
+                            "zone": "us-south-1"
+                        },
+                        "depends_on": [
+                            "ibm_is_vpc.testacc_vpc"
+                        ],
+                        "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6NjAwMDAwMDAwMDAwLCJ1cGRhdGUiOjYwMDAwMDAwMDAwMH19",
+                        "schema_version": 0
+                    }
+                ],
                 "mode": "managed",
-                "name": "test",
+                "name": "testacc_subnet",
                 "provider": "provider.ibm",
-                "type": "ibm_kp_key"
+                "type": "ibm_is_subnet"
             },
             "cluster": "root",
+            "cost": "no cost available",
             "definition": {
-                "key_name": "${var.key_name}",
-                "key_protect_id": "${ibm_resource_instance.kp_instance.guid}",
-                "standard_key": false
+                "ipv4_cidr_block": "10.240.0.0/24",
+                "name": "testsubnet",
+                "vpc": "${ibm_is_vpc.testacc_vpc.id}",
+                "zone": "us-south-1"
             },
             "group": 20000,
-            "label": "[root] ibm_kp_key.test",
+            "label": "[root] ibm_is_subnet.testacc_subnet",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": {
-                "address": "ibm_kp_key.test",
+                "address": "ibm_is_subnet.testacc_subnet",
                 "change": {
                     "actions": [
                         "create"
                     ],
                     "after": {
-                        "encrypted_nonce": null,
-                        "iv_value": null,
-                        "key_name": "test_key2",
-                        "standard_key": false,
-                        "timeouts": null
+                        "ip_version": "ipv4",
+                        "ipv4_cidr_block": "10.240.0.0/24",
+                        "name": "testsubnet",
+                        "public_gateway": null,
+                        "timeouts": null,
+                        "zone": "us-south-1"
                     },
                     "after_unknown": {
-                        "crn": true,
+                        "available_ipv4_address_count": true,
                         "id": true,
-                        "key_id": true,
-                        "key_protect_id": true,
-                        "payload": true,
+                        "ipv6_cidr_block": true,
+                        "network_acl": true,
                         "resource_controller_url": true,
                         "resource_crn": true,
+                        "resource_group": true,
                         "resource_group_name": true,
                         "resource_name": true,
-                        "resource_status": true
+                        "resource_status": true,
+                        "status": true,
+                        "total_ipv4_address_count": true,
+                        "vpc": true
                     },
                     "before": null
                 },
                 "mode": "managed",
-                "name": "test",
+                "name": "testacc_subnet",
                 "provider_name": "ibm",
                 "schema_version": 0,
-                "type": "ibm_kp_key",
+                "type": "ibm_is_subnet",
                 "values": {
-                    "encrypted_nonce": null,
-                    "iv_value": null,
-                    "key_name": "test_key2",
-                    "standard_key": false,
-                    "timeouts": null
+                    "ip_version": "ipv4",
+                    "ipv4_cidr_block": "10.240.0.0/24",
+                    "name": "testsubnet",
+                    "public_gateway": null,
+                    "timeouts": null,
+                    "zone": "us-south-1"
                 }
             },
-            "resource_name": "test",
-            "simple_name": "ibm_kp_key.test",
+            "policy": "no policy available",
+            "resource_name": "testacc_subnet",
+            "simple_name": "ibm_is_subnet.testacc_subnet",
             "svg_id": "node_2",
-            "type": "ibm_kp_key"
+            "type": "ibm_is_subnet"
         },
         {
-            "apply": null,
+            "apply": {
+                "instances": [
+                    {
+                        "attributes": {
+                            "capacity": 100,
+                            "crn": "crn:v1:bluemix:public:is:us-south-1:a/faf6addbf6bf476896f5e342a5bdd702::volume:90537bce-3c80-4c8e-bb90-592e8b15244c",
+                            "encryption_key": null,
+                            "id": "90537bce-3c80-4c8e-bb90-592e8b15244c",
+                            "iops": 3000,
+                            "name": "testvolume",
+                            "profile": "10iops-tier",
+                            "resource_controller_url": "https://cloud.ibm.com/vpc/storage/storageVolumes",
+                            "resource_crn": "crn:v1:bluemix:public:is:us-south-1:a/faf6addbf6bf476896f5e342a5bdd702::volume:90537bce-3c80-4c8e-bb90-592e8b15244c",
+                            "resource_group": "d2f1704cfdfd44d196cbe19cbe99a15b",
+                            "resource_group_name": "d2f1704cfdfd44d196cbe19cbe99a15b",
+                            "resource_name": "testvolume",
+                            "resource_status": "available",
+                            "status": "available",
+                            "tags": [],
+                            "timeouts": null,
+                            "zone": "us-south-1"
+                        },
+                        "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6NjAwMDAwMDAwMDAwfX0=",
+                        "schema_version": 0
+                    }
+                ],
+                "mode": "managed",
+                "name": "testacc_volume",
+                "provider": "provider.ibm",
+                "type": "ibm_is_volume"
+            },
             "cluster": "root",
+            "cost": {
+                "depends": null,
+                "estimateType": "",
+                "features": null,
+                "id": "testacc_volume",
+                "lineitemtotal": "0 USD",
+                "planID": "64841f3b-3a6f-4893-831a-54a6abaf1dd7",
+                "quantity": 1,
+                "shortDescription": "",
+                "terraformItemId": "ibm_is_volume",
+                "title": "Storage Volume"
+            },
             "definition": {
-                "location": "${var.location}",
-                "name": "${var.cos_name}",
-                "plan": "${var.pln}",
-                "service": "cloud-object-storage"
+                "name": "testvolume",
+                "profile": "10iops-tier",
+                "zone": "us-south-1"
             },
             "group": 20000,
-            "label": "[root] ibm_resource_instance.cos_instance",
+            "label": "[root] ibm_is_volume.testacc_volume",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": {
-                "address": "ibm_resource_instance.cos_instance",
+                "address": "ibm_is_volume.testacc_volume",
                 "change": {
                     "actions": [
                         "create"
                     ],
                     "after": {
-                        "location": "globals",
-                        "name": "test_cos2",
-                        "parameters": null,
-                        "plan": "standards",
-                        "resource_group_id": null,
-                        "service": "cloud-object-storage",
-                        "service_endpoints": null,
-                        "tags": null,
-                        "timeouts": null
+                        "capacity": 100,
+                        "name": "testvolume",
+                        "profile": "10iops-tier",
+                        "timeouts": null,
+                        "zone": "us-south-1"
                     },
                     "after_unknown": {
                         "crn": true,
-                        "guid": true,
+                        "encryption_key": true,
                         "id": true,
+                        "iops": true,
                         "resource_controller_url": true,
                         "resource_crn": true,
+                        "resource_group": true,
                         "resource_group_name": true,
                         "resource_name": true,
                         "resource_status": true,
-                        "status": true
+                        "status": true,
+                        "tags": true
                     },
                     "before": null
                 },
                 "mode": "managed",
-                "name": "cos_instance",
+                "name": "testacc_volume",
                 "provider_name": "ibm",
                 "schema_version": 0,
-                "type": "ibm_resource_instance",
+                "type": "ibm_is_volume",
                 "values": {
-                    "location": "globals",
-                    "name": "test_cos2",
-                    "parameters": null,
-                    "plan": "standards",
-                    "resource_group_id": null,
-                    "service": "cloud-object-storage",
-                    "service_endpoints": null,
-                    "tags": null,
-                    "timeouts": null
+                    "capacity": 100,
+                    "name": "testvolume",
+                    "profile": "10iops-tier",
+                    "timeouts": null,
+                    "zone": "us-south-1"
                 }
             },
-            "resource_name": "cos_instance",
-            "simple_name": "ibm_resource_instance.cos_instance",
+            "policy": "no policy available",
+            "resource_name": "testacc_volume",
+            "simple_name": "ibm_is_volume.testacc_volume",
             "svg_id": "node_3",
-            "type": "ibm_resource_instance"
+            "type": "ibm_is_volume"
         },
         {
-            "apply": null,
+            "apply": {
+                "instances": [
+                    {
+                        "attributes": {
+                            "address_prefix_management": "auto",
+                            "classic_access": false,
+                            "crn": "crn:v1:bluemix:public:is:us-south:a/faf6addbf6bf476896f5e342a5bdd702::vpc:c1a6b21d-3493-4087-a691-90b631428a13",
+                            "cse_source_addresses": [
+                                {
+                                    "address": "10.249.128.216",
+                                    "zone_name": "us-south-3"
+                                },
+                                {
+                                    "address": "10.249.112.158",
+                                    "zone_name": "us-south-1"
+                                },
+                                {
+                                    "address": "10.249.120.144",
+                                    "zone_name": "us-south-2"
+                                }
+                            ],
+                            "default_network_acl": "ae34aaf3-67cd-4ea9-9691-3e0b884ed287",
+                            "default_security_group": "2d364f0a-a870-42c3-a554-000003125704",
+                            "id": "c1a6b21d-3493-4087-a691-90b631428a13",
+                            "is_default": null,
+                            "name": "testvpc",
+                            "resource_controller_url": "https://cloud.ibm.com/vpc/network/vpcs",
+                            "resource_crn": "crn:v1:bluemix:public:is:us-south:a/faf6addbf6bf476896f5e342a5bdd702::vpc:c1a6b21d-3493-4087-a691-90b631428a13",
+                            "resource_group": "d2f1704cfdfd44d196cbe19cbe99a15b",
+                            "resource_group_name": "d2f1704cfdfd44d196cbe19cbe99a15b",
+                            "resource_name": "testvpc",
+                            "resource_status": "available",
+                            "status": "available",
+                            "subnets": [],
+                            "tags": [],
+                            "timeouts": null
+                        },
+                        "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6NjAwMDAwMDAwMDAwfX0=",
+                        "schema_version": 0
+                    }
+                ],
+                "mode": "managed",
+                "name": "testacc_vpc",
+                "provider": "provider.ibm",
+                "type": "ibm_is_vpc"
+            },
             "cluster": "root",
+            "cost": {
+                "depends": null,
+                "estimateType": "",
+                "features": null,
+                "id": "testacc_vpc",
+                "lineitemtotal": "0 USD",
+                "planID": "aeb480c6-11ae-4abc-929a-eaaefcdc5615",
+                "quantity": 1,
+                "shortDescription": "",
+                "terraformItemId": "ibm_is_vpc",
+                "title": "VPC"
+            },
             "definition": {
-                "location": "us-south",
-                "name": "${var.kp_name}",
-                "plan": "tiered-pricing",
-                "service": "mks"
+                "name": "testvpc"
             },
             "group": 20000,
-            "label": "[root] ibm_resource_instance.kp_instance",
+            "label": "[root] ibm_is_vpc.testacc_vpc",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": {
-                "address": "ibm_resource_instance.kp_instance",
+                "address": "ibm_is_vpc.testacc_vpc",
                 "change": {
                     "actions": [
                         "create"
                     ],
                     "after": {
-                        "location": "us-south",
-                        "name": "test_kp2",
-                        "parameters": null,
-                        "plan": "tiered-pricing",
-                        "resource_group_id": null,
-                        "service": "mks",
-                        "service_endpoints": null,
-                        "tags": null,
+                        "address_prefix_management": "auto",
+                        "classic_access": false,
+                        "is_default": null,
+                        "name": "testvpc",
                         "timeouts": null
                     },
                     "after_unknown": {
                         "crn": true,
-                        "guid": true,
+                        "cse_source_addresses": true,
+                        "default_network_acl": true,
+                        "default_security_group": true,
                         "id": true,
                         "resource_controller_url": true,
                         "resource_crn": true,
+                        "resource_group": true,
                         "resource_group_name": true,
                         "resource_name": true,
                         "resource_status": true,
-                        "status": true
+                        "status": true,
+                        "subnets": true,
+                        "tags": true
                     },
                     "before": null
                 },
                 "mode": "managed",
-                "name": "kp_instance",
+                "name": "testacc_vpc",
                 "provider_name": "ibm",
                 "schema_version": 0,
-                "type": "ibm_resource_instance",
+                "type": "ibm_is_vpc",
                 "values": {
-                    "location": "us-south",
-                    "name": "test_kp2",
-                    "parameters": null,
-                    "plan": "tiered-pricing",
-                    "resource_group_id": null,
-                    "service": "mks",
-                    "service_endpoints": null,
-                    "tags": null,
+                    "address_prefix_management": "auto",
+                    "classic_access": false,
+                    "is_default": null,
+                    "name": "testvpc",
                     "timeouts": null
                 }
             },
-            "resource_name": "kp_instance",
-            "simple_name": "ibm_resource_instance.kp_instance",
+            "policy": "no policy available",
+            "resource_name": "testacc_vpc",
+            "simple_name": "ibm_is_vpc.testacc_vpc",
             "svg_id": "node_4",
-            "type": "ibm_resource_instance"
+            "type": "ibm_is_vpc"
+        },
+        {
+            "apply": null,
+            "cluster": "root",
+            "cost": {
+                "depends": [
+                    {
+                        "cost": 1,
+                        "quantity": 1,
+                        "title": "is.floating-ip"
+                    }
+                ],
+                "estimateType": "",
+                "features": null,
+                "id": "testacc_vpn_gateway",
+                "lineitemtotal": "1 USD",
+                "planID": "aeb480c6-11ae-4abc-929a-eaaefcdc5615",
+                "quantity": 1,
+                "shortDescription": "",
+                "terraformItemId": "ibm_is_vpn_gateway",
+                "title": "VPN Gateway"
+            },
+            "definition": {
+                "name": "test",
+                "subnet": "a4ce411d-e118-4802-95ad-525e6ea0cfc9"
+            },
+            "group": 20000,
+            "label": "[root] ibm_is_vpn_gateway.testacc_vpn_gateway",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {
+                "address": "ibm_is_vpn_gateway.testacc_vpn_gateway",
+                "change": {
+                    "actions": [
+                        "create"
+                    ],
+                    "after": {
+                        "name": "test",
+                        "subnet": "a4ce411d-e118-4802-95ad-525e6ea0cfc9",
+                        "timeouts": null
+                    },
+                    "after_unknown": {
+                        "id": true,
+                        "public_ip_address": true,
+                        "resource_controller_url": true,
+                        "resource_crn": true,
+                        "resource_group": true,
+                        "resource_group_name": true,
+                        "resource_name": true,
+                        "resource_status": true,
+                        "status": true,
+                        "tags": true
+                    },
+                    "before": null
+                },
+                "mode": "managed",
+                "name": "testacc_vpn_gateway",
+                "provider_name": "ibm",
+                "schema_version": 0,
+                "type": "ibm_is_vpn_gateway",
+                "values": {
+                    "name": "test",
+                    "subnet": "a4ce411d-e118-4802-95ad-525e6ea0cfc9",
+                    "timeouts": null
+                }
+            },
+            "policy": "no policy available",
+            "resource_name": "testacc_vpn_gateway",
+            "simple_name": "ibm_is_vpn_gateway.testacc_vpn_gateway",
+            "svg_id": "node_5",
+            "type": "ibm_is_vpn_gateway"
         },
         {
             "apply": {},
             "cluster": "root",
-            "definition": "",
+            "cost": "cost data to be displayed here",
+            "definition": {
+                "generation": 1,
+                "ibmcloud_api_key": "42fET57nnadurKXzXAedFLOhGqETfIGYxOmQXkFgkJV9"
+            },
             "group": 20000,
             "label": "[root] provider.ibm",
             "module": "root",
@@ -401,104 +739,16 @@
                 "root"
             ],
             "plan": {},
+            "policy": "policy data to be displayed here",
             "resource_name": "ibm",
             "simple_name": "provider.ibm",
-            "svg_id": "node_5",
-            "type": "provider"
-        },
-        {
-            "apply": null,
-            "cluster": "cluster[root] ibm_resource_instance.cos_instance_var_",
-            "definition": {
-                "default": "test_cos2"
-            },
-            "group": 20000,
-            "label": "[root] var.cos_name",
-            "module": "root",
-            "modules": [
-                "root"
-            ],
-            "plan": null,
-            "resource_name": "cos_name",
-            "simple_name": "var.cos_name",
             "svg_id": "node_6",
-            "type": "var"
-        },
-        {
-            "apply": null,
-            "cluster": "cluster[root] ibm_kp_key.test_var_",
-            "definition": {
-                "default": "test_key2"
-            },
-            "group": 20000,
-            "label": "[root] var.key_name",
-            "module": "root",
-            "modules": [
-                "root"
-            ],
-            "plan": null,
-            "resource_name": "key_name",
-            "simple_name": "var.key_name",
-            "svg_id": "node_7",
-            "type": "var"
-        },
-        {
-            "apply": null,
-            "cluster": "cluster[root] ibm_resource_instance.kp_instance_var_",
-            "definition": {
-                "default": "test_kp2"
-            },
-            "group": 20000,
-            "label": "[root] var.kp_name",
-            "module": "root",
-            "modules": [
-                "root"
-            ],
-            "plan": null,
-            "resource_name": "kp_name",
-            "simple_name": "var.kp_name",
-            "svg_id": "node_8",
-            "type": "var"
-        },
-        {
-            "apply": null,
-            "cluster": "cluster[root] ibm_resource_instance.cos_instance_var_",
-            "definition": {
-                "default": "globals"
-            },
-            "group": 20000,
-            "label": "[root] var.location",
-            "module": "root",
-            "modules": [
-                "root"
-            ],
-            "plan": null,
-            "resource_name": "location",
-            "simple_name": "var.location",
-            "svg_id": "node_9",
-            "type": "var"
-        },
-        {
-            "apply": null,
-            "cluster": "cluster[root] ibm_resource_instance.cos_instance_var_",
-            "definition": {
-                "default": "standards"
-            },
-            "group": 20000,
-            "label": "[root] var.pln",
-            "module": "root",
-            "modules": [
-                "root"
-            ],
-            "plan": null,
-            "resource_name": "pln",
-            "simple_name": "var.pln",
-            "svg_id": "node_10",
-            "type": "var"
+            "type": "provider"
         },
         {
             "apply": {},
             "cluster": "root",
+            "cost": {},
             "definition": "",
             "group": 20000,
             "label": "[root] meta.count-boundary (EachMode fixup)",
@@ -507,15 +757,20 @@
                 "root"
             ],
             "plan": {},
+            "policy": {},
             "resource_name": "count-boundary",
             "simple_name": "meta.count-boundary (EachMode fixup)",
-            "svg_id": "node_11",
+            "svg_id": "node_7",
             "type": "meta"
         },
         {
             "apply": {},
             "cluster": "root",
-            "definition": "",
+            "cost": {},
+            "definition": {
+                "generation": 1,
+                "ibmcloud_api_key": "42fET57nnadurKXzXAedFLOhGqETfIGYxOmQXkFgkJV9"
+            },
             "group": 20000,
             "label": "[root] provider.ibm (close)",
             "module": "root",
@@ -523,14 +778,16 @@
                 "root"
             ],
             "plan": {},
+            "policy": {},
             "resource_name": "ibm",
             "simple_name": "provider.ibm (close)",
-            "svg_id": "node_12",
+            "svg_id": "node_8",
             "type": "provider"
         },
         {
             "apply": {},
             "cluster": "root",
+            "cost": {},
             "definition": "",
             "group": 20000,
             "label": "[root] root",
@@ -539,11 +796,12 @@
                 "root"
             ],
             "plan": {},
+            "policy": {},
             "resource_name": "",
             "simple_name": "root",
-            "svg_id": "node_13",
+            "svg_id": "node_9",
             "type": ""
         }
-    ]
+    ],
+    "totalcost": "150.07 USD"
 }
-

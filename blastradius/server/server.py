@@ -3,6 +3,7 @@ import os
 import subprocess
 import itertools
 import json
+import re
 
 # 3rd-party libraries
 from flask import Flask
@@ -67,6 +68,39 @@ def graphnew_svg():
 
     return dot.svg()
 
+@app.route('/graphsimple.svg')
+def graphsimple_svg():
+    Graph.reset_counters()
+    dot = DotGraph('ext','',file_contents=simple_graph())
+
+    module_depth = request.args.get('module_depth', default=None, type=int)
+    refocus      = request.args.get('refocus', default=None, type=str)
+
+    if module_depth is not None and module_depth >= 0:
+        dot.set_module_depth(module_depth)
+
+    if refocus is not None:
+        node = dot.get_node_by_name(refocus)
+        if node:
+            dot.center(node)
+
+    return dot.svg()
+
+
+def simple_graph():
+    file_contents=run_tf_graph()
+    new_file_content = ''
+    for line in file_contents.splitlines():
+        if re.search("var",line) or re.search("provider",line) or re.search("meta.count-boundary",line) or re.search("output",line):
+            if re.search("meta.count-boundary",line) and not (re.search("output",line) or re.search("var",line) or re.search('\[root\] root',line)):
+                new_line = line.replace("meta.count-boundary (EachMode fixup)","root")
+                new_file_content+=new_line +'\n'
+        else:
+            new_file_content+=line +'\n'
+    
+    
+    return new_file_content
+
 
 @app.route('/graph.json')
 def graph_json():
@@ -87,6 +121,8 @@ def graph_json():
             dot.center(node)
 
     return dot.json()
+
+
 
 def run_tf_graph():
     completed = subprocess.run(['terraform', 'graph'], stdout=subprocess.PIPE)

@@ -17,13 +17,10 @@ from blastradius.handlers.plan import Plan
 from blastradius.handlers.apply import Apply
 from blastradius.handlers.terraform import Terraform
 from blastradius.server.server import app
+from blastradius.handlers.cost import Cost
+from blastradius.handlers.policy import Policy
+from blastradius.server.server import simple_graph, run_tf_graph
 
-
-def run_tf_graph():
-    completed = subprocess.run(['terraform', 'graph'], stdout=subprocess.PIPE)
-    if completed.returncode != 0:
-        raise Exception('Execution error', completed.stderr)
-    return completed.stdout.decode('utf-8')
 
 def main():
 
@@ -36,12 +33,16 @@ def main():
     output_group.add_argument('--dot', action='store_const', const=True, default=False, help='print the graphviz/dot representation of the Terraform graph')
     output_group.add_argument('--svg', action='store_const', const=True, default=False, help='print the svg representation of the Terraform graph')
     output_group.add_argument('--newsvg', action='store_const', const=True, default=False, help='print the modified svg representation of the Terraform graph')
+    output_group.add_argument('--simplesvg', action='store_const', const=True, default=False, help='print the simple svg of modified svg representation of the Terraform graph')
     output_group.add_argument('--serve', action='store_const', const=True, default=False, help='spins up a webserver with an interactive Terraform graph')
     
     parser.add_argument('--graph', type=str, help='`terraform graph` output (defaults to stdin)', default=sys.stdin)
     parser.add_argument('--planjson', type=str, help='`terraform plan json` output')
     parser.add_argument('--applyjson', type=str, help='`terraform graph` output (defaults to stdin)', default=sys.stdin)
-    
+    parser.add_argument('--costjson', type=str, help='`resource cost json` output')
+    parser.add_argument('--policyjson', type=str, help='`resource policy json` output')
+
+
     # options to limit, re-focus, and re-center presentation of larger graphs.
     constraint_group = parser.add_mutually_exclusive_group()
     constraint_group.add_argument('--module-depth', type=int, help='hide module details', required=False)
@@ -52,6 +53,8 @@ def main():
     parser.add_argument('--plan', type=str, help='terraform plan output', default=None)
     #parser.add_argument('--state', type=str, help='tfstate file', default=None)
     parser.add_argument('--apply', type=str, help='terraform apply log', default=None)
+    parser.add_argument('--cost', type=str, help='resource cost json', default=None)
+    parser.add_argument('--policy', type=str, help='resource policy json', default=None)
 
     args = parser.parse_args()
 
@@ -70,11 +73,23 @@ def main():
         apply = Apply(args.applyjson)
         print(apply.json())
     
-    elif args.json or args.dot or args.svg or args.newsvg:
+    # argument for cost info
+    elif args.cost:
+        cost = Cost(args.costjson)
+        print(cost.json())
+
+    # argument for policy info
+    elif args.policy:
+        policy = Policy(args.policyjson)
+        print(policy.json())
+    
+    elif args.json or args.dot or args.svg or args.newsvg or args.simplesvg:
         if args.graph is sys.stdin:
             dot = DotGraph('','', file_contents=sys.stdin.read())
         elif args.newsvg:                      #for extended blasradius svg
-            dot = DotGraph('ext','', file_contents=run_tf_graph())
+            dot = DotGraph('ext', args.graph)
+        elif args.simplesvg:                      #for simple blasradius svg
+            dot = DotGraph('ext','',file_contents=simple_graph())
         else:
             dot = DotGraph('',args.graph)
 
@@ -112,6 +127,8 @@ def main():
         elif args.svg:
             print(dot.svg())
         elif args.newsvg:
+            print(dot.svg())
+        elif args.simplesvg:
             print(dot.svg())
     else:
         parser.print_help()

@@ -2,386 +2,438 @@
     "edges": [
         {
             "edge_type": 1,
-            "source": "[root] ibm_cos_bucket.flex-us-south",
+            "source": "[root] ibm_cis.web_domain",
             "svg_id": "edge_0",
-            "target": "[root] ibm_iam_authorization_policy.policy"
+            "target": "[root] ibm_resource_group.web_group"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_cos_bucket.flex-us-south",
+            "source": "[root] ibm_cis_domain.web_domain",
             "svg_id": "edge_1",
-            "target": "[root] ibm_kp_key.test"
+            "target": "[root] ibm_cis.web_domain"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_cos_bucket.flex-us-south",
+            "source": "[root] ibm_cis_domain.web_domain",
             "svg_id": "edge_2",
-            "target": "[root] ibm_resource_instance.cos_instance"
+            "target": "[root] var.domain"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_iam_authorization_policy.policy",
+            "source": "[root] ibm_cis_domain_settings.web_domain",
             "svg_id": "edge_3",
-            "target": "[root] provider.ibm"
+            "target": "[root] ibm_cis_domain.web_domain"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_kp_key.test",
+            "source": "[root] ibm_resource_group.web_group",
             "svg_id": "edge_4",
-            "target": "[root] ibm_resource_instance.kp_instance"
+            "target": "[root] provider.ibm"
         },
         {
             "edge_type": 1,
-            "source": "[root] ibm_kp_key.test",
+            "source": "[root] ibm_resource_group.web_group",
             "svg_id": "edge_5",
-            "target": "[root] var.key_name"
-        },
-        {
-            "edge_type": 1,
-            "source": "[root] ibm_resource_instance.cos_instance",
-            "svg_id": "edge_6",
-            "target": "[root] provider.ibm"
-        },
-        {
-            "edge_type": 1,
-            "source": "[root] ibm_resource_instance.cos_instance",
-            "svg_id": "edge_7",
-            "target": "[root] var.cos_name"
-        },
-        {
-            "edge_type": 2,
-            "source": "[root] ibm_resource_instance.cos_instance",
-            "svg_id": "edge_8",
-            "target": "[root] var.location"
-        },
-        {
-            "edge_type": 2,
-            "source": "[root] ibm_resource_instance.cos_instance",
-            "svg_id": "edge_9",
-            "target": "[root] var.pln"
-        },
-        {
-            "edge_type": 1,
-            "source": "[root] ibm_resource_instance.kp_instance",
-            "svg_id": "edge_10",
-            "target": "[root] provider.ibm"
-        },
-        {
-            "edge_type": 1,
-            "source": "[root] ibm_resource_instance.kp_instance",
-            "svg_id": "edge_11",
-            "target": "[root] var.kp_name"
+            "target": "[root] var.resource_group"
         },
         {
             "edge_type": 1,
             "source": "[root] meta.count-boundary (EachMode fixup)",
-            "svg_id": "edge_12",
-            "target": "[root] ibm_cos_bucket.flex-us-south"
+            "svg_id": "edge_6",
+            "target": "[root] ibm_cis_domain_settings.web_domain"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] meta.count-boundary (EachMode fixup)",
+            "svg_id": "edge_7",
+            "target": "[root] output.web_dns_name"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] meta.count-boundary (EachMode fixup)",
+            "svg_id": "edge_8",
+            "target": "[root] var.datacenter1"
+        },
+        {
+            "edge_type": 2,
+            "source": "[root] meta.count-boundary (EachMode fixup)",
+            "svg_id": "edge_9",
+            "target": "[root] var.datacenter2"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] output.web_dns_name",
+            "svg_id": "edge_10",
+            "target": "[root] var.dns_name"
+        },
+        {
+            "edge_type": 1,
+            "source": "[root] output.web_dns_name",
+            "svg_id": "edge_11",
+            "target": "[root] var.domain"
         },
         {
             "edge_type": 1,
             "source": "[root] provider.ibm (close)",
-            "svg_id": "edge_13",
-            "target": "[root] ibm_cos_bucket.flex-us-south"
+            "svg_id": "edge_12",
+            "target": "[root] ibm_cis_domain_settings.web_domain"
         },
         {
             "edge_type": 1,
             "source": "[root] root",
-            "svg_id": "edge_14",
+            "svg_id": "edge_13",
             "target": "[root] meta.count-boundary (EachMode fixup)"
         },
         {
             "edge_type": 1,
             "source": "[root] root",
-            "svg_id": "edge_15",
+            "svg_id": "edge_14",
             "target": "[root] provider.ibm (close)"
         },
         {
             "edge_type": 3,
-            "source": "[root] var.cos_name",
-            "svg_id": "edge_16",
-            "target": "[root] var.location"
-        },
-        {
-            "edge_type": 3,
-            "source": "[root] var.location",
-            "svg_id": "edge_17",
-            "target": "[root] var.pln"
+            "source": "[root] var.datacenter1",
+            "svg_id": "edge_15",
+            "target": "[root] var.datacenter2"
         }
     ],
     "nodes": [
         {
-            "apply": "not yet applied",
+            "apply": null,
             "cluster": "root",
+            "cost": "no cost available",
             "definition": {
-                "bucket_name": "abuck3",
-                "key_protect": "${ibm_kp_key.test.id}",
-                "region_location": "us-south",
-                "resource_instance_id": "${ibm_resource_instance.cos_instance.id}",
-                "storage_class": "flex"
+                "location": "global",
+                "name": "web_domain",
+                "plan": "standard",
+                "resource_group_id": "${ibm_resource_group.web_group.id}"
             },
             "group": 20000,
-            "label": "[root] ibm_cos_bucket.flex-us-south",
+            "label": "[root] ibm_cis.web_domain",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": {
-                "address": "ibm_cos_bucket.flex-us-south",
+                "address": "ibm_cis.web_domain",
                 "change": {
                     "actions": [
                         "create"
                     ],
                     "after": {
-                        "bucket_name": "abuck3",
-                        "cross_region_location": null,
-                        "region_location": "us-south",
-                        "single_site_location": null,
-                        "storage_class": "flex",
+                        "location": "global",
+                        "name": "web_domain",
+                        "parameters": null,
+                        "plan": "standard",
+                        "tags": null,
                         "timeouts": null
                     },
                     "after_unknown": {
-                        "crn": true,
+                        "guid": true,
                         "id": true,
-                        "key_protect": true,
-                        "resource_instance_id": true,
-                        "s3_endpoint_private": true,
-                        "s3_endpoint_public": true
+                        "resource_controller_url": true,
+                        "resource_crn": true,
+                        "resource_group_id": true,
+                        "resource_group_name": true,
+                        "resource_name": true,
+                        "resource_status": true,
+                        "service": true,
+                        "status": true
                     },
                     "before": null
                 },
                 "mode": "managed",
-                "name": "flex-us-south",
+                "name": "web_domain",
                 "provider_name": "ibm",
                 "schema_version": 0,
-                "type": "ibm_cos_bucket",
+                "type": "ibm_cis",
                 "values": {
-                    "bucket_name": "abuck3",
-                    "cross_region_location": null,
-                    "region_location": "us-south",
-                    "single_site_location": null,
-                    "storage_class": "flex",
+                    "location": "global",
+                    "name": "web_domain",
+                    "parameters": null,
+                    "plan": "standard",
+                    "tags": null,
                     "timeouts": null
                 }
             },
-            "resource_name": "flex-us-south",
-            "simple_name": "ibm_cos_bucket.flex-us-south",
+            "policy": "no policy available",
+            "resource_name": "web_domain",
+            "simple_name": "ibm_cis.web_domain",
             "svg_id": "node_0",
-            "type": "ibm_cos_bucket"
+            "type": "ibm_cis"
         },
         {
-            "apply": "not yet applied",
+            "apply": {
+                "instances": [],
+                "mode": "managed",
+                "name": "web_domain",
+                "provider": "provider.ibm",
+                "type": "ibm_cis_domain"
+            },
             "cluster": "root",
-            "definition": "",
+            "cost": "no cost available",
+            "definition": {
+                "cis_id": "${ibm_cis.web_domain.id}",
+                "domain": "${var.domain}"
+            },
             "group": 20000,
-            "label": "[root] ibm_iam_authorization_policy.policy",
+            "label": "[root] ibm_cis_domain.web_domain",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {
+                "address": "ibm_cis_domain.web_domain",
+                "change": {
+                    "actions": [
+                        "create"
+                    ],
+                    "after": {
+                        "domain": "example.com"
+                    },
+                    "after_unknown": {
+                        "cis_id": true,
+                        "id": true,
+                        "name_servers": true,
+                        "original_name_servers": true,
+                        "paused": true,
+                        "status": true
+                    },
+                    "before": null
+                },
+                "mode": "managed",
+                "name": "web_domain",
+                "provider_name": "ibm",
+                "schema_version": 0,
+                "type": "ibm_cis_domain",
+                "values": {
+                    "domain": "example.com"
+                }
+            },
+            "policy": {
+                "decision": "pass",
+                "name": "web_domain",
+                "policies": [
+                    {
+                        "capsule": "SecurityCapsule",
+                        "control": "SecurityControl",
+                        "rules": [
+                            "ibm_cis_domain_settings"
+                        ],
+                        "severity": ""
+                    },
+                    {
+                        "capsule": "ConfigCapsule",
+                        "control": "ConfigurationControl",
+                        "rules": [
+                            "too_many_admins",
+                            "too_many_managers"
+                        ],
+                        "severity": ""
+                    }
+                ],
+                "type": "ibm_cis_domain"
+            },
+            "resource_name": "web_domain",
+            "simple_name": "ibm_cis_domain.web_domain",
+            "svg_id": "node_1",
+            "type": "ibm_cis_domain"
+        },
+        {
+            "apply": {
+                "instances": [],
+                "mode": "managed",
+                "name": "web_domain",
+                "provider": "provider.ibm",
+                "type": "ibm_cis_domain_settings"
+            },
+            "cluster": "root",
+            "cost": "no cost available",
+            "definition": {
+                "cis_id": "${ibm_cis.web_domain.id}",
+                "domain_id": "${ibm_cis_domain.web_domain.id}",
+                "min_tls_version": "1.2",
+                "ssl": "flexible",
+                "waf": "on"
+            },
+            "group": 20000,
+            "label": "[root] ibm_cis_domain_settings.web_domain",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {
+                "address": "ibm_cis_domain_settings.web_domain",
+                "change": {
+                    "actions": [
+                        "create"
+                    ],
+                    "after": {
+                        "min_tls_version": "1.2",
+                        "ssl": "flexible",
+                        "waf": "on"
+                    },
+                    "after_unknown": {
+                        "always_use_https": true,
+                        "automatic_https_rewrites": true,
+                        "brotli": true,
+                        "browser_check": true,
+                        "certificate_status": true,
+                        "cis_id": true,
+                        "cname_flattening": true,
+                        "domain_id": true,
+                        "hotlink_protection": true,
+                        "http2": true,
+                        "id": true,
+                        "image_load_optimization": true,
+                        "image_size_optimization": true,
+                        "ip_geolocation": true,
+                        "ipv6": true,
+                        "opportunistic_encryption": true,
+                        "origin_error_page_pass_thru": true,
+                        "prefetch_preload": true,
+                        "pseudo_ipv4": true,
+                        "response_buffering": true,
+                        "script_load_optimization": true,
+                        "server_side_exclude": true,
+                        "tls_client_auth": true,
+                        "true_client_ip_header": true,
+                        "websockets": true
+                    },
+                    "before": null
+                },
+                "mode": "managed",
+                "name": "web_domain",
+                "provider_name": "ibm",
+                "schema_version": 0,
+                "type": "ibm_cis_domain_settings",
+                "values": {
+                    "min_tls_version": "1.2",
+                    "ssl": "flexible",
+                    "waf": "on"
+                }
+            },
+            "policy": {
+                "decision": "failed",
+                "name": "web_domain",
+                "policies": [
+                    {
+                        "capsule": "SecurityCapsule",
+                        "control": "SecurityControl",
+                        "rules": [
+                            "ibm_cis_domain_settings"
+                        ],
+                        "severity": ""
+                    },
+                    {
+                        "capsule": "ConfigCapsule",
+                        "control": "ConfigurationControl",
+                        "rules": [
+                            "too_many_admins",
+                            "too_many_managers"
+                        ],
+                        "severity": ""
+                    }
+                ],
+                "type": "ibm_cis_domain_settings"
+            },
+            "resource_name": "web_domain",
+            "simple_name": "ibm_cis_domain_settings.web_domain",
+            "svg_id": "node_2",
+            "type": "ibm_cis_domain_settings"
+        },
+        {
+            "apply": {
+                "instances": [
+                    {
+                        "attributes": {
+                            "default": false,
+                            "id": "769cf60b1ecc4cb092cab5e7af075d3f",
+                            "name": "gilad-test-group1",
+                            "quota_id": null,
+                            "state": "ACTIVE",
+                            "tags": null
+                        },
+                        "private": "bnVsbA==",
+                        "schema_version": 0
+                    }
+                ],
+                "mode": "managed",
+                "name": "web_group",
+                "provider": "provider.ibm",
+                "type": "ibm_resource_group"
+            },
+            "cluster": "root",
+            "cost": "no cost available",
+            "definition": {
+                "name": "${var.resource_group}"
+            },
+            "group": 20000,
+            "label": "[root] ibm_resource_group.web_group",
+            "module": "root",
+            "modules": [
+                "root"
+            ],
+            "plan": {
+                "address": "ibm_resource_group.web_group",
+                "change": {
+                    "actions": [
+                        "create"
+                    ],
+                    "after": {
+                        "name": "gilad-test-group",
+                        "quota_id": null,
+                        "tags": null
+                    },
+                    "after_unknown": {
+                        "default": true,
+                        "id": true,
+                        "state": true
+                    },
+                    "before": null
+                },
+                "mode": "managed",
+                "name": "web_group",
+                "provider_name": "ibm",
+                "schema_version": 0,
+                "type": "ibm_resource_group",
+                "values": {
+                    "name": "gilad-test-group",
+                    "quota_id": null,
+                    "tags": null
+                }
+            },
+            "policy": "no policy available",
+            "resource_name": "web_group",
+            "simple_name": "ibm_resource_group.web_group",
+            "svg_id": "node_3",
+            "type": "ibm_resource_group"
+        },
+        {
+            "apply": null,
+            "cluster": "root",
+            "cost": "no cost available",
+            "definition": {
+                "value": "http://${var.dns_name}${var.domain}"
+            },
+            "group": 20000,
+            "label": "[root] output.web_dns_name",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": null,
-            "resource_name": "policy",
-            "simple_name": "ibm_iam_authorization_policy.policy",
-            "svg_id": "node_1",
-            "type": "ibm_iam_authorization_policy"
-        },
-        {
-            "apply": "not yet applied",
-            "cluster": "root",
-            "definition": {
-                "key_name": "${var.key_name}",
-                "key_protect_id": "${ibm_resource_instance.kp_instance.guid}",
-                "standard_key": false
-            },
-            "group": 20000,
-            "label": "[root] ibm_kp_key.test",
-            "module": "root",
-            "modules": [
-                "root"
-            ],
-            "plan": {
-                "address": "ibm_kp_key.test",
-                "change": {
-                    "actions": [
-                        "create"
-                    ],
-                    "after": {
-                        "encrypted_nonce": null,
-                        "iv_value": null,
-                        "key_name": "test_key2",
-                        "standard_key": false,
-                        "timeouts": null
-                    },
-                    "after_unknown": {
-                        "crn": true,
-                        "id": true,
-                        "key_id": true,
-                        "key_protect_id": true,
-                        "payload": true,
-                        "resource_controller_url": true,
-                        "resource_crn": true,
-                        "resource_group_name": true,
-                        "resource_name": true,
-                        "resource_status": true
-                    },
-                    "before": null
-                },
-                "mode": "managed",
-                "name": "test",
-                "provider_name": "ibm",
-                "schema_version": 0,
-                "type": "ibm_kp_key",
-                "values": {
-                    "encrypted_nonce": null,
-                    "iv_value": null,
-                    "key_name": "test_key2",
-                    "standard_key": false,
-                    "timeouts": null
-                }
-            },
-            "resource_name": "test",
-            "simple_name": "ibm_kp_key.test",
-            "svg_id": "node_2",
-            "type": "ibm_kp_key"
-        },
-        {
-            "apply": "not yet applied",
-            "cluster": "root",
-            "definition": {
-                "location": "${var.location}",
-                "name": "${var.cos_name}",
-                "plan": "${var.pln}",
-                "service": "cloud-object-storage"
-            },
-            "group": 20000,
-            "label": "[root] ibm_resource_instance.cos_instance",
-            "module": "root",
-            "modules": [
-                "root"
-            ],
-            "plan": {
-                "address": "ibm_resource_instance.cos_instance",
-                "change": {
-                    "actions": [
-                        "create"
-                    ],
-                    "after": {
-                        "location": "globals",
-                        "name": "test_cos2",
-                        "parameters": null,
-                        "plan": "standards",
-                        "resource_group_id": null,
-                        "service": "cloud-object-storage",
-                        "service_endpoints": null,
-                        "tags": null,
-                        "timeouts": null
-                    },
-                    "after_unknown": {
-                        "crn": true,
-                        "guid": true,
-                        "id": true,
-                        "resource_controller_url": true,
-                        "resource_crn": true,
-                        "resource_group_name": true,
-                        "resource_name": true,
-                        "resource_status": true,
-                        "status": true
-                    },
-                    "before": null
-                },
-                "mode": "managed",
-                "name": "cos_instance",
-                "provider_name": "ibm",
-                "schema_version": 0,
-                "type": "ibm_resource_instance",
-                "values": {
-                    "location": "globals",
-                    "name": "test_cos2",
-                    "parameters": null,
-                    "plan": "standards",
-                    "resource_group_id": null,
-                    "service": "cloud-object-storage",
-                    "service_endpoints": null,
-                    "tags": null,
-                    "timeouts": null
-                }
-            },
-            "resource_name": "cos_instance",
-            "simple_name": "ibm_resource_instance.cos_instance",
-            "svg_id": "node_3",
-            "type": "ibm_resource_instance"
-        },
-        {
-            "apply": "not yet applied",
-            "cluster": "root",
-            "definition": {
-                "location": "us-south",
-                "name": "${var.kp_name}",
-                "plan": "tiered-pricing",
-                "service": "mks"
-            },
-            "group": 20000,
-            "label": "[root] ibm_resource_instance.kp_instance",
-            "module": "root",
-            "modules": [
-                "root"
-            ],
-            "plan": {
-                "address": "ibm_resource_instance.kp_instance",
-                "change": {
-                    "actions": [
-                        "create"
-                    ],
-                    "after": {
-                        "location": "us-south",
-                        "name": "test_kp2",
-                        "parameters": null,
-                        "plan": "tiered-pricing",
-                        "resource_group_id": null,
-                        "service": "mks",
-                        "service_endpoints": null,
-                        "tags": null,
-                        "timeouts": null
-                    },
-                    "after_unknown": {
-                        "crn": true,
-                        "guid": true,
-                        "id": true,
-                        "resource_controller_url": true,
-                        "resource_crn": true,
-                        "resource_group_name": true,
-                        "resource_name": true,
-                        "resource_status": true,
-                        "status": true
-                    },
-                    "before": null
-                },
-                "mode": "managed",
-                "name": "kp_instance",
-                "provider_name": "ibm",
-                "schema_version": 0,
-                "type": "ibm_resource_instance",
-                "values": {
-                    "location": "us-south",
-                    "name": "test_kp2",
-                    "parameters": null,
-                    "plan": "tiered-pricing",
-                    "resource_group_id": null,
-                    "service": "mks",
-                    "service_endpoints": null,
-                    "tags": null,
-                    "timeouts": null
-                }
-            },
-            "resource_name": "kp_instance",
-            "simple_name": "ibm_resource_instance.kp_instance",
+            "policy": "no policy available",
+            "resource_name": "web_dns_name",
+            "simple_name": "output.web_dns_name",
             "svg_id": "node_4",
-            "type": "ibm_resource_instance"
+            "type": "output"
         },
         {
             "apply": {},
             "cluster": "root",
-            "definition": "",
+            "cost": "cost data to be displayed here",
+            "definition": {},
             "group": 20000,
             "label": "[root] provider.ibm",
             "module": "root",
@@ -389,104 +441,119 @@
                 "root"
             ],
             "plan": {},
+            "policy": "policy data to be displayed here",
             "resource_name": "ibm",
             "simple_name": "provider.ibm",
             "svg_id": "node_5",
             "type": "provider"
         },
         {
-            "apply": "not yet applied",
-            "cluster": "cluster[root] ibm_resource_instance.cos_instance_var_",
+            "apply": null,
+            "cluster": "cluster[root] meta.count-boundary (EachMode fixup)_var_",
+            "cost": "no cost available",
             "definition": {
-                "default": "test_cos2"
+                "default": "lon02"
             },
             "group": 20000,
-            "label": "[root] var.cos_name",
+            "label": "[root] var.datacenter1",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": null,
-            "resource_name": "cos_name",
-            "simple_name": "var.cos_name",
+            "policy": "no policy available",
+            "resource_name": "datacenter1",
+            "simple_name": "var.datacenter1",
             "svg_id": "node_6",
             "type": "var"
         },
         {
-            "apply": "not yet applied",
-            "cluster": "cluster[root] ibm_kp_key.test_var_",
+            "apply": null,
+            "cluster": "cluster[root] meta.count-boundary (EachMode fixup)_var_",
+            "cost": "no cost available",
             "definition": {
-                "default": "test_key2"
+                "default": "ams03"
             },
             "group": 20000,
-            "label": "[root] var.key_name",
+            "label": "[root] var.datacenter2",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": null,
-            "resource_name": "key_name",
-            "simple_name": "var.key_name",
+            "policy": "no policy available",
+            "resource_name": "datacenter2",
+            "simple_name": "var.datacenter2",
             "svg_id": "node_7",
             "type": "var"
         },
         {
-            "apply": "not yet applied",
-            "cluster": "cluster[root] ibm_resource_instance.kp_instance_var_",
+            "apply": null,
+            "cluster": "cluster[root] output.web_dns_name_var_",
+            "cost": "no cost available",
             "definition": {
-                "default": "test_kp2"
+                "default": "",
+                "description": "DNS name (prefix) for website, including '.', 'www.'"
             },
             "group": 20000,
-            "label": "[root] var.kp_name",
+            "label": "[root] var.dns_name",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": null,
-            "resource_name": "kp_name",
-            "simple_name": "var.kp_name",
+            "policy": "no policy available",
+            "resource_name": "dns_name",
+            "simple_name": "var.dns_name",
             "svg_id": "node_8",
             "type": "var"
         },
         {
-            "apply": "not yet applied",
-            "cluster": "cluster[root] ibm_resource_instance.cos_instance_var_",
+            "apply": null,
+            "cluster": "root",
+            "cost": "no cost available",
             "definition": {
-                "default": "globals"
+                "default": "example.com",
+                "description": "DNS Domain for web server"
             },
             "group": 20000,
-            "label": "[root] var.location",
+            "label": "[root] var.domain",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": null,
-            "resource_name": "location",
-            "simple_name": "var.location",
+            "policy": "no policy available",
+            "resource_name": "domain",
+            "simple_name": "var.domain",
             "svg_id": "node_9",
             "type": "var"
         },
         {
-            "apply": "not yet applied",
-            "cluster": "cluster[root] ibm_resource_instance.cos_instance_var_",
+            "apply": null,
+            "cluster": "cluster[root] ibm_resource_group.web_group_var_",
+            "cost": "no cost available",
             "definition": {
-                "default": "standards"
+                "default": "gilad-test-group1",
+                "description": "IBM Cloud Resource Group"
             },
             "group": 20000,
-            "label": "[root] var.pln",
+            "label": "[root] var.resource_group",
             "module": "root",
             "modules": [
                 "root"
             ],
             "plan": null,
-            "resource_name": "pln",
-            "simple_name": "var.pln",
+            "policy": "no policy available",
+            "resource_name": "resource_group",
+            "simple_name": "var.resource_group",
             "svg_id": "node_10",
             "type": "var"
         },
         {
             "apply": {},
             "cluster": "root",
+            "cost": {},
             "definition": "",
             "group": 20000,
             "label": "[root] meta.count-boundary (EachMode fixup)",
@@ -495,6 +562,7 @@
                 "root"
             ],
             "plan": {},
+            "policy": {},
             "resource_name": "count-boundary",
             "simple_name": "meta.count-boundary (EachMode fixup)",
             "svg_id": "node_11",
@@ -503,7 +571,8 @@
         {
             "apply": {},
             "cluster": "root",
-            "definition": "",
+            "cost": {},
+            "definition": {},
             "group": 20000,
             "label": "[root] provider.ibm (close)",
             "module": "root",
@@ -511,6 +580,7 @@
                 "root"
             ],
             "plan": {},
+            "policy": {},
             "resource_name": "ibm",
             "simple_name": "provider.ibm (close)",
             "svg_id": "node_12",
@@ -519,6 +589,7 @@
         {
             "apply": {},
             "cluster": "root",
+            "cost": {},
             "definition": "",
             "group": 20000,
             "label": "[root] root",
@@ -527,10 +598,12 @@
                 "root"
             ],
             "plan": {},
+            "policy": {},
             "resource_name": "",
             "simple_name": "root",
             "svg_id": "node_13",
             "type": ""
         }
-    ]
+    ],
+    "totalcost": ""
 }

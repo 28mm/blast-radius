@@ -54,6 +54,7 @@ For fastest way to get up and running with blast-radius is as follows:
    terraform show -json tfplan.binary > tfplan.json
    terraform apply 
    ```
+   for including cost and policy information into blast-radius cost.json and policy.json file need to be stored into the working directory.
 
    ```sh
    blast-radius --serve /path/to/terraform/directory
