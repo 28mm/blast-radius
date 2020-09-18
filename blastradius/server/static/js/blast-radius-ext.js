@@ -192,7 +192,7 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
             }
 
             var render_policy = function(d) {
-                var policy_title = "policy info"
+                var policy_title = "controls info"
                 var ttip = ''; 
                 ttip += title_html(d);
                 ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + policy_title + '</span><br><br>'+(d.policy.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.policy, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>');
@@ -790,7 +790,6 @@ blastradiusnew = function (selector, svg_url, json_url,br_state) {
                 // without this, selecting an item with <enter> will submit the form
                 // and force a page refresh. not the desired behavior.
                 $(selector + '-search-form').submit(function(){return false;});
-
             } // end if(interactive)
         });   // end json success callback
     });       // end svg scuccess callback
