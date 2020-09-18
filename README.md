@@ -38,7 +38,7 @@ For fastest way to get up and running with blast-radius is as follows:
 
 * Download and install the wheel files from the [release](https://github.com/nishubharti/blast-radius/releases)
    ```
-   easy_install blastradius-0.1.25.0-py3-none-any.whl
+   easy_install blastradius-0.1.25.1-py3-none-any.whl
    ```
 * Once installed just point Blast Radius at any initialized Terraform directory: 
    ```sh
