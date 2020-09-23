@@ -151,7 +151,7 @@ You can read more details in the [documentation](doc/embedded.md)
 ## Implementation Details
 
 *Blast Radius* uses the [Graphviz][] package to layout graph diagrams,
-[hcl2json](https://github.com/tmccombs/hcl2json) to parse [Terraform][] configuration, and [d3.js](https://d3js.org/) to implement interactive features and animations.
+[hcl] to parse [Terraform][] configuration, and [d3.js](https://d3js.org/) to implement interactive features and animations.
 
 ---
 
