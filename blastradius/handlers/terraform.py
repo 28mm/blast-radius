@@ -3,12 +3,9 @@ from glob import iglob
 import io
 import os
 import re
-import json
-import hcl
 
 # 3rd party libraries
-import subprocess
-from pkg_resources import resource_filename
+import hcl    # hashicorp configuration language (.tf)
 
 class Terraform:
     """Finds terraform/hcl files (*.tf) in CWD or a supplied directory, parses
@@ -16,11 +13,12 @@ class Terraform:
 
     def __init__(self, directory=None, settings=None):
         self.settings = settings if settings else {}
+
         # handle the root module first...
         self.directory = directory if directory else os.getcwd()
-        self.config_str:str = ''
+        #print(self.directory)
+        self.config_str = ''
         iterator = iglob( self.directory + '/*.tf')
-        
         for fname in iterator:
             with open(fname, 'r', encoding='utf-8') as f:
                 self.config_str += f.read() + ' '
@@ -68,6 +66,7 @@ class Terraform:
                 # fixme path join. eek.
                 self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)
 
+
     def get_def(self, node, module_depth=0):
 
         # FIXME 'data' resources (incorrectly) handled as modules, necessitating
@@ -90,7 +89,7 @@ class Terraform:
             ''             : lambda x: '' }
             if node.type in types:
                 return types[node.type](node)
-                
+
             # resources are a little different _many_ possible types,
             # nested within the 'resource' field.
             else:
