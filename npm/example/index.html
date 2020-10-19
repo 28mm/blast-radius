@@ -66,6 +66,10 @@
                         class="fas fa-search-plus"></i></button>
             </li>
             <li class="nav-item">
+                <button class="btn btn-primary" id="graph-zoom-reset" title="zoom reset">&nbsp;<i
+                        class="fas fa-search-location"></i></button>
+            </li>
+            <li class="nav-item">
                 <button class="btn btn-primary" id="graph-download" title="download svg">&nbsp;<i
                         class="fas fa-download"></i></button>
             </li>
@@ -191,7 +195,7 @@
         // br_state['#graph'] maintains state for this instance of blastradius
         var br_state = {
             '#graph': {
-                disableSvgZoom: true,
+                disableSvgZoom: false,
                 disableTooltip: true,
                 disableSvgHover: true,
                 htmlCallback: function (html) {
