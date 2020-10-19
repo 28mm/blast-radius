@@ -758,6 +758,7 @@ var blastradius = function (selector, svg_url, json_url, br_state) {
                 var zin_btn = document.querySelector(selector + '-zoom-in');
                 var zout_btn = document.querySelector(selector + '-zoom-out');
                 var zreset_btn = document.querySelector(selector + '-zoom-reset');
+                var preset_btn = document.querySelector(selector + '-pan-reset');
                 var refocus_btn = document.querySelector(selector + '-refocus');
                 var download_btn = document.querySelector(selector + '-download')
                 var svg_el = document.querySelector(selector + ' svg');
@@ -789,6 +790,12 @@ var blastradius = function (selector, svg_url, json_url, br_state) {
                     panzoom && panzoom.resetZoom();
                 }
                 zreset_btn && zreset_btn.addEventListener('click', handle_zreset);
+
+                var handle_preset = function (ev) {
+                    ev.preventDefault();
+                    panzoom && panzoom.resetPan();
+                }
+                preset_btn && preset_btn.addEventListener('click', handle_preset);
 
                 var handle_refocus = function () {
                     if (sticky_node) {
