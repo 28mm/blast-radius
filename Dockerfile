@@ -5,7 +5,10 @@ FROM hashicorp/terraform:$TF_VERSION AS terraform
 
 FROM python:$PYTHON_VERSION-alpine
 RUN pip install -U pip ply \
- && apk add --update --no-cache graphviz ttf-freefont
+ && apk add --update --no-cache graphviz ttf-freefont \
+        gcc make openssl-dev musl-dev libffi-dev \
+ && apk upgrade \
+ && pip install azure-cli
 
 COPY --from=terraform /bin/terraform /bin/terraform
 COPY ./docker-entrypoint.sh /bin/docker-entrypoint.sh
