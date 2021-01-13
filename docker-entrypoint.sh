@@ -26,11 +26,13 @@ mount -t overlay overlay -o lowerdir=/data,upperdir=/tmp/overlay/upper,workdir=/
 # change to the overlayFS
 cd /data-rw
 
-# Is Terraform already initialized? Ensure modules are all downloaded.
-[ -d '.terraform' ] && terraform get
+if [ -n "${DO_TF_INIT}" ]; then
+	# Is Terraform already initialized? Ensure modules are all downloaded.
+	[ [ -d '.terraform' ] || [ -d ${TF_DATA_DIR:-""} ] ] && terraform get
 
-# Reinitialize for some reason
-terraform init
+	# Reinitialize for some reason
+	terraform init
+fi
 
 # it's possible that we're in a sub-directory. leave.
 cd /data-rw
