@@ -1,6 +1,6 @@
 setuptools==41.0.1
 requests==2.22.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 Flask==1.0.3
 beautifulsoup4==4.7.1
 ply>=3.11
