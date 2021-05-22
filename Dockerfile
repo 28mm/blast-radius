@@ -16,6 +16,7 @@ COPY . .
 RUN pip install -e .
 
 WORKDIR /data
+RUN echo $(timeout 15 blast-radius --serve --port 5001; test $? -eq 124) > /output.txt
 
 ENTRYPOINT ["/bin/docker-entrypoint.sh"]
 CMD ["blast-radius", "--serve"]
