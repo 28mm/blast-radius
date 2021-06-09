@@ -1,11 +1,10 @@
-# standard libraries
 from glob import iglob
 import io
 import os
 import re
 
 # 3rd party libraries
-import hcl    # hashicorp configuration language (.tf)
+import hcl2  # hashicorp configuration language (.tf)
 
 class Terraform:
     """Finds terraform/hcl files (*.tf) in CWD or a supplied directory, parses
@@ -22,49 +21,51 @@ class Terraform:
         for fname in iterator:
             with open(fname, 'r', encoding='utf-8') as f:
                 self.config_str += f.read() + ' '
+
         config_io = io.StringIO(self.config_str)
-        self.config = hcl.load(config_io)
+        self.config = hcl2.load(config_io)
 
         # then any submodules it may contain, skipping any remote modules for
         # the time being.
         self.modules = {}
         if 'module' in self.config:
-            for name, mod in self.config['module'].items():
-                if 'source' not in mod:
-                    continue
-                source = mod['source']
-                # '//' used to refer to a subdirectory in a git repo
-                if re.match(r'.*\/\/.*', source):
-                    continue
-                # '@' should only appear in ssh urls
-                elif re.match(r'.*\@.*', source):
-                    continue
-                # 'github.com' special behavior.
-                elif re.match(r'github\.com.*', source):
-                    continue
-                # points to new TFE module registry
-                elif re.match(r'app\.terraform\.io', source):
-                    continue
-                # bitbucket public and private repos
-                elif re.match(r'bitbucket\.org.*', source):
-                    continue
-                # git::https or git::ssh sources
-                elif re.match(r'^git::', source):
-                    continue
-                # git:// sources
-                elif re.match(r'^git:\/\/', source):
-                    continue
-                # Generic Mercurial repos
-                elif re.match(r'^hg::', source):
-                    continue
-                # Public Terraform Module Registry
-                elif re.match(r'^[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+', source):
-                    continue
-                # AWS S3 buckets
-                elif re.match(r's3.*\.amazonaws\.com', source):
-                    continue
-                # fixme path join. eek.
-                self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)
+            for item in self.config['module']:
+                for name, mod in item.items():
+                    if 'source' not in mod:
+                        continue
+                    source = mod['source'][0]
+                    # '//' used to refer to a subdirectory in a git repo
+                    if re.match(r'.*\/\/.*', source):
+                        continue
+                    # '@' should only appear in ssh urls
+                    elif re.match(r'.*\@.*', source):
+                        continue
+                    # 'github.com' special behavior.
+                    elif re.match(r'github\.com.*', source):
+                        continue
+                    # points to new TFE module registry
+                    elif re.match(r'app\.terraform\.io', source):
+                        continue
+                    # bitbucket public and private repos
+                    elif re.match(r'bitbucket\.org.*', source):
+                        continue
+                    # git::https or git::ssh sources
+                    elif re.match(r'^git::', source):
+                        continue
+                    # git:// sources
+                    elif re.match(r'^git:\/\/', source):
+                        continue
+                    # Generic Mercurial repos
+                    elif re.match(r'^hg::', source):
+                        continue
+                    # Public Terraform Module Registry
+                    elif re.match(r'^[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+', source):
+                        continue
+                    # AWS S3 buckets
+                    elif re.match(r's3.*\.amazonaws\.com', source):
+                        continue
+                    # fixme path join. eek.
+                    self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)
 
 
     def get_def(self, node, module_depth=0):
