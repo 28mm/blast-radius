@@ -31,9 +31,8 @@ cd /data-rw
 
 # Reinitialize for some reason
 terraform init
-
 # it's possible that we're in a sub-directory. leave.
 cd /data-rw
-
+cat /output.txt
 # Let's go!
 exec "$@"

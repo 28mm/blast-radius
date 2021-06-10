@@ -1,4 +1,3 @@
-# standard libraries
 import json
 import re
 import subprocess
@@ -316,7 +315,6 @@ digraph {
     graph [fontname = "courier new",fontsize=8];
     node [fontname = "courier new",fontsize=8];
     edge [fontname = "courier new",fontsize=8];
-
     {# just the root module #}
     {% for cluster in clusters %}
         subgraph "{{cluster}}" {
@@ -335,11 +333,9 @@ digraph {
             {% endfor %}
         }
     {% endfor %}
-
     {# non-root modules #}
     {% for node in nodes %}
         {% if node.module != 'root' %}
-
             {% if node.collapsed %}
                 "{{node.label}}" [ shape=none, margin=0, id={{node.svg_id}} label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
                 {% for module in node.modules %}<TR><TD>(M) {{module}}</TD></TR>{% endfor %}
@@ -354,9 +350,7 @@ digraph {
                 </TABLE>>];
             {% endif %}
         {% endif %}
-
     {% endfor %}
-
         {% for edge in edges %}
             {% if edge.edge_type == EdgeType.NORMAL %}"{{edge.source}}" -> "{{edge.target}}" {% if edge.fmt %} [{{edge.fmt}}] {% endif %}{% endif %}
             {% if edge.edge_type == EdgeType.LAYOUT_SHOWN %}"{{edge.source}}" -> "{{edge.target}}" {% if edge.fmt %} [{{edge.fmt}}] {% endif %}{% endif %}
@@ -451,7 +445,7 @@ class DotNode(Node):
         try:
             if not re.match(r'(\[root\]\s+)*module\..*', label):
                 return 'root'
-            m = re.match(r'(\[root\]\s+)*(?P<module>\S+)\.(?P<type>\S+)\.\S+', label)
+            m = re.match(r'(\[root\]\s+)*(?P<module>\S+)\.(?P<type>\S+)\.?\S+', label)
             return m.groupdict()['module']
         except:
             raise Exception("None: ", label)
@@ -521,5 +515,3 @@ class DotEdge(Edge):
     def __iter__(self):
         for key in {'source', 'target', 'svg_id', 'edge_type'}: 
             yield (key, getattr(self, key))
-
-
