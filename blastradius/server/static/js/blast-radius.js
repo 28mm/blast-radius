@@ -1,5 +1,5 @@
 //
-// terraform-graph.js 
+// terraform-graph.js
 //
 
 // enumerate the various kinds of edges that Blast Radius understands.
@@ -40,31 +40,31 @@ var Queue = function() {
     this._newestIndex = 1;
     this._storage = {};
 }
- 
+
 Queue.prototype.size = function() {
     return this._newestIndex - this._oldestIndex;
 };
- 
+
 Queue.prototype.enqueue = function(data) {
     this._storage[this._newestIndex] = data;
     this._newestIndex++;
 };
- 
+
 Queue.prototype.dequeue = function() {
     var oldestIndex = this._oldestIndex,
         newestIndex = this._newestIndex,
         deletedData;
- 
+
     if (oldestIndex !== newestIndex) {
         deletedData = this._storage[oldestIndex];
         delete this._storage[oldestIndex];
         this._oldestIndex++;
- 
+
         return deletedData;
     }
 };
 
-// Takes a unique selector, e.g. "#demo-1", and 
+// Takes a unique selector, e.g. "#demo-1", and
 // appends svg xml from svg_url, and takes graph
 // info from json_url to highlight/annotate it.
 blastradius = function (selector, svg_url, json_url, br_state) {
@@ -101,7 +101,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
 
     // 1st pull down the svg, and append it to the DOM as a child
     // of our selector. If added as <img src="x.svg">, we wouldn't
-    // be able to manipulate x.svg with d3.js, or other DOM fns. 
+    // be able to manipulate x.svg with d3.js, or other DOM fns.
     d3.xml(svg_url, function (error, xml) {
 
         container.node()
@@ -122,19 +122,30 @@ blastradius = function (selector, svg_url, json_url, br_state) {
         // d3.xml success callback, to guaruntee the svg/xml
         // has loaded.
         d3.json(json_url, function (error, data) {
-            var edges = data.edges;
-            var svg_nodes = [];
-            var nodes = {};
-            data.nodes.forEach(function (node) {
-                if (!(node.type in resource_groups))
-                    console.log(node.type)
-                if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
-                    node.resource_name = 'root';
-                }
-                node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
-                nodes[node['label']] = node;
-                svg_nodes.push(node);
-            });
+            if (!error) {
+                console.log("An error occurred on the server")
+                var edges = data.edges;
+                var svg_nodes = [];
+                var nodes = {};
+                data.nodes.forEach(function (node) {
+                    if (!(node.type in resource_groups))
+                        console.log(node.type)
+                    if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
+                        node.resource_name = 'root';
+                    }
+                    node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
+                    nodes[node['label']] = node;
+                    svg_nodes.push(node);
+                });
+            } else {
+                let div = document.createElement("div")
+                div.setAttribute("role", "alert")
+                div.classList = ["alert alert-danger"]
+                div.textContent = "A server exception has occurred. The graph is still usable but without all features enabled such as filtering content"
+                document.getElementsByClassName("navbar")[0].appendChild(div)
+
+                edges = []
+            }
 
             // convenient to access edges by their source.
             var edges_by_source = {}
@@ -164,10 +175,10 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 var json_cbox   = document.querySelector(selector + '-tooltip-json');
                 var deps_cbox   = document.querySelector(selector + '-tooltip-deps');
 
-                if ((! title_cbox) || (! json_cbox) || (! deps_cbox)) 
+                if ((! title_cbox) || (! json_cbox) || (! deps_cbox))
                     return title_html(d) + (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
 
-                var ttip = ''; 
+                var ttip = '';
                 if (title_cbox.checked)
                     ttip += title_html(d);
                 if (json_cbox.checked)
@@ -204,7 +215,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             }
 
             // returns <div> element representing node's title and module namespace.
-            // intended for use in an interactive searchbox. 
+            // intended for use in an interactive searchbox.
             var searchbox_listing = function(d) {
                 var node = d;
                 var title = [ '<div class="sbox-listings">']
@@ -224,7 +235,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 return title.join('');
             }
 
-            // returns <span> elements representing a node's direct children 
+            // returns <span> elements representing a node's direct children
             var child_html = function(d) {
                 var children = [];
                 var edges   = edges_by_source[d.label];
@@ -449,23 +460,25 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             }
 
             // colorize nodes, and add mouse candy.
-            svg.selectAll('g.node')
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseenter', node_mouseenter)
-                .on('mouseleave', node_mouseleave)
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .attr('fill', function (d) { return color(d.group); })
-                .select('polygon:nth-last-of-type(2)')
-                .style('fill', (function (d) {
-                    if (d)
-                        return color(d.group);
-                    else
-                        return '#000';
-                }));
+            if (svg_nodes) {
+                svg.selectAll('g.node')
+                    .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+                    .on('mouseenter', node_mouseenter)
+                    .on('mouseleave', node_mouseleave)
+                    .on('mouseover', node_mouseover)
+                    .on('mouseout', node_mouseout)
+                    .on('mousedown', node_mousedown)
+                    .attr('fill', function (d) { return color(d.group); })
+                    .select('polygon:nth-last-of-type(2)')
+                    .style('fill', (function (d) {
+                        if (d)
+                            return color(d.group);
+                        else
+                            return '#000';
+                    }));
+            }
 
             // colorize modules
             svg.selectAll('polygon')
@@ -481,22 +494,24 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             });
 
             // hack to make mouse events and coloration work on the root node again.
-            var root = nodes['[root] root'];
-            svg.selectAll('g.node#' + root.svg_id)
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .select('polygon')
-                .attr('fill', function (d) { return color(d.group); })
-                .style('fill', (function (d) {
-                    if (d)
-                        return color(d.group);
-                    else
-                        return '#000';
-                }));
+            if (nodes) {
+                var root = nodes['[root] root'];
+                svg.selectAll('g.node#' + root.svg_id)
+                    .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+                    .on('mouseover', node_mouseover)
+                    .on('mouseout', node_mouseout)
+                    .on('mousedown', node_mousedown)
+                    .select('polygon')
+                    .attr('fill', function (d) { return color(d.group); })
+                    .style('fill', (function (d) {
+                        if (d)
+                            return color(d.group);
+                        else
+                            return '#000';
+                    }));
+            }
 
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')
@@ -512,8 +527,6 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 var svg_el       = document.querySelector(selector + ' svg');
                 var panzoom      = svgPanZoom(svg_el).disableDblClickZoom();
 
-                console.log('bang');
-                console.log(state);
                 if (state['no_scroll_zoom'] == true) {
                     console.log('bang');
                     panzoom.disableMouseWheelZoom();
@@ -579,7 +592,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 var render_searchbox_node = function(d) {
                     return searchbox_listing(d);
                 }
-                
+
                 var select_node = function(d) {
                     if (d === undefined || d.length == 0) {
                         return true;
@@ -636,4 +649,3 @@ blastradius = function (selector, svg_url, json_url, br_state) {
     });       // end svg scuccess callback
 
 }             // end blastradius()
-

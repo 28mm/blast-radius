@@ -10,7 +10,6 @@ RUN pip install -U pip ply \
 COPY --from=terraform /bin/terraform /bin/terraform
 COPY ./docker-entrypoint.sh /bin/docker-entrypoint.sh
 RUN chmod +x /bin/docker-entrypoint.sh
-
 WORKDIR /src
 COPY . .
 RUN pip install -e .
