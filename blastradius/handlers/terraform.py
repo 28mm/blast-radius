@@ -5,7 +5,7 @@ import os
 import re
 
 # 3rd party libraries
-import hcl    # hashicorp configuration language (.tf)
+import hcl2 as hcl    # hashicorp configuration language (.tf)
 
 class Terraform:
     """Finds terraform/hcl files (*.tf) in CWD or a supplied directory, parses
@@ -79,20 +79,12 @@ class Terraform:
                 return ''
 
         try:
-            # non resource types
-            types = { 'var'  : lambda x: self.config['variable'][x.resource_name],
-            'provider'     : lambda x: self.config['provider'][x.resource_name],
-            'output'       : lambda x: self.config['output'][x.resource_name],
-            'data'         : lambda x: self.config['data'][x.resource_name],
-            'meta'         : lambda x: '',
-            'provisioner'  : lambda x: '',
-            ''             : lambda x: '' }
-            if node.type in types:
-                return types[node.type](node)
+            for n in self.config['resource']:
+                if node.type in n:
+                    if node.resource_name in n[node.type]:
+                        return n[node.type][node.resource_name]
+                
+            return ''
 
-            # resources are a little different _many_ possible types,
-            # nested within the 'resource' field.
-            else:
-                return self.config['resource'][node.type][node.resource_name]
         except:
             return ''

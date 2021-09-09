@@ -13,6 +13,8 @@
         <script src="/static/js/categories.js"></script>
         <script src="/static/js/svg-pan-zoom.js"></script>
         <script src="/static/js/selectize.js"></script>
+        <script src="/static/js/json2yaml.js"></script>
+        <script src="/static/images"></script>
 
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/static/css/selectize.css">
@@ -130,6 +132,31 @@
                         </div>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false" title="tooltip options">
+                            <i class="fas fa-file"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item">
+                                <label><b>Graph</b></label>
+                            </div>
+                            <div class="dropdown-divider"></div>
+    
+                            <!-- Resource Name-->
+                            <div class="dropdown-item form-check">
+                                <label>
+                                    <input type="radio" name="graph-type" value="" id="graph-radio-extended"
+                                     checked="true">
+                                    Blast-radius-extended
+                                </label>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </li>
+    
             </ul>
         </nav>
 
@@ -139,6 +166,10 @@
              pan/zoom interactions and to avoid clipping                                    -->
         
         <div id="graph"></div>
+        <div id="mySidenav" class="sidenav">
+            <button class="closebtn" onclick="closeNav()" color="grey">&times;</button>
+            <div class="test"></div>
+        </div>
 
     </body>
 
@@ -146,7 +177,19 @@
 
         // br_state['#graph'] maintains state for this instance of blastradius
         var br_state = { '#graph' : {}}
-        blastradius('#graph', '/graph.svg', '/graph.json', br_state);
+        var id1 = document.getElementById("graph-radio-extended");
+
+    (function () {
+        // your page initialization code here
+        // the DOM will be available here
+        if (id1.checked) {
+            blastradius('#graph', '/graph.svg', '/graph.json', br_state);
+        }
+    })();
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
 
     </script>
 

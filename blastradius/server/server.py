@@ -3,6 +3,7 @@ import os
 import subprocess
 import itertools
 import json
+import re
 
 # 3rd-party libraries
 from flask import Flask
@@ -33,7 +34,7 @@ def index():
 @app.route('/graph.svg')
 def graph_svg():
     Graph.reset_counters()
-    dot = DotGraph('', file_contents=run_tf_graph())
+    dot = DotGraph('', file_contents=simple_graph())
 
     module_depth = request.args.get('module_depth', default=None, type=int)
     refocus      = request.args.get('refocus', default=None, type=str)
@@ -52,7 +53,7 @@ def graph_svg():
 @app.route('/graph.json')
 def graph_json():
     Graph.reset_counters()
-    dot = DotGraph('', file_contents=run_tf_graph())
+    dot = DotGraph('', file_contents=simple_graph())
     module_depth = request.args.get('module_depth', default=None, type=int)
     refocus      = request.args.get('refocus', default=None, type=str)
     if module_depth is not None and module_depth >= 0:
@@ -88,6 +89,25 @@ def get_terraform_version():
 
 def get_terraform_exe():
     return which('terraform')
+
+
+def simple_graph():
+    file_contents=run_tf_graph()
+    new_file_content = ''
+    for line in file_contents.splitlines():
+        if re.search("var",line) or re.search("provider",line) or re.search("meta.count-boundary",line) or re.search("output",line) :
+            if re.search("meta.count-boundary",line) and not (re.search("output",line) or re.search("var",line) or re.search('\[root\] root',line)):
+                new_line = line.replace("meta.count-boundary (EachMode fixup)","root")
+                new_file_content+=new_line +'\n'
+            if re.search("provider.template",line):
+                    x = line.split('->')
+                    if x[0].find("[root] provider.template (close)") != -1 :
+                        new_line = line.replace("[root] provider.template (close)","[root] root")
+                        new_file_content+=new_line +'\n' 
+        else:
+            new_file_content+=line +'\n'
+    
+    return new_file_content
 
 
 
