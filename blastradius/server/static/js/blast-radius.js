@@ -104,6 +104,8 @@ blastradius = function (selector, svg_url, json_url, br_state) {
     // be able to manipulate x.svg with d3.js, or other DOM fns. 
     d3.xml(svg_url, function (error, xml) {
 
+        d3.select(selector).selectAll("svg").remove();
+
         container.node()
             .appendChild(document.importNode(xml.documentElement, true));
 
@@ -159,38 +161,112 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 svg.attr('height', scale).attr('width', scale);
             }
 
-            var render_tooltip = function(d) {
-                var title_cbox  = document.querySelector(selector + '-tooltip-title');
-                var json_cbox   = document.querySelector(selector + '-tooltip-json');
-                var deps_cbox   = document.querySelector(selector + '-tooltip-deps');
 
-                if ((! title_cbox) || (! json_cbox) || (! deps_cbox)) 
-                    return title_html(d) + (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
-
+            var render_plan = function(d) {
+                var plan_title = "plan info"
                 var ttip = ''; 
-                if (title_cbox.checked)
-                    ttip += title_html(d);
-                if (json_cbox.checked)
-                    ttip += (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
-                if (deps_cbox.checked)
-                    ttip += child_html(d);
+                ttip += title_html(d);
+                if (d.plan == "no plan available"){
+                    ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + plan_title + '</span><br><br>'+(d.plan.length == 0 ? '' : "<p class='explain'>" +  JSON.stringify(d.plan, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>') ;
+                } else {
+                var yamlplan = json2yaml(d.plan)
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + plan_title + '</span><br><br>'+(d.plan.length == 0 ? '' : "<p class='explain'>" + yamlplan + "</p><br>"+ '<hr style="background-color:black"/>') ;
+                }
+                ttip += child_html(d);
                 return ttip;
             }
 
-            // setup tooltips
-            var tip = d3.tip()
-                .attr('class', class_selector.slice(1, class_selector.length) + '-d3-tip d3-tip')
-                .offset([-10, 0])
-                .html(render_tooltip);
-            svg.call(tip);
+            var render_cost = function(d) {
+                var cost_title = "cost info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                if (d.cost == "no cost available"){
+                    ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + cost_title + '</span><br><br>'+(d.cost.length == 0 ? '' : "<p class='explain'>" +  JSON.stringify(d.cost, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>') ;
+                }
+                else{
+                var yamlcost = json2yaml(d.cost)
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + cost_title + '</span><br><br>'+(d.cost.length == 0 ? '' : "<p class='explain'>" + yamlcost + "</p><br>"+ '<hr style="background-color:black"/>') ;
+                }
+                ttip += child_html(d);
+                return ttip;
+            }
 
-            // returns <div> element representinga  node's title and module namespace.
+            var render_policy = function(d) {
+                var controls_title = "controls info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                if (d.controls == "no controls available" )
+                {
+                    ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + controls_title + '</span><br><br>'+(d.controls.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.controls, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>');
+                }
+                else{
+                var yamlcontrols = json2yaml(d.controls)
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + controls_title + '</span><br><br>'+(d.controls.length == 0 ? '' : "<p class='explain'>" + yamlcontrols + "</p><br>"+ '<hr style="background-color:black"/>');
+                }  
+                ttip += child_html(d);
+                return ttip;
+            }
+
+            var render_time = function(d) {
+                var time_title = "time info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                if (d.time == "no time estimation available" )
+                {
+                    ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + time_title + '</span><br><br>'+(d.time.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.time, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>') ;
+                
+                } else{
+                var yamltime = json2yaml(d.time)
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + time_title + '</span><br><br>'+(d.time.length == 0 ? '' : "<p class='explain'>" + yamltime + "</p><br>"+ '<hr style="background-color:black"/>') ;
+                }
+                ttip += child_html(d);
+                return ttip;
+            }
+
+            var render_apply = function(d) {
+                var apply_title = "apply info"
+                var ttip = ''; 
+                ttip += title_html(d);
+                if (d.apply == "not yet applied" )
+                {
+                    ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + apply_title + '</span><br><br>'+("<p class='explain'>" + JSON.stringify(d.apply, replacer, 2) + "</p><br>"+ '<hr style="background-color:black"/>');
+                }
+                else {
+                    if( d.apply == null || d.apply.instances[0] == null)
+                    {
+                        ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + apply_title + '</span><br><br>'+("<p class='explain'>" + "resource apply failed" + "</p><br>"+ '<hr style="background-color:black"/>');
+                    }
+                    else
+                    {
+                        var yamlapply = json2yaml(d.apply)
+                        ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + apply_title + '</span><br><br>'+(d.apply.length == 0 ? '' : "<p class='explain'>" + yamlapply + "</p><br>"+ '<hr style="background-color:black"/>');
+                    }
+                }
+                ttip += child_html(d);
+                return ttip;
+            }
+
+            var render_tfstate = function(d) {
+                var title = "config info"
+                var yamlstate = json2yaml(d.definition)
+                var ttip = ''; 
+                ttip += title_html(d);
+                ttip += '<hr style="background-color:black"/><br><span class="title" style="background:' + color("#ffbf00") + ';">' + title + '</span><br><br>' +(d.definition.length == 0 ? '' : "<p class='explain'>" + yamlstate + "</p><br>"+ '<hr style="background-color:black"/>');
+                ttip += child_html(d);
+                return ttip;
+            }
+
+
+            // returns <div> element representinga  node's title and module namespace
             var title_html = function(d) {
                 var node = d;
                 var title = [ '<div class="header">']
+                var head = "resource name"
+                title[title.length] = '<span class="title" style="background:' + color("#ffbf00") + ';">' + head + '</span><br><br>';
                 if (node.modules.length <= 1 && node.modules[0] == 'root') {
                     title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.type + '</span>';
                     title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
+                    
                 }
                 else {
                     for (var i in node.modules) {
@@ -202,6 +278,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 title[title.length] = '</div>'
                 return title.join('');
             }
+
 
             // returns <div> element representing node's title and module namespace.
             // intended for use in an interactive searchbox. 
@@ -347,70 +424,220 @@ blastradius = function (selector, svg_url, json_url, br_state) {
             // FIXME: but don't seem to be necessary for display
             var node_mousedown = function(d, x, y, z, no_tip_p) {
                 if (sticky_node == d && click_count == 1) {
-                    tip.hide(d);
                     highlight(d, true, true);
                     click_count += 1;
                 }
                 else if (sticky_node == d && click_count == 2) {
                     unhighlight(d);
-                    tip.hide(d);
                     sticky_node = null;
                     click_count = 0;
                 }
                 else {
                     if (sticky_node) {
                         unhighlight(sticky_node);
-                        tip.hide(sticky_node);
                     }
                     sticky_node = d;
                     click_count = 1;
                     highlight(d, true, false);
-                    if (no_tip_p === undefined) {
-                        tip.show(d)
-                            .direction(tipdir(d))
-                            .offset(tipoff(d));
+                }
+            }
+
+            var plan_click = function(d) {
+                openNav()
+                var renderInfo = render_plan(d);
+                $('div.test').html(renderInfo);
+                
+             }
+ 
+            var tfstate_click = function(d) {
+                 openNav()
+                 var renderInfo = render_tfstate(d);
+                 $('div.test').html(renderInfo);
+                 
+              }
+ 
+            var apply_click = function(d) {
+                 openNav()
+                 var renderInfo = render_apply(d);
+                 $('div.test').html(renderInfo);
+                 
+              }
+ 
+            var cost_click = function(d) {
+                 openNav()
+                 var renderInfo = render_cost(d);
+                 $('div.test').html(renderInfo);
+             }
+ 
+            var time_click = function(d) {
+                 openNav()
+                 var renderInfo = render_time(d);
+                 $('div.test').html(renderInfo);
+             }
+ 
+            var policy_click = function(d) {
+                 openNav()
+  
+                 var renderInfo = render_policy(d);
+                 $('div.test').html(renderInfo);
+                 
+              }
+             
+            function openNav() {
+                 document.getElementById("mySidenav").style.width = "350px";     
+            }
+
+
+            node = svg.selectAll('g.node')
+                   .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+    
+            node.select('polygon:nth-of-type(2)')
+                    .on('click', node_mousedown)
+                    .style('fill', (function (d) {
+                        if (d){
+                            if (d.label == "[root] root") {
+                                return "#fff";
+                            }
+                            else {
+                            return "#AEC7E8";
+                            }
+                        }   
+                        else
+                            return '#000';
+                    }));
+
+            node.select('polygon:nth-of-type(3)')
+                .on('click',(function (d) { 
+                    if (d.label == "[root] root") {
+                      return "";
                     }
-                }
-            }
-
-            var node_mouseleave = function(d) {
-                tip.hide(d);
-            }
-
-            var node_mouseenter = function(d) {
-                tip.show(d)
-                    .direction(tipdir(d))
-                    .offset(tipoff(d));
-            }
-
-            var node_mouseover = function(d) {
-                if (! sticky_node)
-                    highlight(d, true, false);
-            }
-
-            var node_mouseout = function(d) {
-                if (sticky_node == d) {
-                    return;
-                }
-                else if (! sticky_node) {
-                    unhighlight(d);
-                }
-                else {
-                    if (click_count == 2)
-                        highlight(sticky_node, true, true);
+                    else {
+                        return tfstate_click(d);
+                    }
+                }))
+                .style('fill', (function (d) {
+                    if (d)
+                      return '#fff';
                     else
-                        highlight(sticky_node, true, false);
-                }
+                        return '#000';
+                }));
+            
+            
+            node.select('polygon:nth-of-type(8)')
+                .on('click',plan_click)
+                .style('fill', (function (d) {
+                    if (d){
+                    return '#fff';
+            
+                    }   
+                    else
+                        return '#000';
+                }));
 
-            }
+            
+            
+            node.select('polygon:nth-of-type(9)')
+                .on('click',plan_click)
+                .style('fill', (function (d) {
+                    if (d){
+                    return '#fff';
+            
+                    }   
+                    else
+                        return '#000';
+                }));
 
-            var tipdir = function(d) {
-                return 'n';
-            }
+            node.select('polygon:nth-of-type(11)')
+                .on('click',policy_click)
+                .style('fill', (function (d) {
+                    if (d){
+                    return '#fff';
+            
+                    }   
+                    else
+                        return '#000';
+                }));
 
-            var tipoff = function(d) {
-                return [-10, 0];
-            }
+            node.select('polygon:nth-of-type(12)')
+                .on('click',policy_click)
+                .style('fill', (function (d) {
+                    if (d){
+                    return '#fff';
+            
+                    }   
+                    else
+                        return '#000';
+                }));
+
+                node.select('polygon:nth-of-type(14)')
+                .on('click',cost_click)
+                .style('fill', (function (d) {
+                    if (d) {
+                    return '#fff';
+                    }
+                    else
+                        return '#000';
+                }));
+
+            node.select('polygon:nth-of-type(15)')
+                .on('click',cost_click)
+                .style('fill', (function (d) {
+                    if (d) {
+                    return '#fff';
+                    }
+                    else
+                        return '#000';
+                }));
+            
+            
+            node.select('polygon:nth-of-type(17)')
+                .on('click',time_click)
+                .style('fill', (function (d) {
+                    if (d) {
+                        return '#fff';
+                    }
+                    else
+                        return '#000';
+                }));
+            
+            node.select('polygon:nth-of-type(18)')
+                .on('click',time_click)
+                .style('fill', (function (d) {
+                    if (d) {
+                        return '#fff';
+                    }
+                    else
+                        return '#000';
+                }));
+                    
+
+               
+
+            node.select('polygon:nth-of-type(20)')
+                .on('click',apply_click)
+                .style('fill', (function (d) {
+                    if (d){
+                    return '#fff';
+            
+                    }   
+                    else
+                        return '#000';
+                }));
+
+            node.select('polygon:nth-of-type(21)')
+                .on('click',apply_click)
+                .style('fill', (function (d) {
+                    if (d){
+                    return '#fff';
+            
+                    }   
+                    else
+                        return '#000';
+                }));
+
+ 
 
             var highlight = function (d, downstream, upstream) {
 
@@ -448,24 +675,6 @@ blastradius = function (selector, svg_url, json_url, br_state) {
 
             }
 
-            // colorize nodes, and add mouse candy.
-            svg.selectAll('g.node')
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseenter', node_mouseenter)
-                .on('mouseleave', node_mouseleave)
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .attr('fill', function (d) { return color(d.group); })
-                .select('polygon:nth-last-of-type(2)')
-                .style('fill', (function (d) {
-                    if (d)
-                        return color(d.group);
-                    else
-                        return '#000';
-                }));
 
             // colorize modules
             svg.selectAll('polygon')
@@ -486,9 +695,6 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                 .data(svg_nodes, function (d) {
                     return (d && d.svg_id) || d3.select(this).attr("id");
                 })
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
                 .select('polygon')
                 .attr('fill', function (d) { return color(d.group); })
                 .style('fill', (function (d) {
@@ -571,9 +777,6 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     refocus_btn.removeEventListener('click', handle_refocus);
                     download_btn.removeEventListener('click', handle_download);
                     panzoom = null;
-
-                    //
-                    tip.hide();
                 }
 
                 var render_searchbox_node = function(d) {
@@ -608,7 +811,7 @@ blastradius = function (selector, svg_url, json_url, br_state) {
                     // because of scoping, we need to change the onChange callback to the new version
                     // of select_node(), and delete the old callback associations.
                     $(selector + '-search').selectize()[0].selectize.settings.onChange = select_node;
-                    $(selector + '-search').selectize()[0].selectize.swapOnChange();
+                    // $(selector + '-search').selectize()[0].selectize.swapOnChange();
                 }
                 else {
                     $(selector + '-search').selectize({

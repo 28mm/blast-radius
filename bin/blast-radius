@@ -17,6 +17,8 @@ from blastradius.handlers.apply import Apply
 from blastradius.handlers.terraform import Terraform
 from blastradius.server.server import app
 
+from blastradius.server.server import simple_graph
+
 def main():
 
     parser = parser = argparse.ArgumentParser(description='blast-radius: Interactive Terraform Graph Visualizations')
@@ -28,7 +30,8 @@ def main():
     output_group.add_argument('--dot', action='store_const', const=True, default=False, help='print the graphviz/dot representation of the Terraform graph')
     output_group.add_argument('--svg', action='store_const', const=True, default=False, help='print the svg representation of the Terraform graph')
     output_group.add_argument('--serve', action='store_const', const=True, default=False, help='spins up a webserver with an interactive Terraform graph')
-    
+    output_group.add_argument('--svg-ext', action='store_const', const=True, default=False, help='download the simple svg of modified svg representation of the Terraform graph')
+
     parser.add_argument('--graph', type=str, help='`terraform graph` output (defaults to stdin)', default=sys.stdin)
 
     # options to limit, re-focus, and re-center presentation of larger graphs.
@@ -49,11 +52,11 @@ def main():
         app.run(host='0.0.0.0',port=args.port)
         sys.exit(0)
     
-    elif args.json or args.dot or args.svg:
+    elif args.json or args.dot or args.svg or args.svg_ext:
         if args.graph is sys.stdin:
             dot = DotGraph('', file_contents=sys.stdin.read())
         else:
-            dot = DotGraph(args.graph)
+            dot = DotGraph('',file_contents=simple_graph())
 
         # we might not want to show every node in the depedency graph
         # specifying --module-depth is an easy way to limit detail
@@ -76,18 +79,22 @@ def main():
                 parser.print_help()
                 sys.exit(1)
             dot.focus(f_node)
-
+        
         if args.json:
             tf = Terraform(args.directory)
             for node in dot.nodes:
                 node.definition = tf.get_def(node)
-        
-        if args.json:
-            print(dot.json())
+            f = open("visualization.json", "a")
+            f.write(dot.json())
+            f.close()
         elif args.dot:
             print(dot.dot())
         elif args.svg:
             print(dot.svg())
+        elif args.svg_ext:
+            f = open("visualization.svg", "a")
+            f.write(dot.svg())
+            f.close()
     else:
         parser.print_help()
 

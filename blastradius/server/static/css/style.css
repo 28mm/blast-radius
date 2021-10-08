@@ -3,12 +3,14 @@ h1, h2, h3, h4, p {
 }
 
 p.explain {
-  font-family: monospace;
+  font-family: Arial;
+  font-weight:400;
   white-space: pre;
 }
 
 h3.explain {
-  font-family: monospace;
+  font-family: Arial;
+  font-weight:400;
 }
 
 path.link {
@@ -24,7 +26,7 @@ circle {
 
 text {
   fill: #000;
-  font: 10px sans-serif;
+  font: 40px sans-serif;
   pointer-events: none;
 }
 
@@ -48,12 +50,13 @@ div.graph svg {
 }
 
 .diagmenu .dropdown-item {
-  font-family: 'courier new';
+  font-family: 'Arial';
   /*font-size: 14px;*/
 }
 
 .dropdown-menu div label {
-  font-family: 'courier new';
+  font-family: 'Arial';
+  font-weight: bold;
 }
 
 /* tooltip stuff */
@@ -74,7 +77,7 @@ div.graph svg {
 .d3-tip p {
   font-weight: normal;
   line-height: 1.2;
-  font-family: 'courier new', 'monaco', fixed-width;
+  font-family: 'Arial', 'sans-serif', fixed-width;
   font-size: 11px;
 }
 
@@ -94,7 +97,8 @@ span.title {
 span.sbox-listing {
   display: inline-block;
   font-size: 12px;
-  font-family: "Courier New";
+  font-family: "Arial";
+  font-weight: 900;
   line-height: 18px;
   color: black;
   margin: 1px;
@@ -104,6 +108,7 @@ span.sbox-listing {
 span.dep {
       line-height: 15px;
       font-size: 12px;
+      font-weight: 900;
       color: white;
       display: inline-block;
       margin: 1px;
@@ -132,6 +137,78 @@ span.dep {
 }
 
 g.node text {
-        font-family: 'consolas', 'monaco', 'fixed-width';
-        font-size: 8px;
+  font-family: 'Arial', 'sans-serif', 'fixed-width';
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.navbar-nav>li {
+  padding-left: 6px;
+}
+
+.navbar-brand {
+  font-family: 'Arial';
+  font-weight: 900;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+}
+.sidenav {
+height: 100%;
+width: 0;
+position: fixed;
+z-index: 1;
+top: 0;
+right: 0;
+background-color: #D3D3D3;
+
+transition: 0.5s;
+padding-top: 60px;
+color: #000;
+overflow: auto;
+}
+
+.sidenav a {
+padding: 8px 8px 8px 32px;
+text-decoration: none;
+font-size: 25px;
+color: #818181;
+display: block;
+transition: 0.3s;
+
+}
+
+.sidenav a:hover {
+color: #f1f1f1;
+}
+
+.square {
+height: 10px;
+width: 10px;
+
+}
+
+.sidenav .closebtn {
+
+position: absolute;
+top: 60;
+right: 20px;
+font-size: 16px;
+margin-right: 0px;
+color: grey;
+}
+
+
+table, td {
+/* /* position: absolute; */
+margin-top: 60;
+margin-left: 20; 
+border: 1px solid black;
+}
+
+
+@media screen and (max-height: 450px) {
+.sidenav {padding-top: 15px;}
+.sidenav a {font-size: 18px;}
 }
