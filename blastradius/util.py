@@ -1,6 +1,6 @@
 import re
 import os
-import collections
+import collections.abc
 
 class Re:
     '''A bit of a hack to simplify conditionals with 
@@ -62,7 +62,7 @@ class Counter:
         self.count += 1
         return self.count
 
-class OrderedSet(collections.MutableSet):
+class OrderedSet(collections.abc.MutableSet):
     '''ordered set implementation linked from StackOverflow
     http://code.activestate.com/recipes/576694/
     https://stackoverflow.com/questions/1653970/does-python-have-an-ordered-set'''

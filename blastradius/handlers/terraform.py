@@ -9,7 +9,7 @@ import hcl2 as hcl    # hashicorp configuration language (.tf)
 
 class Terraform:
     """Finds terraform/hcl files (*.tf) in CWD or a supplied directory, parses
-    them with pyhcl, and exposes the configuration via self.config."""
+    them with hcl2, and exposes the configuration via self.config."""
 
     def __init__(self, directory=None, settings=None):
         self.settings = settings if settings else {}

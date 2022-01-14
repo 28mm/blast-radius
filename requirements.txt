@@ -1,7 +1,7 @@
-setuptools==41.0.1
-requests==2.22.0
-Jinja2==2.10.1
-Flask==1.0.3
-beautifulsoup4==4.7.1
+setuptools
+requests
+Jinja2
+Flask
+beautifulsoup4
 ply>=3.11
-python-hcl2==3.0.1 
+python-hcl2
