@@ -14,6 +14,7 @@ with open("requirements.txt") as f:
 setup(
     name='blastradius',
     version='0.1.25',
+    python_requires='>=3.10.0',
     description='Interactive Terraform graph visualizations',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -22,4 +23,5 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     scripts=['bin/blast-radius'],
     install_requires=reqs,
+    include_package_data=True
 )

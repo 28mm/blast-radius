@@ -124,7 +124,7 @@ You can read more details in the [documentation](doc/embedded.md)
 ## Implementation Details
 
 *Blast Radius* uses the [Graphviz][] package to layout graph diagrams,
-[PyHCL](https://github.com/virtuald/pyhcl) to parse [Terraform][] configuration,
+[python-hcl2](https://github.com/amplify-education/python-hcl2) to parse [Terraform][] configuration,
 and [d3.js](https://d3js.org/) to implement interactive features and animations.
 
 ## Further Reading
