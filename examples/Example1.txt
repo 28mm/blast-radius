@@ -1,0 +1,48 @@
+digraph {
+        compound = "true"
+        newrank = "true"
+        subgraph "root" {
+                "[root] aws_instance.ec2_instance_one (expand)" [label = "aws_instance.ec2_instance_one", shape = "box"]
+                "[root] aws_internet_gateway.igw (expand)" [label = "aws_internet_gateway.igw", shape = "box"]
+                "[root] aws_main_route_table_association.main-rt (expand)" [label = "aws_main_route_table_association.main-rt", shape = "box"]
+                "[root] aws_route.mgmt-default (expand)" [label = "aws_route.mgmt-default", shape = "box"]
+                "[root] aws_route_table.mgmt-rt (expand)" [label = "aws_route_table.mgmt-rt", shape = "box"]
+                "[root] aws_s3_bucket.bucket1 (expand)" [label = "aws_s3_bucket.bucket1", shape = "box"]
+                "[root] aws_s3_bucket_server_side_encryption_configuration.aesbucket1 (expand)" [label = "aws_s3_bucket_server_side_encryption_configuration.aesbucket1", shape = "box"]
+                "[root] aws_security_group.sg (expand)" [label = "aws_security_group.sg", shape = "box"]
+                "[root] aws_subnet.first (expand)" [label = "aws_subnet.first", shape = "box"]
+                "[root] aws_vpc.terraformvpc1 (expand)" [label = "aws_vpc.terraformvpc1", shape = "box"]
+                "[root] output.ec1-public-ip" [label = "output.ec1-public-ip", shape = "note"]
+                "[root] output.vpc-id" [label = "output.vpc-id", shape = "note"]
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"]" [label = "provider[\"registry.terraform.io/hashicorp/aws\"]", shape = "diamond"]
+                "[root] var.AWS_ACCESS_KEY_ID" [label = "var.AWS_ACCESS_KEY_ID", shape = "note"]
+                "[root] var.AWS_REGION" [label = "var.AWS_REGION", shape = "note"]
+                "[root] var.AWS_SECRET_ACCESS_KEY" [label = "var.AWS_SECRET_ACCESS_KEY", shape = "note"]
+                "[root] var.FRANKFURTKEY" [label = "var.FRANKFURTKEY", shape = "note"]
+                "[root] aws_instance.ec2_instance_one (expand)" -> "[root] aws_security_group.sg (expand)"
+                "[root] aws_internet_gateway.igw (expand)" -> "[root] aws_vpc.terraformvpc1 (expand)"
+                "[root] aws_main_route_table_association.main-rt (expand)" -> "[root] aws_route_table.mgmt-rt (expand)"
+                "[root] aws_route.mgmt-default (expand)" -> "[root] aws_internet_gateway.igw (expand)"
+                "[root] aws_route.mgmt-default (expand)" -> "[root] aws_route_table.mgmt-rt (expand)"
+                "[root] aws_route_table.mgmt-rt (expand)" -> "[root] aws_vpc.terraformvpc1 (expand)"
+                "[root] aws_s3_bucket.bucket1 (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+                "[root] aws_s3_bucket_server_side_encryption_configuration.aesbucket1 (expand)" -> "[root] aws_s3_bucket.bucket1 (expand)"
+                "[root] aws_security_group.sg (expand)" -> "[root] aws_subnet.first (expand)"
+                "[root] aws_security_group.sg (expand)" -> "[root] local.rulesmap (expand)"
+                "[root] aws_subnet.first (expand)" -> "[root] aws_vpc.terraformvpc1 (expand)"
+                "[root] aws_subnet.first (expand)" -> "[root] var.AWS_REGION"
+                "[root] aws_vpc.terraformvpc1 (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+                "[root] output.ec1-public-ip" -> "[root] aws_instance.ec2_instance_one (expand)"
+                "[root] output.vpc-id" -> "[root] aws_vpc.terraformvpc1 (expand)"
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_instance.ec2_instance_one (expand)"
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_main_route_table_association.main-rt (expand)"
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.mgmt-default (expand)"
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_s3_bucket_server_side_encryption_configuration.aesbucket1 (expand)"
+                "[root] root" -> "[root] output.ec1-public-ip"
+                "[root] root" -> "[root] output.vpc-id"
+                "[root] root" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)"
+                "[root] root" -> "[root] var.AWS_ACCESS_KEY_ID"
+                "[root] root" -> "[root] var.AWS_SECRET_ACCESS_KEY"
+                "[root] root" -> "[root] var.KEY"
+        }
+}

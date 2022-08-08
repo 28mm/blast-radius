@@ -94,6 +94,13 @@ venv.bak/
 .spyderproject
 .spyproject
 
+#IntelliJ IDEA project settings
+.ideas
+.idea
+
+#VS Code project settings
+.vscode
+
 # Rope project settings
 .ropeproject
 
@@ -102,3 +109,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Terraform stuff
+.terraform/
+*.tfstate

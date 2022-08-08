@@ -23,13 +23,13 @@ dist:
 # build docker image
 .PHONY: docker
 docker:
-	-docker build -t 28mm/blast-radius .
+	-docker build -t ianyliu/blast-radius-fork .
 
 # push pypi and docker images to public repos
 .PHONY: publish
 publish:
 	-twine upload dist/*
-	-docker push 28mm/blast-radius:latest
+	-docker push ianyliu/blast-radius-fork:latest
 
 # rebuild categories.js from upstream docs
 .PHONY: categories

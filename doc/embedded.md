@@ -2,7 +2,7 @@
 
 You may wish to embed figures produced with *Blast Radius* in other documents. You will need the following:
 
- 1. an `svg` file and `json` document representing the graph and its layout. These are produced with *Blast Radius*, as follows
+ 1. An `svg` file and `json` document representing the graph and its layout. These are produced with *Blast Radius*, as follows
 
 ````bash
 [...]$ terraform graph | blast-radius --svg > graph.svg
@@ -28,4 +28,4 @@ blastradius('#graph', '/graph.svg', '/graph.json');
 </script>
 ````
 
-That's it. Ideas to simplify this process strongly desired. 
+That's it. Ideas to simplify this process are strongly desired. 

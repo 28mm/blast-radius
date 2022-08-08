@@ -4,4 +4,8 @@ Jinja2==2.10.1
 Flask==1.0.3
 beautifulsoup4==4.7.1
 ply>=3.11
-pyhcl==0.3.12
+python-hcl2==3.0.1
+markupsafe==2.0.1
+pyhcl<=0.4.4
+itsdangerous==2.0.1
+# hcl<=0.2.1

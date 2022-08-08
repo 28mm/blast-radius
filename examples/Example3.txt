@@ -1,0 +1,410 @@
+digraph {
+	compound = "true"
+	newrank = "true"
+	subgraph "root" {
+		"[root] aws_ec2_transit_gateway.central-tgw" [label = "aws_ec2_transit_gateway.central-tgw", shape = "box"]
+		"[root] aws_ec2_transit_gateway.central-tgw (expand)" [label = "aws_ec2_transit_gateway.central-tgw", shape = "box"]
+		"[root] aws_ec2_transit_gateway.west-tgw" [label = "aws_ec2_transit_gateway.west-tgw", shape = "box"]
+		"[root] aws_ec2_transit_gateway.west-tgw (expand)" [label = "aws_ec2_transit_gateway.west-tgw", shape = "box"]
+		"[root] aws_ec2_transit_gateway_peering_attachment.central-west" [label = "aws_ec2_transit_gateway_peering_attachment.central-west", shape = "box"]
+		"[root] aws_ec2_transit_gateway_peering_attachment.central-west (expand)" [label = "aws_ec2_transit_gateway_peering_attachment.central-west", shape = "box"]
+		"[root] aws_ec2_transit_gateway_peering_attachment_accepter.west" [label = "aws_ec2_transit_gateway_peering_attachment_accepter.west", shape = "box"]
+		"[root] aws_ec2_transit_gateway_peering_attachment_accepter.west (expand)" [label = "aws_ec2_transit_gateway_peering_attachment_accepter.west", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route.central-to-10_20" [label = "aws_ec2_transit_gateway_route.central-to-10_20", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route.central-to-10_20 (expand)" [label = "aws_ec2_transit_gateway_route.central-to-10_20", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route.central-to-10_30" [label = "aws_ec2_transit_gateway_route.central-to-10_30", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route.central-to-10_30 (expand)" [label = "aws_ec2_transit_gateway_route.central-to-10_30", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route.central-to-10_99" [label = "aws_ec2_transit_gateway_route.central-to-10_99", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route.central-to-10_99 (expand)" [label = "aws_ec2_transit_gateway_route.central-to-10_99", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route.west-to-10_00" [label = "aws_ec2_transit_gateway_route.west-to-10_00", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route.west-to-10_00 (expand)" [label = "aws_ec2_transit_gateway_route.west-to-10_00", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table.central-rt" [label = "aws_ec2_transit_gateway_route_table.central-rt", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table.central-rt (expand)" [label = "aws_ec2_transit_gateway_route_table.central-rt", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table.west-rt" [label = "aws_ec2_transit_gateway_route_table.west-rt", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table.west-rt (expand)" [label = "aws_ec2_transit_gateway_route_table.west-rt", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_association.central-rtassoc" [label = "aws_ec2_transit_gateway_route_table_association.central-rtassoc", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_association.central-rtassoc (expand)" [label = "aws_ec2_transit_gateway_route_table_association.central-rtassoc", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc" [label = "aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc (expand)" [label = "aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc" [label = "aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc (expand)" [label = "aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_association.west-rtassoc" [label = "aws_ec2_transit_gateway_route_table_association.west-rtassoc", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_association.west-rtassoc (expand)" [label = "aws_ec2_transit_gateway_route_table_association.west-rtassoc", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_propagation.central-propag" [label = "aws_ec2_transit_gateway_route_table_propagation.central-propag", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_propagation.central-propag (expand)" [label = "aws_ec2_transit_gateway_route_table_propagation.central-propag", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_propagation.west-propag" [label = "aws_ec2_transit_gateway_route_table_propagation.west-propag", shape = "box"]
+		"[root] aws_ec2_transit_gateway_route_table_propagation.west-propag (expand)" [label = "aws_ec2_transit_gateway_route_table_propagation.west-propag", shape = "box"]
+		"[root] aws_ec2_transit_gateway_vpc_attachment.central-hub" [label = "aws_ec2_transit_gateway_vpc_attachment.central-hub", shape = "box"]
+		"[root] aws_ec2_transit_gateway_vpc_attachment.central-hub (expand)" [label = "aws_ec2_transit_gateway_vpc_attachment.central-hub", shape = "box"]
+		"[root] aws_ec2_transit_gateway_vpc_attachment.west-remote" [label = "aws_ec2_transit_gateway_vpc_attachment.west-remote", shape = "box"]
+		"[root] aws_ec2_transit_gateway_vpc_attachment.west-remote (expand)" [label = "aws_ec2_transit_gateway_vpc_attachment.west-remote", shape = "box"]
+		"[root] aws_instance.ec2 (expand)" [label = "aws_instance.ec2", shape = "box"]
+		"[root] aws_instance.ec2[0]" [label = "aws_instance.ec2", shape = "box"]
+		"[root] aws_instance.ec2[1]" [label = "aws_instance.ec2", shape = "box"]
+		"[root] aws_instance.ec2[2]" [label = "aws_instance.ec2", shape = "box"]
+		"[root] aws_instance.ec2remote" [label = "aws_instance.ec2remote", shape = "box"]
+		"[root] aws_instance.ec2remote (expand)" [label = "aws_instance.ec2remote", shape = "box"]
+		"[root] aws_internet_gateway.igw (expand)" [label = "aws_internet_gateway.igw", shape = "box"]
+		"[root] aws_internet_gateway.igw[\"0\"]" [label = "aws_internet_gateway.igw", shape = "box"]
+		"[root] aws_internet_gateway.igw[\"1\"]" [label = "aws_internet_gateway.igw", shape = "box"]
+		"[root] aws_internet_gateway.igw[\"2\"]" [label = "aws_internet_gateway.igw", shape = "box"]
+		"[root] aws_internet_gateway.remoteigw" [label = "aws_internet_gateway.remoteigw", shape = "box"]
+		"[root] aws_internet_gateway.remoteigw (expand)" [label = "aws_internet_gateway.remoteigw", shape = "box"]
+		"[root] aws_main_route_table_association.remotertassoc" [label = "aws_main_route_table_association.remotertassoc", shape = "box"]
+		"[root] aws_main_route_table_association.remotertassoc (expand)" [label = "aws_main_route_table_association.remotertassoc", shape = "box"]
+		"[root] aws_main_route_table_association.rtassoc (expand)" [label = "aws_main_route_table_association.rtassoc", shape = "box"]
+		"[root] aws_main_route_table_association.rtassoc[0]" [label = "aws_main_route_table_association.rtassoc", shape = "box"]
+		"[root] aws_main_route_table_association.rtassoc[1]" [label = "aws_main_route_table_association.rtassoc", shape = "box"]
+		"[root] aws_main_route_table_association.rtassoc[2]" [label = "aws_main_route_table_association.rtassoc", shape = "box"]
+		"[root] aws_route.defaultRoutes (expand)" [label = "aws_route.defaultRoutes", shape = "box"]
+		"[root] aws_route.defaultRoutes[0]" [label = "aws_route.defaultRoutes", shape = "box"]
+		"[root] aws_route.defaultRoutes[1]" [label = "aws_route.defaultRoutes", shape = "box"]
+		"[root] aws_route.defaultRoutes[2]" [label = "aws_route.defaultRoutes", shape = "box"]
+		"[root] aws_route.hubToRemote" [label = "aws_route.hubToRemote", shape = "box"]
+		"[root] aws_route.hubToRemote (expand)" [label = "aws_route.hubToRemote", shape = "box"]
+		"[root] aws_route.remoteDefaultRoute" [label = "aws_route.remoteDefaultRoute", shape = "box"]
+		"[root] aws_route.remoteDefaultRoute (expand)" [label = "aws_route.remoteDefaultRoute", shape = "box"]
+		"[root] aws_route.remoteRoutes" [label = "aws_route.remoteRoutes", shape = "box"]
+		"[root] aws_route.remoteRoutes (expand)" [label = "aws_route.remoteRoutes", shape = "box"]
+		"[root] aws_route.vpcRoutes (expand)" [label = "aws_route.vpcRoutes", shape = "box"]
+		"[root] aws_route.vpcRoutes[\"0\"]" [label = "aws_route.vpcRoutes", shape = "box"]
+		"[root] aws_route.vpcRoutes[\"1\"]" [label = "aws_route.vpcRoutes", shape = "box"]
+		"[root] aws_route.vpcRoutes[\"2\"]" [label = "aws_route.vpcRoutes", shape = "box"]
+		"[root] aws_route.vpcRoutes[\"3\"]" [label = "aws_route.vpcRoutes", shape = "box"]
+		"[root] aws_route.vpcRoutes[\"4\"]" [label = "aws_route.vpcRoutes", shape = "box"]
+		"[root] aws_route.vpcRoutes[\"5\"]" [label = "aws_route.vpcRoutes", shape = "box"]
+		"[root] aws_route_table.remotert" [label = "aws_route_table.remotert", shape = "box"]
+		"[root] aws_route_table.remotert (expand)" [label = "aws_route_table.remotert", shape = "box"]
+		"[root] aws_route_table.rt (expand)" [label = "aws_route_table.rt", shape = "box"]
+		"[root] aws_route_table.rt[\"0\"]" [label = "aws_route_table.rt", shape = "box"]
+		"[root] aws_route_table.rt[\"1\"]" [label = "aws_route_table.rt", shape = "box"]
+		"[root] aws_route_table.rt[\"2\"]" [label = "aws_route_table.rt", shape = "box"]
+		"[root] aws_security_group.remotesg" [label = "aws_security_group.remotesg", shape = "box"]
+		"[root] aws_security_group.remotesg (expand)" [label = "aws_security_group.remotesg", shape = "box"]
+		"[root] aws_security_group.sg (expand)" [label = "aws_security_group.sg", shape = "box"]
+		"[root] aws_security_group.sg[\"0\"]" [label = "aws_security_group.sg", shape = "box"]
+		"[root] aws_security_group.sg[\"1\"]" [label = "aws_security_group.sg", shape = "box"]
+		"[root] aws_security_group.sg[\"2\"]" [label = "aws_security_group.sg", shape = "box"]
+		"[root] aws_subnet.remotesubnet" [label = "aws_subnet.remotesubnet", shape = "box"]
+		"[root] aws_subnet.remotesubnet (expand)" [label = "aws_subnet.remotesubnet", shape = "box"]
+		"[root] aws_subnet.subnet (expand)" [label = "aws_subnet.subnet", shape = "box"]
+		"[root] aws_subnet.subnet[\"0\"]" [label = "aws_subnet.subnet", shape = "box"]
+		"[root] aws_subnet.subnet[\"1\"]" [label = "aws_subnet.subnet", shape = "box"]
+		"[root] aws_subnet.subnet[\"2\"]" [label = "aws_subnet.subnet", shape = "box"]
+		"[root] aws_vpc.myvpc (expand)" [label = "aws_vpc.myvpc", shape = "box"]
+		"[root] aws_vpc.myvpc[\"0\"]" [label = "aws_vpc.myvpc", shape = "box"]
+		"[root] aws_vpc.myvpc[\"1\"]" [label = "aws_vpc.myvpc", shape = "box"]
+		"[root] aws_vpc.myvpc[\"2\"]" [label = "aws_vpc.myvpc", shape = "box"]
+		"[root] aws_vpc.remotevpc" [label = "aws_vpc.remotevpc", shape = "box"]
+		"[root] aws_vpc.remotevpc (expand)" [label = "aws_vpc.remotevpc", shape = "box"]
+		"[root] aws_vpc_peering_connection.eastToHub" [label = "aws_vpc_peering_connection.eastToHub", shape = "box"]
+		"[root] aws_vpc_peering_connection.eastToHub (expand)" [label = "aws_vpc_peering_connection.eastToHub", shape = "box"]
+		"[root] aws_vpc_peering_connection.eastToWest" [label = "aws_vpc_peering_connection.eastToWest", shape = "box"]
+		"[root] aws_vpc_peering_connection.eastToWest (expand)" [label = "aws_vpc_peering_connection.eastToWest", shape = "box"]
+		"[root] aws_vpc_peering_connection.westToHub" [label = "aws_vpc_peering_connection.westToHub", shape = "box"]
+		"[root] aws_vpc_peering_connection.westToHub (expand)" [label = "aws_vpc_peering_connection.westToHub", shape = "box"]
+		"[root] data.aws_ami.amazon_linux (expand)" [label = "data.aws_ami.amazon_linux", shape = "box"]
+		"[root] data.aws_ami.amazon_linux_remote (expand)" [label = "data.aws_ami.amazon_linux_remote", shape = "box"]
+		"[root] data.aws_region.peer (expand)" [label = "data.aws_region.peer", shape = "box"]
+		"[root] output.instance_ip_addresses" [label = "output.instance_ip_addresses", shape = "note"]
+		"[root] output.instance_pubip_addresses" [label = "output.instance_pubip_addresses", shape = "note"]
+		"[root] output.remoteInstance_ip_address" [label = "output.remoteInstance_ip_address", shape = "note"]
+		"[root] output.remoteInstance_pubip_address" [label = "output.remoteInstance_pubip_address", shape = "note"]
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"]" [label = "provider[\"registry.terraform.io/hashicorp/aws\"]", shape = "diamond"]
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1" [label = "provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1", shape = "diamond"]
+		"[root] aws_ec2_transit_gateway.central-tgw (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway.central-tgw" -> "[root] aws_ec2_transit_gateway.central-tgw (expand)"
+		"[root] aws_ec2_transit_gateway.west-tgw (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_ec2_transit_gateway.west-tgw" -> "[root] aws_ec2_transit_gateway.west-tgw (expand)"
+		"[root] aws_ec2_transit_gateway_peering_attachment.central-west (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway_peering_attachment.central-west" -> "[root] aws_ec2_transit_gateway.central-tgw"
+		"[root] aws_ec2_transit_gateway_peering_attachment.central-west" -> "[root] aws_ec2_transit_gateway.west-tgw"
+		"[root] aws_ec2_transit_gateway_peering_attachment.central-west" -> "[root] aws_ec2_transit_gateway_peering_attachment.central-west (expand)"
+		"[root] aws_ec2_transit_gateway_peering_attachment.central-west" -> "[root] data.aws_region.peer (expand)"
+		"[root] aws_ec2_transit_gateway_peering_attachment_accepter.west (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_ec2_transit_gateway_peering_attachment_accepter.west" -> "[root] aws_ec2_transit_gateway_peering_attachment.central-west"
+		"[root] aws_ec2_transit_gateway_peering_attachment_accepter.west" -> "[root] aws_ec2_transit_gateway_peering_attachment_accepter.west (expand)"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_20 (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_20" -> "[root] aws_ec2_transit_gateway_route.central-to-10_20 (expand)"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_20" -> "[root] aws_ec2_transit_gateway_route_table.central-rt"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_20" -> "[root] aws_ec2_transit_gateway_vpc_attachment.central-hub"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_30 (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_30" -> "[root] aws_ec2_transit_gateway_route.central-to-10_30 (expand)"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_30" -> "[root] aws_ec2_transit_gateway_route_table.central-rt"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_30" -> "[root] aws_ec2_transit_gateway_vpc_attachment.central-hub"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_99 (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_99" -> "[root] aws_ec2_transit_gateway_peering_attachment.central-west"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_99" -> "[root] aws_ec2_transit_gateway_route.central-to-10_99 (expand)"
+		"[root] aws_ec2_transit_gateway_route.central-to-10_99" -> "[root] aws_ec2_transit_gateway_route_table.central-rt"
+		"[root] aws_ec2_transit_gateway_route.west-to-10_00 (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_ec2_transit_gateway_route.west-to-10_00" -> "[root] aws_ec2_transit_gateway_peering_attachment.central-west"
+		"[root] aws_ec2_transit_gateway_route.west-to-10_00" -> "[root] aws_ec2_transit_gateway_route.west-to-10_00 (expand)"
+		"[root] aws_ec2_transit_gateway_route.west-to-10_00" -> "[root] aws_ec2_transit_gateway_route_table.west-rt"
+		"[root] aws_ec2_transit_gateway_route_table.central-rt (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway_route_table.central-rt" -> "[root] aws_ec2_transit_gateway.central-tgw"
+		"[root] aws_ec2_transit_gateway_route_table.central-rt" -> "[root] aws_ec2_transit_gateway_route_table.central-rt (expand)"
+		"[root] aws_ec2_transit_gateway_route_table.west-rt (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_ec2_transit_gateway_route_table.west-rt" -> "[root] aws_ec2_transit_gateway.west-tgw"
+		"[root] aws_ec2_transit_gateway_route_table.west-rt" -> "[root] aws_ec2_transit_gateway_route_table.west-rt (expand)"
+		"[root] aws_ec2_transit_gateway_route_table_association.central-rtassoc (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway_route_table_association.central-rtassoc" -> "[root] aws_ec2_transit_gateway_route_table.central-rt"
+		"[root] aws_ec2_transit_gateway_route_table_association.central-rtassoc" -> "[root] aws_ec2_transit_gateway_route_table_association.central-rtassoc (expand)"
+		"[root] aws_ec2_transit_gateway_route_table_association.central-rtassoc" -> "[root] aws_ec2_transit_gateway_vpc_attachment.central-hub"
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc" -> "[root] aws_ec2_transit_gateway_peering_attachment.central-west"
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc" -> "[root] aws_ec2_transit_gateway_route_table.central-rt"
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc" -> "[root] aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc (expand)"
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc" -> "[root] aws_ec2_transit_gateway_peering_attachment.central-west"
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc" -> "[root] aws_ec2_transit_gateway_route_table.west-rt"
+		"[root] aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc" -> "[root] aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc (expand)"
+		"[root] aws_ec2_transit_gateway_route_table_association.west-rtassoc (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_ec2_transit_gateway_route_table_association.west-rtassoc" -> "[root] aws_ec2_transit_gateway_route_table.west-rt"
+		"[root] aws_ec2_transit_gateway_route_table_association.west-rtassoc" -> "[root] aws_ec2_transit_gateway_route_table_association.west-rtassoc (expand)"
+		"[root] aws_ec2_transit_gateway_route_table_association.west-rtassoc" -> "[root] aws_ec2_transit_gateway_vpc_attachment.west-remote"
+		"[root] aws_ec2_transit_gateway_route_table_propagation.central-propag (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway_route_table_propagation.central-propag" -> "[root] aws_ec2_transit_gateway_route_table.central-rt"
+		"[root] aws_ec2_transit_gateway_route_table_propagation.central-propag" -> "[root] aws_ec2_transit_gateway_route_table_propagation.central-propag (expand)"
+		"[root] aws_ec2_transit_gateway_route_table_propagation.central-propag" -> "[root] aws_ec2_transit_gateway_vpc_attachment.central-hub"
+		"[root] aws_ec2_transit_gateway_route_table_propagation.west-propag (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_ec2_transit_gateway_route_table_propagation.west-propag" -> "[root] aws_ec2_transit_gateway_route_table.west-rt"
+		"[root] aws_ec2_transit_gateway_route_table_propagation.west-propag" -> "[root] aws_ec2_transit_gateway_route_table_propagation.west-propag (expand)"
+		"[root] aws_ec2_transit_gateway_route_table_propagation.west-propag" -> "[root] aws_ec2_transit_gateway_vpc_attachment.west-remote"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.central-hub (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.central-hub" -> "[root] aws_ec2_transit_gateway.central-tgw"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.central-hub" -> "[root] aws_ec2_transit_gateway_vpc_attachment.central-hub (expand)"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.central-hub" -> "[root] aws_subnet.subnet[\"0\"]"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.central-hub" -> "[root] aws_subnet.subnet[\"1\"]"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.central-hub" -> "[root] aws_subnet.subnet[\"2\"]"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.west-remote (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.west-remote" -> "[root] aws_ec2_transit_gateway.west-tgw"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.west-remote" -> "[root] aws_ec2_transit_gateway_vpc_attachment.west-remote (expand)"
+		"[root] aws_ec2_transit_gateway_vpc_attachment.west-remote" -> "[root] aws_subnet.remotesubnet"
+		"[root] aws_instance.ec2 (expand)" -> "[root] local.vpcs (expand)"
+		"[root] aws_instance.ec2 (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_instance.ec2[0]" -> "[root] aws_instance.ec2 (expand)"
+		"[root] aws_instance.ec2[0]" -> "[root] aws_security_group.sg[\"0\"]"
+		"[root] aws_instance.ec2[0]" -> "[root] aws_security_group.sg[\"1\"]"
+		"[root] aws_instance.ec2[0]" -> "[root] aws_security_group.sg[\"2\"]"
+		"[root] aws_instance.ec2[0]" -> "[root] aws_subnet.subnet[\"0\"]"
+		"[root] aws_instance.ec2[0]" -> "[root] aws_subnet.subnet[\"1\"]"
+		"[root] aws_instance.ec2[0]" -> "[root] aws_subnet.subnet[\"2\"]"
+		"[root] aws_instance.ec2[0]" -> "[root] data.aws_ami.amazon_linux (expand)"
+		"[root] aws_instance.ec2[1]" -> "[root] aws_instance.ec2 (expand)"
+		"[root] aws_instance.ec2[1]" -> "[root] aws_security_group.sg[\"0\"]"
+		"[root] aws_instance.ec2[1]" -> "[root] aws_security_group.sg[\"1\"]"
+		"[root] aws_instance.ec2[1]" -> "[root] aws_security_group.sg[\"2\"]"
+		"[root] aws_instance.ec2[1]" -> "[root] aws_subnet.subnet[\"0\"]"
+		"[root] aws_instance.ec2[1]" -> "[root] aws_subnet.subnet[\"1\"]"
+		"[root] aws_instance.ec2[1]" -> "[root] aws_subnet.subnet[\"2\"]"
+		"[root] aws_instance.ec2[1]" -> "[root] data.aws_ami.amazon_linux (expand)"
+		"[root] aws_instance.ec2[2]" -> "[root] aws_instance.ec2 (expand)"
+		"[root] aws_instance.ec2[2]" -> "[root] aws_security_group.sg[\"0\"]"
+		"[root] aws_instance.ec2[2]" -> "[root] aws_security_group.sg[\"1\"]"
+		"[root] aws_instance.ec2[2]" -> "[root] aws_security_group.sg[\"2\"]"
+		"[root] aws_instance.ec2[2]" -> "[root] aws_subnet.subnet[\"0\"]"
+		"[root] aws_instance.ec2[2]" -> "[root] aws_subnet.subnet[\"1\"]"
+		"[root] aws_instance.ec2[2]" -> "[root] aws_subnet.subnet[\"2\"]"
+		"[root] aws_instance.ec2[2]" -> "[root] data.aws_ami.amazon_linux (expand)"
+		"[root] aws_instance.ec2remote (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_instance.ec2remote" -> "[root] aws_instance.ec2remote (expand)"
+		"[root] aws_instance.ec2remote" -> "[root] aws_security_group.remotesg"
+		"[root] aws_instance.ec2remote" -> "[root] aws_subnet.remotesubnet"
+		"[root] aws_instance.ec2remote" -> "[root] data.aws_ami.amazon_linux_remote (expand)"
+		"[root] aws_internet_gateway.igw (expand)" -> "[root] aws_vpc.myvpc[\"0\"]"
+		"[root] aws_internet_gateway.igw (expand)" -> "[root] aws_vpc.myvpc[\"1\"]"
+		"[root] aws_internet_gateway.igw (expand)" -> "[root] aws_vpc.myvpc[\"2\"]"
+		"[root] aws_internet_gateway.igw[\"0\"]" -> "[root] aws_internet_gateway.igw (expand)"
+		"[root] aws_internet_gateway.igw[\"1\"]" -> "[root] aws_internet_gateway.igw (expand)"
+		"[root] aws_internet_gateway.igw[\"2\"]" -> "[root] aws_internet_gateway.igw (expand)"
+		"[root] aws_internet_gateway.remoteigw (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_internet_gateway.remoteigw" -> "[root] aws_internet_gateway.remoteigw (expand)"
+		"[root] aws_internet_gateway.remoteigw" -> "[root] aws_vpc.remotevpc"
+		"[root] aws_main_route_table_association.remotertassoc (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_main_route_table_association.remotertassoc" -> "[root] aws_main_route_table_association.remotertassoc (expand)"
+		"[root] aws_main_route_table_association.remotertassoc" -> "[root] aws_route_table.remotert"
+		"[root] aws_main_route_table_association.rtassoc (expand)" -> "[root] local.subnets (expand)"
+		"[root] aws_main_route_table_association.rtassoc (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_main_route_table_association.rtassoc[0]" -> "[root] aws_main_route_table_association.rtassoc (expand)"
+		"[root] aws_main_route_table_association.rtassoc[0]" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_main_route_table_association.rtassoc[0]" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_main_route_table_association.rtassoc[0]" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_main_route_table_association.rtassoc[1]" -> "[root] aws_main_route_table_association.rtassoc (expand)"
+		"[root] aws_main_route_table_association.rtassoc[1]" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_main_route_table_association.rtassoc[1]" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_main_route_table_association.rtassoc[1]" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_main_route_table_association.rtassoc[2]" -> "[root] aws_main_route_table_association.rtassoc (expand)"
+		"[root] aws_main_route_table_association.rtassoc[2]" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_main_route_table_association.rtassoc[2]" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_main_route_table_association.rtassoc[2]" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_route.defaultRoutes (expand)" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_route.defaultRoutes (expand)" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_route.defaultRoutes (expand)" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_route.defaultRoutes[0]" -> "[root] aws_internet_gateway.igw[\"0\"]"
+		"[root] aws_route.defaultRoutes[0]" -> "[root] aws_internet_gateway.igw[\"1\"]"
+		"[root] aws_route.defaultRoutes[0]" -> "[root] aws_internet_gateway.igw[\"2\"]"
+		"[root] aws_route.defaultRoutes[0]" -> "[root] aws_route.defaultRoutes (expand)"
+		"[root] aws_route.defaultRoutes[1]" -> "[root] aws_internet_gateway.igw[\"0\"]"
+		"[root] aws_route.defaultRoutes[1]" -> "[root] aws_internet_gateway.igw[\"1\"]"
+		"[root] aws_route.defaultRoutes[1]" -> "[root] aws_internet_gateway.igw[\"2\"]"
+		"[root] aws_route.defaultRoutes[1]" -> "[root] aws_route.defaultRoutes (expand)"
+		"[root] aws_route.defaultRoutes[2]" -> "[root] aws_internet_gateway.igw[\"0\"]"
+		"[root] aws_route.defaultRoutes[2]" -> "[root] aws_internet_gateway.igw[\"1\"]"
+		"[root] aws_route.defaultRoutes[2]" -> "[root] aws_internet_gateway.igw[\"2\"]"
+		"[root] aws_route.defaultRoutes[2]" -> "[root] aws_route.defaultRoutes (expand)"
+		"[root] aws_route.hubToRemote (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_route.hubToRemote" -> "[root] aws_ec2_transit_gateway.central-tgw"
+		"[root] aws_route.hubToRemote" -> "[root] aws_route.hubToRemote (expand)"
+		"[root] aws_route.hubToRemote" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_route.hubToRemote" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_route.hubToRemote" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_route.remoteDefaultRoute (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_route.remoteDefaultRoute" -> "[root] aws_internet_gateway.remoteigw"
+		"[root] aws_route.remoteDefaultRoute" -> "[root] aws_route.remoteDefaultRoute (expand)"
+		"[root] aws_route.remoteDefaultRoute" -> "[root] aws_route_table.remotert"
+		"[root] aws_route.remoteRoutes (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_route.remoteRoutes" -> "[root] aws_ec2_transit_gateway.west-tgw"
+		"[root] aws_route.remoteRoutes" -> "[root] aws_route.remoteRoutes (expand)"
+		"[root] aws_route.remoteRoutes" -> "[root] aws_route_table.remotert"
+		"[root] aws_route.vpcRoutes (expand)" -> "[root] local.routes (expand)"
+		"[root] aws_route.vpcRoutes[\"0\"]" -> "[root] aws_route.vpcRoutes (expand)"
+		"[root] aws_route.vpcRoutes[\"0\"]" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_route.vpcRoutes[\"0\"]" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_route.vpcRoutes[\"0\"]" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_route.vpcRoutes[\"1\"]" -> "[root] aws_route.vpcRoutes (expand)"
+		"[root] aws_route.vpcRoutes[\"1\"]" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_route.vpcRoutes[\"1\"]" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_route.vpcRoutes[\"1\"]" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_route.vpcRoutes[\"2\"]" -> "[root] aws_route.vpcRoutes (expand)"
+		"[root] aws_route.vpcRoutes[\"2\"]" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_route.vpcRoutes[\"2\"]" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_route.vpcRoutes[\"2\"]" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_route.vpcRoutes[\"3\"]" -> "[root] aws_route.vpcRoutes (expand)"
+		"[root] aws_route.vpcRoutes[\"3\"]" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_route.vpcRoutes[\"3\"]" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_route.vpcRoutes[\"3\"]" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_route.vpcRoutes[\"4\"]" -> "[root] aws_route.vpcRoutes (expand)"
+		"[root] aws_route.vpcRoutes[\"4\"]" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_route.vpcRoutes[\"4\"]" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_route.vpcRoutes[\"4\"]" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_route.vpcRoutes[\"5\"]" -> "[root] aws_route.vpcRoutes (expand)"
+		"[root] aws_route.vpcRoutes[\"5\"]" -> "[root] aws_route_table.rt[\"0\"]"
+		"[root] aws_route.vpcRoutes[\"5\"]" -> "[root] aws_route_table.rt[\"1\"]"
+		"[root] aws_route.vpcRoutes[\"5\"]" -> "[root] aws_route_table.rt[\"2\"]"
+		"[root] aws_route_table.remotert (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_route_table.remotert" -> "[root] aws_route_table.remotert (expand)"
+		"[root] aws_route_table.remotert" -> "[root] aws_vpc.remotevpc"
+		"[root] aws_route_table.rt (expand)" -> "[root] aws_vpc.myvpc[\"0\"]"
+		"[root] aws_route_table.rt (expand)" -> "[root] aws_vpc.myvpc[\"1\"]"
+		"[root] aws_route_table.rt (expand)" -> "[root] aws_vpc.myvpc[\"2\"]"
+		"[root] aws_route_table.rt[\"0\"]" -> "[root] aws_route_table.rt (expand)"
+		"[root] aws_route_table.rt[\"1\"]" -> "[root] aws_route_table.rt (expand)"
+		"[root] aws_route_table.rt[\"2\"]" -> "[root] aws_route_table.rt (expand)"
+		"[root] aws_security_group.remotesg (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_security_group.remotesg" -> "[root] aws_security_group.remotesg (expand)"
+		"[root] aws_security_group.remotesg" -> "[root] aws_vpc.remotevpc"
+		"[root] aws_security_group.sg (expand)" -> "[root] aws_vpc.myvpc[\"0\"]"
+		"[root] aws_security_group.sg (expand)" -> "[root] aws_vpc.myvpc[\"1\"]"
+		"[root] aws_security_group.sg (expand)" -> "[root] aws_vpc.myvpc[\"2\"]"
+		"[root] aws_security_group.sg[\"0\"]" -> "[root] aws_security_group.sg (expand)"
+		"[root] aws_security_group.sg[\"0\"]" -> "[root] local.rulesmap (expand)"
+		"[root] aws_security_group.sg[\"1\"]" -> "[root] aws_security_group.sg (expand)"
+		"[root] aws_security_group.sg[\"1\"]" -> "[root] local.rulesmap (expand)"
+		"[root] aws_security_group.sg[\"2\"]" -> "[root] aws_security_group.sg (expand)"
+		"[root] aws_security_group.sg[\"2\"]" -> "[root] local.rulesmap (expand)"
+		"[root] aws_subnet.remotesubnet (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_subnet.remotesubnet" -> "[root] aws_subnet.remotesubnet (expand)"
+		"[root] aws_subnet.remotesubnet" -> "[root] aws_vpc.remotevpc"
+		"[root] aws_subnet.remotesubnet" -> "[root] local.remoteAz (expand)"
+		"[root] aws_subnet.remotesubnet" -> "[root] local.remoteSubnet (expand)"
+		"[root] aws_subnet.subnet (expand)" -> "[root] local.subnets (expand)"
+		"[root] aws_subnet.subnet (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_subnet.subnet[\"0\"]" -> "[root] aws_subnet.subnet (expand)"
+		"[root] aws_subnet.subnet[\"0\"]" -> "[root] aws_vpc.myvpc[\"0\"]"
+		"[root] aws_subnet.subnet[\"0\"]" -> "[root] aws_vpc.myvpc[\"1\"]"
+		"[root] aws_subnet.subnet[\"0\"]" -> "[root] aws_vpc.myvpc[\"2\"]"
+		"[root] aws_subnet.subnet[\"1\"]" -> "[root] aws_subnet.subnet (expand)"
+		"[root] aws_subnet.subnet[\"1\"]" -> "[root] aws_vpc.myvpc[\"0\"]"
+		"[root] aws_subnet.subnet[\"1\"]" -> "[root] aws_vpc.myvpc[\"1\"]"
+		"[root] aws_subnet.subnet[\"1\"]" -> "[root] aws_vpc.myvpc[\"2\"]"
+		"[root] aws_subnet.subnet[\"2\"]" -> "[root] aws_subnet.subnet (expand)"
+		"[root] aws_subnet.subnet[\"2\"]" -> "[root] aws_vpc.myvpc[\"0\"]"
+		"[root] aws_subnet.subnet[\"2\"]" -> "[root] aws_vpc.myvpc[\"1\"]"
+		"[root] aws_subnet.subnet[\"2\"]" -> "[root] aws_vpc.myvpc[\"2\"]"
+		"[root] aws_vpc.myvpc (expand)" -> "[root] local.vpcs (expand)"
+		"[root] aws_vpc.myvpc (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_vpc.myvpc[\"0\"]" -> "[root] aws_vpc.myvpc (expand)"
+		"[root] aws_vpc.myvpc[\"1\"]" -> "[root] aws_vpc.myvpc (expand)"
+		"[root] aws_vpc.myvpc[\"2\"]" -> "[root] aws_vpc.myvpc (expand)"
+		"[root] aws_vpc.remotevpc (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] aws_vpc.remotevpc" -> "[root] aws_vpc.remotevpc (expand)"
+		"[root] aws_vpc.remotevpc" -> "[root] local.remoteCidrBlock (expand)"
+		"[root] aws_vpc_peering_connection.eastToHub (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_vpc_peering_connection.eastToHub" -> "[root] aws_vpc.myvpc[\"0\"]"
+		"[root] aws_vpc_peering_connection.eastToHub" -> "[root] aws_vpc.myvpc[\"1\"]"
+		"[root] aws_vpc_peering_connection.eastToHub" -> "[root] aws_vpc.myvpc[\"2\"]"
+		"[root] aws_vpc_peering_connection.eastToHub" -> "[root] aws_vpc_peering_connection.eastToHub (expand)"
+		"[root] aws_vpc_peering_connection.eastToWest (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_vpc_peering_connection.eastToWest" -> "[root] aws_vpc.myvpc[\"0\"]"
+		"[root] aws_vpc_peering_connection.eastToWest" -> "[root] aws_vpc.myvpc[\"1\"]"
+		"[root] aws_vpc_peering_connection.eastToWest" -> "[root] aws_vpc.myvpc[\"2\"]"
+		"[root] aws_vpc_peering_connection.eastToWest" -> "[root] aws_vpc_peering_connection.eastToWest (expand)"
+		"[root] aws_vpc_peering_connection.westToHub (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] aws_vpc_peering_connection.westToHub" -> "[root] aws_vpc.myvpc[\"0\"]"
+		"[root] aws_vpc_peering_connection.westToHub" -> "[root] aws_vpc.myvpc[\"1\"]"
+		"[root] aws_vpc_peering_connection.westToHub" -> "[root] aws_vpc.myvpc[\"2\"]"
+		"[root] aws_vpc_peering_connection.westToHub" -> "[root] aws_vpc_peering_connection.westToHub (expand)"
+		"[root] data.aws_ami.amazon_linux (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] data.aws_ami.amazon_linux_remote (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] data.aws_region.peer (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1"
+		"[root] local.routes (expand)" -> "[root] aws_vpc_peering_connection.eastToHub"
+		"[root] local.routes (expand)" -> "[root] aws_vpc_peering_connection.eastToWest"
+		"[root] local.routes (expand)" -> "[root] aws_vpc_peering_connection.westToHub"
+		"[root] output.instance_ip_addresses" -> "[root] aws_instance.ec2[0]"
+		"[root] output.instance_ip_addresses" -> "[root] aws_instance.ec2[1]"
+		"[root] output.instance_ip_addresses" -> "[root] aws_instance.ec2[2]"
+		"[root] output.instance_pubip_addresses" -> "[root] aws_instance.ec2[0]"
+		"[root] output.instance_pubip_addresses" -> "[root] aws_instance.ec2[1]"
+		"[root] output.instance_pubip_addresses" -> "[root] aws_instance.ec2[2]"
+		"[root] output.remoteInstance_ip_address" -> "[root] aws_instance.ec2remote"
+		"[root] output.remoteInstance_pubip_address" -> "[root] aws_instance.ec2remote"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_ec2_transit_gateway_route.central-to-10_20"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_ec2_transit_gateway_route.central-to-10_30"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_ec2_transit_gateway_route.central-to-10_99"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_ec2_transit_gateway_route_table_association.central-rtassoc"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_ec2_transit_gateway_route_table_association.peering-central-rtassoc"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_ec2_transit_gateway_route_table_propagation.central-propag"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_instance.ec2[0]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_instance.ec2[1]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_instance.ec2[2]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_main_route_table_association.rtassoc[0]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_main_route_table_association.rtassoc[1]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_main_route_table_association.rtassoc[2]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.defaultRoutes[0]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.defaultRoutes[1]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.defaultRoutes[2]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.hubToRemote"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.vpcRoutes[\"0\"]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.vpcRoutes[\"1\"]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.vpcRoutes[\"2\"]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.vpcRoutes[\"3\"]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.vpcRoutes[\"4\"]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.vpcRoutes[\"5\"]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)" -> "[root] aws_ec2_transit_gateway_peering_attachment_accepter.west"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)" -> "[root] aws_ec2_transit_gateway_route.west-to-10_00"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)" -> "[root] aws_ec2_transit_gateway_route_table_association.peering-west-rtassoc"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)" -> "[root] aws_ec2_transit_gateway_route_table_association.west-rtassoc"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)" -> "[root] aws_ec2_transit_gateway_route_table_propagation.west-propag"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)" -> "[root] aws_instance.ec2remote"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)" -> "[root] aws_main_route_table_association.remotertassoc"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)" -> "[root] aws_route.remoteDefaultRoute"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)" -> "[root] aws_route.remoteRoutes"
+		"[root] root" -> "[root] output.instance_ip_addresses"
+		"[root] root" -> "[root] output.instance_pubip_addresses"
+		"[root] root" -> "[root] output.remoteInstance_ip_address"
+		"[root] root" -> "[root] output.remoteInstance_pubip_address"
+		"[root] root" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)"
+		"[root] root" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"].eu-west-1 (close)"
+	}
+}
+

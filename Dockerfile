@@ -1,5 +1,5 @@
-ARG TF_VERSION=0.12.12
-ARG PYTHON_VERSION=3.7
+ARG TF_VERSION=1.2.5
+ARG PYTHON_VERSION=3.8
 
 FROM hashicorp/terraform:$TF_VERSION AS terraform
 
@@ -8,7 +8,7 @@ RUN pip install -U pip ply \
  && apk add --update --no-cache graphviz ttf-freefont
 
 COPY --from=terraform /bin/terraform /bin/terraform
-COPY ./docker-entrypoint.sh /bin/docker-entrypoint.sh
+COPY ./Docker/docker-entrypoint.sh /bin/docker-entrypoint.sh
 RUN chmod +x /bin/docker-entrypoint.sh
 
 WORKDIR /src
