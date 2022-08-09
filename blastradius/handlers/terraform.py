@@ -63,8 +63,24 @@ class Terraform:
                 # AWS S3 buckets
                 elif re.match(r's3.*\.amazonaws\.com', source):
                     continue
-                # fixme path join. eek.
-                self.modules[name] = Terraform(directory=self.directory+'/'+source, settings=mod)
+
+                path = os.path.join(self.directory, source)
+                if os.path.exists(path):
+                    # local module
+                    # fixme path join. eek.
+                    self.modules[name] = Terraform(directory=path, settings=mod)
+                else:
+                    # remote module
+                    # Since terraform must be init'd before use, we can
+                    # assume remote modules have been downloaded to .terraform/modules
+                    path = os.path.join(os.getcwd(), '.terraform', 'modules', name)
+
+                    # Get the subdir if any
+                    match = re.match(r'.*(\/\/.*)(?!:)', source)
+                    if re.match(r'.*\/(\/.*)(?!:)', source):
+                        path = os.path.join(path, match.groups()[0])
+
+                    self.modules = Terraform(directory=path, settings=mod)
 
 
     def get_def(self, node, module_depth=0):
