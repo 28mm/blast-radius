@@ -77,8 +77,9 @@ let inputGraph = async () => {
     let graphinput = prompt("Please paste Graphviz DOT script ");
 
     if (graphinput != null) {
-        if ($("div.tabcontent").last()[0] != null ) {
-            let prevNumber = parseInt($("div.tabcontent").last()[0].id.split("-")[1])
+        let lastTabContent = $("div.tabcontent").last()[0]
+        if (lastTabContent != null ) {
+            let prevNumber = parseInt(lastTabContent.id.split("-")[1])
             let curNumber = parseInt(prevNumber) + 1
             let selector = "#graph-" + curNumber;
             await insertTabContent(prevNumber)
@@ -100,6 +101,7 @@ let inputGraph = async () => {
 }
 /**
  * @param {string} filename - The filename
+ * @param {int} tabNumber - The number of the tab (can be found in ID of tab)
  */
 let createTab = (filename, tabNumber) => {
     let newTab = `<li class="nav-item nav-item-tab" id="nav-item-${tabNumber}">
@@ -127,10 +129,12 @@ let createTab = (filename, tabNumber) => {
     }
 
     let firstTabNum = parseInt($("div.tabcontent").first()[0].id.split("-")[1])
+    let firstXButton = $(`#close-tab-${firstTabNum}`);
+
     //If the first tab's X has been removed
-    if ($(`#close-tab-${firstTabNum}`).prop("disabled") | $(`#close-tab-${firstTabNum}`).prop("hidden")) {
-        $(`#close-tab-${firstTabNum}`).prop("disabled", false);
-        $(`#close-tab-${firstTabNum}`).prop("hidden", false);
+    if (firstXButton.prop("disabled") || firstXButton.prop("hidden")) {
+        firstXButton.prop("disabled", false);
+        firstXButton.prop("hidden", false);
     }
 
 }
@@ -177,7 +181,7 @@ let closeTab = (tabNumber) => {
     $(`#tablink-${newLastTabNum}`).click(); //open last tab
 
     //If there's only one tab left after closing the current tab  (first element == last element)
-    if ($("div.tabcontent").last()[0] == $("div.tabcontent").first()[0]) {
+    if ($("div.tabcontent").last()[0] === $("div.tabcontent").first()[0]) {
         $(`#close-tab-${newLastTabNum}`).prop("disabled", true);
         $(`#close-tab-${newLastTabNum}`).prop("hidden", true);
     }
@@ -249,8 +253,7 @@ let insertTabContent = (prevNumber) => {
 
         '<div class="dropdown-item form-check">' +
         '<label class="form-check-label">' +
-        '<input class="form-check-input graph-tooltip-deps" type="checkbox" value="" id="' + graphSelector + '-tooltip-deps"' +
-        'checked>' +
+        '<input class="form-check-input graph-tooltip-deps" type="checkbox" value="" id="' + graphSelector + '-tooltip-deps" checked>' +
         'Dependencies</label></div></div></div></li>' +
         `<li class="nav-item"><button class="btn btn-primary graph-print" id="` + graphSelector + `-print" title="print this page">&nbsp;<i
                 class="fas fa-print"></i></button></li>` + `<li class="nav-item">` + helpButton + `</li>` + `</ul></nav>` +
@@ -377,7 +380,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 var nodes = {};
                 data.nodes.forEach(function (node) {
                     if (!(node.type in resource_groups))
-                    if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
+                    if (node.label === '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
                         node.resource_name = 'root';
                     }
                     node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
@@ -391,13 +394,13 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 div.classList = ["alert alert-danger"];
                 div.textContent = "A server exception has occurred. The graph is still usable but without all features enabled such as filtering content"
                 document.getElementsByClassName("navbar")[0].appendChild(div);
-                edges = [];
+                edges = []
             }
 
 
             // convenient to access edges by their source.
             var edges_by_source = {}
-            for (var i in edges) {
+            for (let i in edges) {
                 if (edges[i].source in edges_by_source)
                     edges_by_source[edges[i].source].push(edges[i]);
                 else
@@ -406,7 +409,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
 
             // convenient access to edges by their target.
             var edges_by_target = {}
-            for (var i in edges) {
+            for (let i in edges) {
                 if (edges[i].target in edges_by_target)
                     edges_by_target[edges[i].target].push(edges[i]);
                 else
@@ -424,13 +427,13 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 var deps_cbox = document.querySelector(selector + '-tooltip-deps');
 
                 if ((!title_cbox) || (!json_cbox) || (!deps_cbox))
-                    return title_html(d) + (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
+                    return title_html(d) + (d.definition.length === 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
 
                 var ttip = '';
                 if (title_cbox.checked)
                     ttip += title_html(d);
                 if (json_cbox.checked)
-                    ttip += (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
+                    ttip += (d.definition.length === 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
                 if (deps_cbox.checked)
                     ttip += child_html(d);
                 return ttip;
@@ -447,7 +450,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             var title_html = function (d) {
                 var node = d;
                 var title = ['<div class="header">']
-                if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                if (node.modules.length <= 1 && node.modules[0] === 'root') {
                     title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.type + '</span>';
                     title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
                 } else {
@@ -466,7 +469,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             var searchbox_listing = function (d) {
                 var node = d;
                 var title = ['<div class="sbox-listings">']
-                if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                if (node.modules.length <= 1 && node.modules[0] === 'root') {
                     if (node.type)
                         title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.type + '</span>';
                     title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
@@ -489,7 +492,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                     edge = edges[i];
                     if (edge.edge_type == edge_types.NORMAL || edge.edge_type == edge_types.HIDDEN) {
                         var node = nodes[edge.target];
-                        if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                        if (node.modules.length <= 1 && node.modules[0] === 'root') {
                             children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.type + '</span>';
                             children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.resource_name + '</span></br>';
                         } else {
@@ -601,11 +604,11 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             // FIXME: these x,y,z-s pad out parameters I haven't looked up,
             // FIXME: but don't seem to be necessary for display
             var node_mousedown = function (d, x, y, z, no_tip_p) {
-                if (sticky_node == d && click_count == 1) {
+                if (sticky_node == d && click_count === 1) {
                     tip.hide(d);
                     highlight(d, true, true);
                     click_count += 1;
-                } else if (sticky_node == d && click_count == 2) {
+                } else if (sticky_node == d && click_count === 2) {
                     unhighlight(d);
                     tip.hide(d);
                     sticky_node = null;
@@ -647,7 +650,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 } else if (!sticky_node) {
                     unhighlight(d);
                 } else {
-                    if (click_count == 2)
+                    if (click_count === 2)
                         highlight(sticky_node, true, true);
                     else
                         highlight(sticky_node, true, false);
@@ -655,11 +658,11 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
 
             }
 
-            var tipdir = function (d) {
+            var tipdir = function () {
                 return 'n';
             }
 
-            var tipoff = function (d) {
+            var tipoff = function () {
                 return [-10, 0];
             }
 
@@ -695,7 +698,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                     .attr('opacity', 0.0);
             }
 
-            var unhighlight = function (d) {
+            var unhighlight = function () {
                 svg.selectAll('g.node')
                     .attr('opacity', 1.0);
                 svg.selectAll('g.edge')
@@ -731,7 +734,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
 
             // colorize modules
             svg.selectAll('polygon')
-                .each(function (d, i) {
+                .each(function (d) {
                     if (d != undefined)
                         return undefined;
                     sibling = this.nextElementSibling;
@@ -747,7 +750,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 var root = nodes['[root] root'];
 
                 if (root == undefined) {
-                    if (confirm("Invalid graph detected! Would you like to reload the page?") == true) {
+                    if (confirm("Invalid graph detected! Would you like to reload the page?") === true) {
                         window.location.reload()
                     }
                 }
@@ -795,7 +798,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 let prevNumber = parseInt($("div.tabcontent").last()[0].id.split("-")[1]);
 
 
-                if (prevNumber == 1) {
+                if (prevNumber === 1) {
                     document.getElementById("tablink-1").onclick = function () {
                         displayTabContent(1, "#555")
                     }
@@ -804,7 +807,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                     }
                 }
 
-                if (state['no_scroll_zoom'] == true) {
+                if (state['no_scroll_zoom'] === true) {
                     panzoom.disableMouseWheelZoom();
                 }
 
@@ -929,7 +932,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 }
 
                 var select_node = function (d) {
-                    if (d === undefined || d.length == 0) {
+                    if (d === undefined || d.length === 0) {
                         return true;
                     }
                     // FIXME: these falses pad out parameters I haven't looked up,
