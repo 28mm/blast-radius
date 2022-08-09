@@ -385,7 +385,12 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                     svg_nodes.push(node);
                 });
             } else {
-                console.log("An error occurred when parsing JSON data for resource descriptions")
+                console.log("An error occurred when parsing JSON data for resource descriptions");
+                let div = document.createElement("div");
+                div.setAttribute("role", "alert");
+                div.classList = ["alert alert-danger"];
+                div.textContent = "A server exception has occurred. The graph is still usable but without all features enabled such as filtering content"
+                document.getElementsByClassName("navbar")[0].appendChild(div);
                 edges = [];
             }
 
