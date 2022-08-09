@@ -77,7 +77,6 @@ let inputGraph = async () => {
     let graphinput = prompt("Please paste Graphviz DOT script ");
 
     if (graphinput != null) {
-        console.log("Graph input is not null")
         if ($("div.tabcontent").last()[0] != null ) {
             let prevNumber = parseInt($("div.tabcontent").last()[0].id.split("-")[1])
             let curNumber = parseInt(prevNumber) + 1
@@ -92,11 +91,11 @@ let inputGraph = async () => {
 
             $('#tablink-' + curNumber).click();
         } else {
-            console.log("tab content is null for some reason")
+            console.log("Last tab's content could not be retrieved.")
         }
 
     } else {
-        alert("Invalid input or empty input!")
+        alert("Invalid graph input or empty input!")
     }
 }
 /**
@@ -378,7 +377,6 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 var nodes = {};
                 data.nodes.forEach(function (node) {
                     if (!(node.type in resource_groups))
-                        console.log(node.type)
                     if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
                         node.resource_name = 'root';
                     }
@@ -482,7 +480,6 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             var child_html = function (d) {
                 var children = [];
                 var edges = edges_by_source[d.label];
-                //console.log(edges);
                 for (i in edges) {
                     edge = edges[i];
                     if (edge.edge_type == edge_types.NORMAL || edge.edge_type == edge_types.HIDDEN) {
@@ -792,7 +789,6 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 let dropArea = document.querySelector(".drag-area");
                 let prevNumber = parseInt($("div.tabcontent").last()[0].id.split("-")[1]);
 
-                console.log('bang');
 
                 if (prevNumber == 1) {
                     document.getElementById("tablink-1").onclick = function () {
@@ -804,7 +800,6 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 }
 
                 if (state['no_scroll_zoom'] == true) {
-                    console.log('bang');
                     panzoom.disableMouseWheelZoom();
                 }
 
@@ -850,9 +845,6 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                     var dl = document.createElement("a");
                     document.body.appendChild(dl);
                     dl.setAttribute("href", svg_data_url);
-                    console.log(svg_as_xml)
-                    console.log(svg_data_url)
-                    console.log(dl)
                     dl.setAttribute("download", "blast-radius.svg");
                     dl.click();
                 }
@@ -910,7 +902,6 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 });
 
                 var handle_print = function () {
-                    console.log("print");
                     window.print();
                 }
                 print_btn.addEventListener('click', handle_print)
