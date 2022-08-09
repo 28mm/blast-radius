@@ -372,19 +372,25 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 data = uploadJSON
             }
 
-            var edges = data.edges;
-            var svg_nodes = [];
-            var nodes = {};
-            data.nodes.forEach(function (node) {
-                if (!(node.type in resource_groups))
-                    console.log(node.type)
-                if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
-                    node.resource_name = 'root';
-                }
-                node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
-                nodes[node['label']] = node;
-                svg_nodes.push(node);
-            });
+            if (!error) {
+                var edges = data.edges;
+                var svg_nodes = [];
+                var nodes = {};
+                data.nodes.forEach(function (node) {
+                    if (!(node.type in resource_groups))
+                        console.log(node.type)
+                    if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
+                        node.resource_name = 'root';
+                    }
+                    node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
+                    nodes[node['label']] = node;
+                    svg_nodes.push(node);
+                });
+            } else {
+                console.log("An error occurred when parsing JSON data for resource descriptions")
+                edges = [];
+            }
+
 
             // convenient to access edges by their source.
             var edges_by_source = {}
@@ -696,25 +702,30 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             }
 
             // colorize nodes, and add mouse candy.
-            svg.selectAll('g.node')
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseenter', node_mouseenter)
-                .on('mouseleave', node_mouseleave)
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .attr('fill', function (d) {
-                    return color(d.group);
-                })
-                .select('polygon:nth-last-of-type(2)')
-                .style('fill', (function (d) {
-                    if (d)
+            if (svg_nodes) {
+                svg.selectAll('g.node')
+                    .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+                    .on('mouseenter', node_mouseenter)
+                    .on('mouseleave', node_mouseleave)
+                    .on('mouseover', node_mouseover)
+                    .on('mouseout', node_mouseout)
+                    .on('mousedown', node_mousedown)
+                    .attr('fill', function (d) {
                         return color(d.group);
-                    else
-                        return '#000';
-                }));
+                    })
+                    .select('polygon:nth-last-of-type(2)')
+                    .style('fill', (function (d) {
+                        if (d)
+                            return color(d.group);
+                        else
+                            return '#000';
+                    }));
+            } else {
+                console.log("SVG nodes could not be colorized, and mouse functionality could not be added either.")
+            }
+
 
             // colorize modules
             svg.selectAll('polygon')
@@ -730,32 +741,35 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 });
 
             // hack to make mouse events and coloration work on the root node again.
-            var root = nodes['[root] root'];
+            if (nodes) {
+                var root = nodes['[root] root'];
 
-            if (root == undefined) {
-                if (confirm("Invalid upload! Would you like to reload the page?") == true) {
-                    window.location.reload()
+                if (root == undefined) {
+                    if (confirm("Invalid graph detected! Would you like to reload the page?") == true) {
+                        window.location.reload()
+                    }
                 }
-            }
-            console.log(root.svg_id)
 
-            svg.selectAll('g.node#' + root.svg_id)
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .select('polygon')
-                .attr('fill', function (d) {
-                    return color(d.group);
-                })
-                .style('fill', (function (d) {
-                    if (d)
+                svg.selectAll('g.node#' + root.svg_id)
+                    .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+                    .on('mouseover', node_mouseover)
+                    .on('mouseout', node_mouseout)
+                    .on('mousedown', node_mousedown)
+                    .select('polygon')
+                    .attr('fill', function (d) {
                         return color(d.group);
-                    else
-                        return '#000';
-                }));
+                    })
+                    .style('fill', (function (d) {
+                        if (d)
+                            return color(d.group);
+                        else
+                            return '#000';
+                    }));
+            } else {
+                console.warn("Mouse events and coloration may not work due to nodes being undefined.")
+            }
 
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')
