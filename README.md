@@ -12,7 +12,7 @@ with interactive visualizations.
 
 ## Table of Contents 
 - [Usage](#usage)
-- [Preqrequisites](#preqrequisites)
+- [Preqrequisites](#prerequisites)
 - [Quickstart](#quickstart)
 - [Docker](#docker)
   - [Docker Configurations](#docker-configurations)
@@ -94,7 +94,7 @@ docker run --rm -it -p 5000:5000 \
 ```
 
 A slightly more customized variant of this is also available as an example
-[docker-compose.yml](./examples/docker-compose.yml) usecase for Workspaces.
+[docker-compose.yml](./Docker/docker-compose.yml) usecase for Workspaces.
 
 ### Docker configurations
 
@@ -211,7 +211,7 @@ You can read more details in the [documentation for embedded figures](doc/embedd
 
 *Blast Radius* uses 
 - [Graphviz](https://graphviz.org/) package to layout graph diagrams
-- [PyHCL](https://github.com/virtuald/pyhcl) to parse [Terraform][] configuration
+- [python-hcl2](https://github.com/amplify-education/python-hcl2) to parse [Terraform][] configuration
 - [d3.js](https://d3js.org/) to implement interactive features
 - [Flask](https://flask.palletsprojects.com/) to start a server
 - [Vanilla JavaScript](http://vanilla-js.com/) and [jQuery](https://jquery.com/) for front-end functionality
