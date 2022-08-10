@@ -451,7 +451,7 @@ class DotNode(Node):
         try:
             if not re.match(r'(\[root\]\s+)*module\..*', label):
                 return 'root'
-            m = re.match(r'(\[root\]\s+)*(?P<module>\S+)\.(?P<type>\S+)\.\S+', label)
+            m = re.match(r'(\[root\]\s+)*(?P<module>\S+)\.(?P<type>\S+)\.?\S+', label)
             return m.groupdict()['module']
         except:
             raise Exception("None: ", label)
