@@ -5,7 +5,7 @@ FROM hashicorp/terraform:$TF_VERSION AS terraform
 
 FROM python:$PYTHON_VERSION-alpine
 RUN pip install --upgrade setuptools && \
-    pip install -U pip ply \
+    pip install -U pip ply distlib \
  && apk add --update --no-cache graphviz ttf-freefont git
 
 COPY --from=terraform /bin/terraform /bin/terraform
