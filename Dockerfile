@@ -4,7 +4,8 @@ ARG PYTHON_VERSION=3.9.13
 FROM hashicorp/terraform:$TF_VERSION AS terraform
 
 FROM python:$PYTHON_VERSION-alpine
-RUN pip install -U pip ply \
+RUN pip install --upgrade setuptools && \
+    pip install -U pip ply \
  && apk add --update --no-cache graphviz ttf-freefont git
 
 COPY --from=terraform /bin/terraform /bin/terraform
