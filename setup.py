@@ -22,4 +22,5 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     scripts=['bin/blast-radius'],
     install_requires=reqs,
+    include_package_data=True
 )
