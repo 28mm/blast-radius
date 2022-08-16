@@ -56,14 +56,3 @@ else
   $BUILDFILE "$IMAGE_NAME"
 
 fi
-
-
-
-#if [ "$(docker i Docker Image: $IMAGE_NAME echo $IMAGE_NAME)" ]; then
-#    echo "Image $IMAGE_NAME exists"
-#else
-#    echo "Image $IMAGE_NAME does not exist"
-#    echo "docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t $IMAGE_NAME . format="$IMAGE_EXISTS"  ==  "$IMAGE_EXISTS")" ]; then
-#  echo "Running Docker Image: $IMAGE_NAME"
-#  docker run --rm -it -p $PORT:5000 -v "$(pwd)":/data:ro --security-opt apparmor:unconfined --cap-add=SYS_ADMIN $IMAGE_NAME
-#fi
