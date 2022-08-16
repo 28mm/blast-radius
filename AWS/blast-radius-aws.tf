@@ -16,11 +16,11 @@ variable "AWS_SECRET_ACCESS_KEY" {
 }
 
 variable "AWS_REGION" {
-  default = "us-east-1"
+  default = ""
 }
 
 variable "AMI_ID" {
-  default = "09d56f8956ab235b3"
+  default = "09d56f8956ab235b3" #UBUNTU
 }
 
 variable "KEY_NAME" {

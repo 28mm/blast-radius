@@ -77,9 +77,9 @@ let inputGraph = async () => {
     let graphinput = prompt("Please paste Graphviz DOT script ");
 
     if (graphinput != null) {
-        console.log("Graph input is not null")
-        if ($("div.tabcontent").last()[0] != null ) {
-            let prevNumber = parseInt($("div.tabcontent").last()[0].id.split("-")[1])
+        let lastTabContent = $("div.tabcontent").last()[0]
+        if (lastTabContent != null ) {
+            let prevNumber = parseInt(lastTabContent.id.split("-")[1])
             let curNumber = parseInt(prevNumber) + 1
             let selector = "#graph-" + curNumber;
             await insertTabContent(prevNumber)
@@ -92,15 +92,16 @@ let inputGraph = async () => {
 
             $('#tablink-' + curNumber).click();
         } else {
-            console.log("tab content is null for some reason")
+            console.log("Last tab's content could not be retrieved.")
         }
 
     } else {
-        alert("Invalid input or empty input!")
+        alert("Invalid graph input or empty input!")
     }
 }
 /**
  * @param {string} filename - The filename
+ * @param {int} tabNumber - The number of the tab (can be found in ID of tab)
  */
 let createTab = (filename, tabNumber) => {
     let newTab = `<li class="nav-item nav-item-tab" id="nav-item-${tabNumber}">
@@ -128,10 +129,12 @@ let createTab = (filename, tabNumber) => {
     }
 
     let firstTabNum = parseInt($("div.tabcontent").first()[0].id.split("-")[1])
+    let firstXButton = $(`#close-tab-${firstTabNum}`);
+
     //If the first tab's X has been removed
-    if ($(`#close-tab-${firstTabNum}`).prop("disabled") | $(`#close-tab-${firstTabNum}`).prop("hidden")) {
-        $(`#close-tab-${firstTabNum}`).prop("disabled", false);
-        $(`#close-tab-${firstTabNum}`).prop("hidden", false);
+    if (firstXButton.prop("disabled") || firstXButton.prop("hidden")) {
+        firstXButton.prop("disabled", false);
+        firstXButton.prop("hidden", false);
     }
 
 }
@@ -178,7 +181,7 @@ let closeTab = (tabNumber) => {
     $(`#tablink-${newLastTabNum}`).click(); //open last tab
 
     //If there's only one tab left after closing the current tab  (first element == last element)
-    if ($("div.tabcontent").last()[0] == $("div.tabcontent").first()[0]) {
+    if ($("div.tabcontent").last()[0] === $("div.tabcontent").first()[0]) {
         $(`#close-tab-${newLastTabNum}`).prop("disabled", true);
         $(`#close-tab-${newLastTabNum}`).prop("hidden", true);
     }
@@ -250,8 +253,7 @@ let insertTabContent = (prevNumber) => {
 
         '<div class="dropdown-item form-check">' +
         '<label class="form-check-label">' +
-        '<input class="form-check-input graph-tooltip-deps" type="checkbox" value="" id="' + graphSelector + '-tooltip-deps"' +
-        'checked>' +
+        '<input class="form-check-input graph-tooltip-deps" type="checkbox" value="" id="' + graphSelector + '-tooltip-deps" checked>' +
         'Dependencies</label></div></div></div></li>' +
         `<li class="nav-item"><button class="btn btn-primary graph-print" id="` + graphSelector + `-print" title="print this page">&nbsp;<i
                 class="fas fa-print"></i></button></li>` + `<li class="nav-item">` + helpButton + `</li>` + `</ul></nav>` +
@@ -372,23 +374,33 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 data = uploadJSON
             }
 
-            var edges = data.edges;
-            var svg_nodes = [];
-            var nodes = {};
-            data.nodes.forEach(function (node) {
-                if (!(node.type in resource_groups))
-                    console.log(node.type)
-                if (node.label == '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
-                    node.resource_name = 'root';
-                }
-                node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
-                nodes[node['label']] = node;
-                svg_nodes.push(node);
-            });
+            if (!error) {
+                var edges = data.edges;
+                var svg_nodes = [];
+                var nodes = {};
+                data.nodes.forEach(function (node) {
+                    if (!(node.type in resource_groups))
+                    if (node.label === '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
+                        node.resource_name = 'root';
+                    }
+                    node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
+                    nodes[node['label']] = node;
+                    svg_nodes.push(node);
+                });
+            } else {
+                console.log("An error occurred when parsing JSON data for resource descriptions");
+                let div = document.createElement("div");
+                div.setAttribute("role", "alert");
+                div.classList = ["alert alert-danger"];
+                div.textContent = "A server exception has occurred. The graph is still usable but without all features enabled such as filtering content"
+                document.getElementsByClassName("navbar")[0].appendChild(div);
+                edges = []
+            }
+
 
             // convenient to access edges by their source.
             var edges_by_source = {}
-            for (var i in edges) {
+            for (let i in edges) {
                 if (edges[i].source in edges_by_source)
                     edges_by_source[edges[i].source].push(edges[i]);
                 else
@@ -397,7 +409,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
 
             // convenient access to edges by their target.
             var edges_by_target = {}
-            for (var i in edges) {
+            for (let i in edges) {
                 if (edges[i].target in edges_by_target)
                     edges_by_target[edges[i].target].push(edges[i]);
                 else
@@ -415,13 +427,13 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 var deps_cbox = document.querySelector(selector + '-tooltip-deps');
 
                 if ((!title_cbox) || (!json_cbox) || (!deps_cbox))
-                    return title_html(d) + (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
+                    return title_html(d) + (d.definition.length === 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>" + child_html(d));
 
                 var ttip = '';
                 if (title_cbox.checked)
                     ttip += title_html(d);
                 if (json_cbox.checked)
-                    ttip += (d.definition.length == 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
+                    ttip += (d.definition.length === 0 ? '' : "<p class='explain'>" + JSON.stringify(d.definition, replacer, 2) + "</p><br>");
                 if (deps_cbox.checked)
                     ttip += child_html(d);
                 return ttip;
@@ -438,7 +450,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             var title_html = function (d) {
                 var node = d;
                 var title = ['<div class="header">']
-                if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                if (node.modules.length <= 1 && node.modules[0] === 'root') {
                     title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.type + '</span>';
                     title[title.length] = '<span class="title" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
                 } else {
@@ -457,7 +469,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             var searchbox_listing = function (d) {
                 var node = d;
                 var title = ['<div class="sbox-listings">']
-                if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                if (node.modules.length <= 1 && node.modules[0] === 'root') {
                     if (node.type)
                         title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.type + '</span>';
                     title[title.length] = '<span class="sbox-listing" style="background:' + color(node.group) + ';">' + node.resource_name + '</span>';
@@ -476,12 +488,11 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             var child_html = function (d) {
                 var children = [];
                 var edges = edges_by_source[d.label];
-                //console.log(edges);
                 for (i in edges) {
                     edge = edges[i];
                     if (edge.edge_type == edge_types.NORMAL || edge.edge_type == edge_types.HIDDEN) {
                         var node = nodes[edge.target];
-                        if (node.modules.length <= 1 && node.modules[0] == 'root') {
+                        if (node.modules.length <= 1 && node.modules[0] === 'root') {
                             children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.type + '</span>';
                             children[children.length] = '<span class="dep" style="background:' + color(node.group) + ';">' + node.resource_name + '</span></br>';
                         } else {
@@ -593,11 +604,11 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             // FIXME: these x,y,z-s pad out parameters I haven't looked up,
             // FIXME: but don't seem to be necessary for display
             var node_mousedown = function (d, x, y, z, no_tip_p) {
-                if (sticky_node == d && click_count == 1) {
+                if (sticky_node == d && click_count === 1) {
                     tip.hide(d);
                     highlight(d, true, true);
                     click_count += 1;
-                } else if (sticky_node == d && click_count == 2) {
+                } else if (sticky_node == d && click_count === 2) {
                     unhighlight(d);
                     tip.hide(d);
                     sticky_node = null;
@@ -639,7 +650,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 } else if (!sticky_node) {
                     unhighlight(d);
                 } else {
-                    if (click_count == 2)
+                    if (click_count === 2)
                         highlight(sticky_node, true, true);
                     else
                         highlight(sticky_node, true, false);
@@ -647,11 +658,11 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
 
             }
 
-            var tipdir = function (d) {
+            var tipdir = function () {
                 return 'n';
             }
 
-            var tipoff = function (d) {
+            var tipoff = function () {
                 return [-10, 0];
             }
 
@@ -687,7 +698,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                     .attr('opacity', 0.0);
             }
 
-            var unhighlight = function (d) {
+            var unhighlight = function () {
                 svg.selectAll('g.node')
                     .attr('opacity', 1.0);
                 svg.selectAll('g.edge')
@@ -696,29 +707,34 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
             }
 
             // colorize nodes, and add mouse candy.
-            svg.selectAll('g.node')
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseenter', node_mouseenter)
-                .on('mouseleave', node_mouseleave)
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .attr('fill', function (d) {
-                    return color(d.group);
-                })
-                .select('polygon:nth-last-of-type(2)')
-                .style('fill', (function (d) {
-                    if (d)
+            if (svg_nodes) {
+                svg.selectAll('g.node')
+                    .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+                    .on('mouseenter', node_mouseenter)
+                    .on('mouseleave', node_mouseleave)
+                    .on('mouseover', node_mouseover)
+                    .on('mouseout', node_mouseout)
+                    .on('mousedown', node_mousedown)
+                    .attr('fill', function (d) {
                         return color(d.group);
-                    else
-                        return '#000';
-                }));
+                    })
+                    .select('polygon:nth-last-of-type(2)')
+                    .style('fill', (function (d) {
+                        if (d)
+                            return color(d.group);
+                        else
+                            return '#000';
+                    }));
+            } else {
+                console.log("SVG nodes could not be colorized, and mouse functionality could not be added either.")
+            }
+
 
             // colorize modules
             svg.selectAll('polygon')
-                .each(function (d, i) {
+                .each(function (d) {
                     if (d != undefined)
                         return undefined;
                     sibling = this.nextElementSibling;
@@ -730,32 +746,35 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 });
 
             // hack to make mouse events and coloration work on the root node again.
-            var root = nodes['[root] root'];
+            if (nodes) {
+                var root = nodes['[root] root'];
 
-            if (root == undefined) {
-                if (confirm("Invalid upload! Would you like to reload the page?") == true) {
-                    window.location.reload()
+                if (root == undefined) {
+                    if (confirm("Invalid graph detected! Would you like to reload the page?") === true) {
+                        window.location.reload()
+                    }
                 }
-            }
-            console.log(root.svg_id)
 
-            svg.selectAll('g.node#' + root.svg_id)
-                .data(svg_nodes, function (d) {
-                    return (d && d.svg_id) || d3.select(this).attr("id");
-                })
-                .on('mouseover', node_mouseover)
-                .on('mouseout', node_mouseout)
-                .on('mousedown', node_mousedown)
-                .select('polygon')
-                .attr('fill', function (d) {
-                    return color(d.group);
-                })
-                .style('fill', (function (d) {
-                    if (d)
+                svg.selectAll('g.node#' + root.svg_id)
+                    .data(svg_nodes, function (d) {
+                        return (d && d.svg_id) || d3.select(this).attr("id");
+                    })
+                    .on('mouseover', node_mouseover)
+                    .on('mouseout', node_mouseout)
+                    .on('mousedown', node_mousedown)
+                    .select('polygon')
+                    .attr('fill', function (d) {
                         return color(d.group);
-                    else
-                        return '#000';
-                }));
+                    })
+                    .style('fill', (function (d) {
+                        if (d)
+                            return color(d.group);
+                        else
+                            return '#000';
+                    }));
+            } else {
+                console.warn("Mouse events and coloration may not work due to nodes being undefined.")
+            }
 
             // stub, in case we want to do something with edges on init.
             svg.selectAll('g.edge')
@@ -778,9 +797,8 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 let dropArea = document.querySelector(".drag-area");
                 let prevNumber = parseInt($("div.tabcontent").last()[0].id.split("-")[1]);
 
-                console.log('bang');
 
-                if (prevNumber == 1) {
+                if (prevNumber === 1) {
                     document.getElementById("tablink-1").onclick = function () {
                         displayTabContent(1, "#555")
                     }
@@ -789,8 +807,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                     }
                 }
 
-                if (state['no_scroll_zoom'] == true) {
-                    console.log('bang');
+                if (state['no_scroll_zoom'] === true) {
                     panzoom.disableMouseWheelZoom();
                 }
 
@@ -836,9 +853,6 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                     var dl = document.createElement("a");
                     document.body.appendChild(dl);
                     dl.setAttribute("href", svg_data_url);
-                    console.log(svg_as_xml)
-                    console.log(svg_data_url)
-                    console.log(dl)
                     dl.setAttribute("download", "blast-radius.svg");
                     dl.click();
                 }
@@ -896,7 +910,6 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 });
 
                 var handle_print = function () {
-                    console.log("print");
                     window.print();
                 }
                 print_btn.addEventListener('click', handle_print)
@@ -919,7 +932,7 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 }
 
                 var select_node = function (d) {
-                    if (d === undefined || d.length == 0) {
+                    if (d === undefined || d.length === 0) {
                         return true;
                     }
                     // FIXME: these falses pad out parameters I haven't looked up,
