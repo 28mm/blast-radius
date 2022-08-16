@@ -1,3 +1,6 @@
+#Allow print function to work in Python 2
+from __future__ import print_function
+
 # standard libraries
 from glob import iglob
 import io
