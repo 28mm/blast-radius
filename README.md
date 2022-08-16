@@ -246,6 +246,8 @@ There are many issues waiting to be resolved, and features to be added. This rep
 * Graph sharing
   * Generate unique URL to allow users to view graphs created by others
 * Create standalone executable (run without CLI)
+  * Docker2exe
+  * PyInstaller 
 * Mobile interface formatting
 * Loading spinner before graphs load (and disable buttons)
 * cache DOT script or SVG in local storage so it can be loaded next time without re-upload
