@@ -1,0 +1,1 @@
+& docker run -it --cap-add=SYS_ADMIN -p 5000:5000 -v "$PSScriptRoot/template:/data:ro" blastradius
