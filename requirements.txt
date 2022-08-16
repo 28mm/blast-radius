@@ -1,8 +1,8 @@
-setuptools==51.0.0
-requests==2.25.0
-Jinja2==2.10.1
+setuptools==63.4.3
+requests==2.27.1
+Jinja2==3.1.2
 Flask==2.1.2
-beautifulsoup4==4.9.3
+beautifulsoup4==4.11.1
 ply>=3.11
 python-hcl2==3.0.1
 markupsafe==2.0.1
