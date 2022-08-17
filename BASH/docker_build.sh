@@ -1,6 +1,6 @@
 #! /bin/bash
 IMAGE_NAME="blast-radius-fork"
-MULTI_CPU=true
+MULTI_CPU=false
 SCRIPT_DIR=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")") # get the directory of this script
 DOCKERFILE_DIR=$(dirname -- "$(readlink -f -- "$SCRIPT_DIR")")
 
@@ -8,8 +8,8 @@ if [ "$1" != "" ]; then
   IMAGE_NAME=$1
 fi
 
-if [ "$2" == false ]; then
-  MULTI_CPU=false
+if [ "$2" == true ]; then
+  MULTI_CPU=true
 fi
 
 if [ ! -e "$DOCKERFILE_DIR/Dockerfile" ]; then
