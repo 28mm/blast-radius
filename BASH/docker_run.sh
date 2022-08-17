@@ -30,7 +30,6 @@ fi
 
 # check if image exists
 if [[ "$(docker image inspect "$IMAGE_NAME" --format='exists')" == 'exists' ]]; then
-#if [ "$(docker image inspect "$IMAGE_NAME" --format="$IMAGE_EXISTS"  ==  "$IMAGE_EXISTS")" ]; then
   echo "Running Docker Image: $IMAGE_NAME on $ACCESS_PORT $DETACHED"
   docker run --rm -it "$DETACHED" -p "$ACCESS_PORT":5000 -v "$(PWD)":/data:ro --security-opt apparmor:unconfined --cap-add=SYS_ADMIN "$IMAGE_NAME"
 else
@@ -55,4 +54,8 @@ else
   echo "Using $BUILDFILE to build image $IMAGE_NAME"
   $BUILDFILE "$IMAGE_NAME"
 
+  if [[ "$(docker image inspect "$IMAGE_NAME" --format='exists')" == 'exists' ]]; then
+    echo "Attempting to re-run Docker Image: $IMAGE_NAME on $ACCESS_PORT $DETACHED"
+    docker run --rm -it "$DETACHED" -p "$ACCESS_PORT":5000 -v "$(PWD)":/data:ro --security-opt apparmor:unconfined --cap-add=SYS_ADMIN "$IMAGE_NAME"
+  fi
 fi
