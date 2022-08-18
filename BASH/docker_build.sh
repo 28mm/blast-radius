@@ -21,6 +21,7 @@ if [ "$MULTI_CPU" == false ]; then
   echo "Building image $IMAGE_NAME without multi-cpu support"
   docker build -t "$IMAGE_NAME" "$DOCKERFILE_DIR"
 else
+  #FIXME: multi-cpu build is not working yet
   echo "Building image $IMAGE_NAME with multi-cpu support"
   docker buildx build --platform linux/arm64,linux/amd64,linux/amd64/v2,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 -t "$IMAGE_NAME" "$DOCKERFILE_DIR"
 fi
