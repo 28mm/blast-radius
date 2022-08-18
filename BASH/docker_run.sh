@@ -50,7 +50,7 @@ if [[ "$(docker image inspect "$IMAGE_NAME" --format='exists')" != 'exists' ]]; 
 fi
 
 if [[ "$(docker image inspect "$IMAGE_NAME" --format='exists')" == 'exists' ]]; then
-  echo "Attempting to re-run Docker Image: $IMAGE_NAME on $ACCESS_PORT"
+  echo "Attempting to run Docker Image: $IMAGE_NAME on $ACCESS_PORT"
   docker run --rm -it -d -p "$ACCESS_PORT":5000 \
     -v "$(PWD)":/data:ro \
     --security-opt apparmor:unconfined \
