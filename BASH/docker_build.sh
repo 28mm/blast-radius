@@ -1,5 +1,5 @@
 #! /bin/bash
-IMAGE_NAME="blast-radius-fork"
+IMAGE_NAME="blast-radius-fork-local"
 MULTI_CPU=false
 SCRIPT_DIR=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")") # get the directory of this script
 DOCKERFILE_DIR=$(dirname -- "$(readlink -f -- "$SCRIPT_DIR")")
