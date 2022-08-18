@@ -230,13 +230,21 @@ There are many issues waiting to be resolved, and features to be added. This rep
 
 ## What's Different
 * Independence from Terraform and Terraform files
-  * App can run on its own, accepting file or keyboard input 
+  * App can run on its own, accepting DOT file or keyboard input 
 * Multi-graph feature
   * The app can display multiple graphs and can be compared side by side with tabs 
 * Print 
   * The graph can be printed, although the print can sometimes cut off the graph at times
 * UI changes
   * To enable a better design, the multi-colored buttons and other parts of the page have been changed to follow the 60-30-10 design rule
+* Compatability with recent versions of Terraform, Python, and Python packages
+* Created a new Docker image at [ianyliu/blast-radius-fork](https://hub.docker.com/repository/docker/ianyliu/blast-radius-fork/) for multi-cpu architectures equipped with updated features
+* Added Shell scripts that can be used to run & build the Docker image with aliases for convenience 
+* Updated README.md 
+* Integrated changes across other forks and pull requests of Blast Radius, including: 
+  * PowerShell scripts for running and building Docker containers
+  * Running Terratests during Docker build
+  * Allowing Blast Radius to run even if JSON data couldn't be parsed  
 
 ## Future Implementations & Possible Functionalities
 * Accept file input as a command-line argument 
@@ -257,11 +265,11 @@ There are many issues waiting to be resolved, and features to be added. This rep
   * PyInstaller 
 * Mobile interface formatting
 * Loading spinner before graphs load (and disable buttons)
-* cache DOT script or SVG in local storage so it can be loaded next time without re-upload
+* Cache DOT script or SVG in local storage so it can be loaded next time without re-upload
 * Animation
   * Shows difference between current state and state after apply
   * Shows difference between one Terraform graph and another via animation 
-* Add example Terraform files that allow Blast Radius to be run on Microsoft Azure, Google Cloud, IBM Cloud Services, etc.
+* Add example Terraform DOT files that allow Blast Radius to be run on Microsoft Azure, Google Cloud, IBM Cloud Services, etc.
 * Integration with Neo4j or other graph database, parse *Terraform* files and find relationships between resources
 
 
