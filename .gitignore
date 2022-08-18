@@ -111,6 +111,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# Terraform stuff
+# Terraform configuration
 .terraform/
 *.tfstate
+
+# Mac
+.DS_Store
