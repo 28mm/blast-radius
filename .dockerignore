@@ -5,3 +5,5 @@ LICENSE
 examples/
 PowerShell/
 BASH/
+Kubernetes/
+*.md
