@@ -1,4 +1,4 @@
-# Blast Radius
+<h1 align="center">Blast Radius</h1>
 
 [![PyPI version](https://badge.fury.io/py/BlastRadius.svg)](https://badge.fury.io/py/BlastRadius)
 
