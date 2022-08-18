@@ -90,13 +90,30 @@ Other ways to run it include [Docker](#docker) and [Kubernetes](#kubernetes)
 [privileges]: https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
 [overlayfs]: https://wiki.archlinux.org/index.php/Overlay_filesystem
 
-To launch *Blast Radius* for a local directory by manually running:
+First install Docker on your machine:
+* [Linux](https://docs.docker.com/desktop/install/linux-install/)
+* [Mac](https://docs.docker.com/desktop/install/mac-install/)
+* [Windows](https://docs.docker.com/desktop/install/windows-install/) 
 
+You can also install [Docker Desktop](https://www.docker.com/products/docker-desktop/), which is a more intuitive GUI for Docker.
+
+Now launch *Blast Radius* for a local directory by manually running:
+
+sh, zsh, bash, etc. (Linux recommended):
 ```sh
 docker run --rm -it -p 5000:5000 \
   -v $(pwd):/data:ro \
   --security-opt apparmor:unconfined \
   --cap-add=SYS_ADMIN \
+  ianyliu/blast-radius-fork
+```
+
+Windows PowerShell:
+```powershell
+docker run --rm -it -p 5000:5000 `
+  -v ${pwd}:/data:ro `
+  --security-opt apparmor:unconfined `
+  --cap-add=SYS_ADMIN `
   ianyliu/blast-radius-fork
 ```
 
@@ -295,6 +312,15 @@ These examples are drawn primarily from the `examples/` directory distributed
 with various *Terraform* providers, and aren't necessarily ideal. Additional
 examples, particularly demonstrations of best-practices, or of multi-cloud
 configurations strongly desired.
+
+There are more 188 forks as of August 2022, each containing new updates or features of some sort. Notable ones include: 
+- https://github.com/gruberdev/blast-radius/
+- https://github.com/IBM-Cloud/blast-radius/
+- https://github.com/nishubharti/blast-radius/ 
+- https://github.com/obourdon/blast-radius/
+- https://github.com/nibhart1/blast-radius
+- 
+It would greatly help if you could contribute to bringing all of these forks into one repository so that we can have a tool that can be used by everyone.
 
 ## Other Tools to Check Out
 
