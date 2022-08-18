@@ -23,6 +23,7 @@ with interactive visualizations.
   - [Kubernetes Debugging & Helpful Commands](#kubernetes-debugginghelpful-commands)
 - [Embedded Figures](#embedded-figures)
 - [How It Works](#how-it-works)
+- [What's Different](#whats-different)
 - [Future Implementation Possibilities](#future-implementations--possible-functionalities)
 - [Further Reading](#further-reading)
 - [Other Tools to Check Out](#other-tools-to-check-out)
@@ -58,23 +59,29 @@ python -m pip install git+https://github.com/Ianyliu/blast-radius-fork
 ```
 or 
 ```sh
-python3 -m pip install git+https://github.com/Ianyliu/blast-radius-fork
+python3 -m pip3 install git+https://github.com/Ianyliu/blast-radius-fork
 ```
 
-If you have an initialized *Terraform* directory, you can just start *Blast Radius* within the initialized *Terraform*
-directory:
+You can run Blast Radius from the command line with:
 
 ```sh
+blast-radius --serve 
+```
+
+If you want to create graphs for an initialized *Terraform* directory, you can just start *Blast Radius* within the initialized *Terraform*
+directory:
+
+```
 blast-radius --serve /path/to/terraform/directory
 ```
 
 And you will shortly be rewarded with a browser link http://127.0.0.1:5000/.
 
-If you __DON'T__ have an initialized *Terraform* directory and would like to start it as a standalone application to visualize existing DOT files, you can start it in any directory:
-```sh
-blast-radius --serve 
+You can specify the port number with the `--port` flag:
+
 ```
-You may then upload DOT script via text input or file upload.
+blast-radius --serve /path/to/terraform/directory --port=8080
+```
 
 Other ways to run it include [Docker](#docker) and [Kubernetes](#kubernetes)
 
@@ -221,7 +228,7 @@ You can read more details in the [documentation for embedded figures](doc/embedd
 The original creator of this open source project, [Patrick McMurchie](https://github.com/28mm), has been inactive on this project for some time. 
 There are many issues waiting to be resolved, and features to be added. This repository presents some basic modifications, additional features, and enhanced accessibility.  
 
-## Modifications & New Features 
+## What's Different
 * Independence from Terraform and Terraform files
   * App can run on its own, accepting file or keyboard input 
 * Multi-graph feature
