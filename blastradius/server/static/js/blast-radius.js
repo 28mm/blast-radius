@@ -180,10 +180,11 @@ let closeTab = (tabNumber) => {
     let newLastTabNum = parseInt($("div.tabcontent").last()[0].id.split("-")[1])
     $(`#tablink-${newLastTabNum}`).click(); //open last tab
 
+    let xButton = $(`#close-tab-${newLastTabNum}`)
     //If there's only one tab left after closing the current tab  (first element == last element)
     if ($("div.tabcontent").last()[0] === $("div.tabcontent").first()[0]) {
-        $(`#close-tab-${newLastTabNum}`).prop("disabled", true);
-        $(`#close-tab-${newLastTabNum}`).prop("hidden", true);
+        xButton.prop("disabled", true);
+        xButton.prop("hidden", true);
     }
 
 }

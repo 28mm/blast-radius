@@ -1,15 +1,14 @@
 #! /bin/bash
 
-SCRIPT_DIR=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
-BUILDFILE=$SCRIPT_DIR/docker_build.sh
+SCRIPT_DIR=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")") # get the directory of this script
+BUILDFILE=$SCRIPT_DIR/docker_build.sh # get the path to the docker build script
 
-IMAGE_NAME="blast-radius-fork"
+IMAGE_NAME="blast-radius-fork-local"
 ACCESS_PORT=5000
-DETACHED=""
 
 # first check if number of arguments to script is greater than 3 or not, if it is exit
 if [ $# -gt 3 ]; then
-    echo "$0 does not accept more than 3 arguments (image name, port, and detached flag). You have provided $# arguments."
+    echo "$0 does not accept more than 2 arguments (image name & port). You have provided $# arguments."
     exit 1
 fi
 
@@ -23,18 +22,11 @@ else
     if [ "$2" != "" ]; then
         ACCESS_PORT=$2
     fi
-    if [ "$3" == "-d" ] || [ "$3" == "--detach" ]; then
-        DETACHED=$3
-    fi
 fi
 
-# check if image exists
-if [[ "$(docker image inspect "$IMAGE_NAME" --format='exists')" == 'exists' ]]; then
-#if [ "$(docker image inspect "$IMAGE_NAME" --format="$IMAGE_EXISTS"  ==  "$IMAGE_EXISTS")" ]; then
-  echo "Running Docker Image: $IMAGE_NAME on $ACCESS_PORT $DETACHED"
-  docker run --rm -it "$DETACHED" -p "$ACCESS_PORT":5000 -v "$(PWD)":/data:ro --security-opt apparmor:unconfined --cap-add=SYS_ADMIN "$IMAGE_NAME"
-else
-  echo "$IMAGE_NAME does not exist. Trying to rebuild the image using $BUILDFILE ..."
+# check if image exists, if not try to build it
+if [[ "$(docker image inspect "$IMAGE_NAME" --format='exists')" != 'exists' ]]; then
+  echo "$IMAGE_NAME does not exist. Trying to build the image using $BUILDFILE ..."
 
   if [ ! -e "$BUILDFILE" ]; then
     echo "File $BUILDFILE does not exist. Exiting"
@@ -55,4 +47,13 @@ else
   echo "Using $BUILDFILE to build image $IMAGE_NAME"
   $BUILDFILE "$IMAGE_NAME"
 
+fi
+
+if [[ "$(docker image inspect "$IMAGE_NAME" --format='exists')" == 'exists' ]]; then
+  echo "Attempting to run Docker Image: $IMAGE_NAME on $ACCESS_PORT"
+  docker run --rm -it -d -p "$ACCESS_PORT":5000 \
+    -v "$(PWD)":/data:ro \
+    --security-opt apparmor:unconfined \
+    --cap-add=SYS_ADMIN \
+    "$IMAGE_NAME"
 fi
