@@ -6,7 +6,8 @@
 [examples]: https://28mm.github.io/blast-radius-docs/
 [docs]: https://28mm.github.io/blast-radius-docs/
 
-_Blast Radius Fork_ is an interactive visualizer for [Terraform](https://www.terraform.io/) based off of [_Blast Radius_](https://28mm.github.io/blast-radius/), 
+_Blast Radius Fork_ is an interactive visualizer for [Terraform](https://www.terraform.io/) based off of 
+[_Blast Radius_](https://28mm.github.io/blast-radius/), 
 which hasn't been actively maintained since 2020. 
 
 It is a work in progress and is not guaranteed to be bug free.
@@ -15,8 +16,8 @@ It is a work in progress and is not guaranteed to be bug free.
 
 ## Table of Contents 
 - [Usage](#usage)
-- [Preqrequisites](#prerequisites)
-- [Quickstart](#quickstart)
+- [Preqrequisites](#prerequisites-for-local-use)
+- [Quickstart](#local-quickstart)
 - [Docker](#docker)
   - [Docker Configurations](#docker-configurations)
     - [Docker Subdirectories](#docker--subdirectories)
@@ -45,16 +46,17 @@ Use _Blast Radius_ to:
 
 ![screenshot](doc/blastradius-interactive.png)
 
-## Prerequisites
+## Prerequisites for Local Use
 
 * [Python](https://www.python.org/) 3.7-3.9 (does not work with Python 3.10 at the moment)
 * [Graphviz](https://www.graphviz.org/)
+* [Terraform](https://www.terraform.io/) (if you do not have generated Terraform DOT graphs yet)
 
 > __Note:__ For macOS you can `brew install graphviz`
 
-## Quickstart
+## Local Quickstart
 
-The fastest way to get up and running with *Blast Radius* is to install it with
+The fastest way to run with *Blast Radius* is to install it with
 `pip` to your pre-existing environment:
 
 ```sh
@@ -71,7 +73,8 @@ You can run Blast Radius from the command line with:
 blast-radius --serve 
 ```
 
-If you want to create graphs for an initialized *Terraform* directory, you can just start *Blast Radius* within the initialized *Terraform*
+If you want to create graphs for an initialized *Terraform* directory, you can just start *Blast Radius* within the 
+initialized *Terraform*
 directory:
 
 ```
@@ -80,11 +83,14 @@ blast-radius --serve /path/to/terraform/directory
 
 And you will shortly be rewarded with a browser link http://127.0.0.1:5000/.
 
-You can specify the port number with the `--port` flag:
+[//]: # (You can specify the port number with the `--port` flag:)
 
-```
-blast-radius --serve /path/to/terraform/directory --port=8080
-```
+[//]: # ()
+[//]: # (```)
+
+[//]: # (blast-radius --serve /path/to/terraform/directory --port=8080)
+
+[//]: # (```)
 
 Other ways to run it include [Docker](#docker) and [Kubernetes](#kubernetes)
 
@@ -98,7 +104,8 @@ First install Docker on your machine:
 * [Mac](https://docs.docker.com/desktop/install/mac-install/)
 * [Windows](https://docs.docker.com/desktop/install/windows-install/) 
 
-You can also install [Docker Desktop](https://www.docker.com/products/docker-desktop/), which is a more intuitive GUI for Docker.
+You can also install [Docker Desktop](https://www.docker.com/products/docker-desktop/), which is a more intuitive GUI 
+for Docker.
 
 Now launch *Blast Radius* for a local directory by manually running:
 
@@ -198,7 +205,8 @@ Launch *Kubernetes* locally using Minikube, Kubernetes, and Kubectl:
 
 1. Start Minikube  
 ```minikube start```
-2. Change directories to the file containing the 2 YAML files (*k8-blast-radius-deployment.yaml* and *k8-blast-radius-service.yaml* pply the YAML configuration files to the default namespace (or any other namespace)  
+2. Change directories to the file containing the 2 YAML files (*k8-blast-radius-deployment.yaml* and 
+3. *k8-blast-radius-service.yaml* pply the YAML configuration files to the default namespace (or any other namespace)  
 ```
 kubectl apply -f k8-blast-radius-deployment.yaml
 kubectl apply -f k8-blast-radius-service.yaml
@@ -242,17 +250,22 @@ You can read more details in the [documentation for embedded figures](doc/embedd
 - [d3.js](https://d3js.org/) to implement interactive features
 - [Flask](https://flask.palletsprojects.com/) to start a server
 - [Vanilla JavaScript](http://vanilla-js.com/) and [jQuery](https://jquery.com/) for front-end functionality
-- [HTML](https://html.com/), [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS), [Bootstrap](https://getbootstrap.com/), and other libraries for front-end design
+- [HTML](https://html.com/), [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS), 
+- [Bootstrap](https://getbootstrap.com/), and other libraries for front-end design
 
-Terraform generates graphs in the form of [DOT](https://en.wikipedia.org/wiki/DOT_language) language. *Blast Radius* uses [Graphviz](https://graphviz.org/) to layout the graph after converting to SVG, 
+Terraform generates graphs in the form of [DOT](https://en.wikipedia.org/wiki/DOT_language) language. *Blast Radius* 
+uses [Graphviz](https://graphviz.org/) to layout the graph after converting to SVG, 
 and D3.js to implement interactive features. 
-Terraform configurations are then parsed by [python-hcl2](https://github.com/amplify-education/python-hcl2) to generate a [JSON](https://en.wikipedia.org/wiki/JSON_document) representation of the graph, 
+Terraform configurations are then parsed by [python-hcl2](https://github.com/amplify-education/python-hcl2) to generate 
+a [JSON](https://en.wikipedia.org/wiki/JSON_document) representation of the graph, 
 which provides details of each resource on hover.
 All of this is hosted on [Flask](https://flask.palletsprojects.com/) and runs on a [local server](http://localhost:5000/). 
 
 ## Motivation
-The original creator of this open source project, [Patrick McMurchie](https://github.com/28mm), has been inactive on this project for some time. 
-There are many issues waiting to be resolved, and features to be added. This repository presents some **basic modifications**, **additional features**, and **enhanced accessibility**.  
+The original creator of this open source project, [Patrick McMurchie](https://github.com/28mm), has been inactive on 
+this project for some time. 
+There are many issues waiting to be resolved, and features to be added. This repository presents some 
+**basic modifications**, **additional features**, and **enhanced accessibility**.  
 
 ## What's Different
 * **Independence** from Terraform and Terraform files
