@@ -4,9 +4,12 @@
 
 [terraform]: https://www.terraform.io/
 [examples]: https://28mm.github.io/blast-radius-docs/
+[docs]: https://28mm.github.io/blast-radius-docs/
 
-_Blast Radius_ is a tool for reasoning about [Terraform](https://www.terraform.io/) dependency graphs
-with interactive visualizations.
+_Blast Radius Fork_ is an interactive visualizer for [Terraform](https://www.terraform.io/) based off of [_Blast Radius_](https://28mm.github.io/blast-radius/), 
+which hasn't been actively maintained since 2020. 
+
+It is a work in progress and is not guaranteed to be bug free.
 
 ----------------------------------
 
@@ -44,8 +47,8 @@ Use _Blast Radius_ to:
 
 ## Prerequisites
 
+* [Python](https://www.python.org/) 3.7-3.9 (does not work with Python 3.10 at the moment)
 * [Graphviz](https://www.graphviz.org/)
-* [Python](https://www.python.org/) 3.7-3.9 (does not work with Python 3.10 on Ubuntu machines)
 
 > __Note:__ For macOS you can `brew install graphviz`
 
@@ -241,15 +244,21 @@ You can read more details in the [documentation for embedded figures](doc/embedd
 - [Vanilla JavaScript](http://vanilla-js.com/) and [jQuery](https://jquery.com/) for front-end functionality
 - [HTML](https://html.com/), [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS), [Bootstrap](https://getbootstrap.com/), and other libraries for front-end design
 
+Terraform generates graphs in the form of [DOT](https://en.wikipedia.org/wiki/DOT_language) language. *Blast Radius* uses [Graphviz](https://graphviz.org/) to layout the graph after converting to SVG, 
+and D3.js to implement interactive features. 
+Terraform configurations are then parsed by [python-hcl2](https://github.com/amplify-education/python-hcl2) to generate a [JSON](https://en.wikipedia.org/wiki/JSON_document) representation of the graph, 
+which provides details of each resource on hover.
+All of this is hosted on [Flask](https://flask.palletsprojects.com/) and runs on a [local server](http://localhost:5000/). 
+
 ## Motivation
 The original creator of this open source project, [Patrick McMurchie](https://github.com/28mm), has been inactive on this project for some time. 
-There are many issues waiting to be resolved, and features to be added. This repository presents some basic modifications, additional features, and enhanced accessibility.  
+There are many issues waiting to be resolved, and features to be added. This repository presents some **basic modifications**, **additional features**, and **enhanced accessibility**.  
 
 ## What's Different
-* Independence from Terraform and Terraform files
+* **Independence** from Terraform and Terraform files
   * App can run on its own, accepting DOT file or keyboard input 
 * Multi-graph feature
-  * The app can display multiple graphs and can be compared side by side with tabs 
+  * The app can **display multiple graphs** and can be compared side by side with tabs 
 * Print 
   * The graph can be printed, although the print can sometimes cut off the graph at times
 * UI changes
@@ -292,7 +301,7 @@ There are many issues waiting to be resolved, and features to be added. This rep
 
 ## Further Reading
 
-The development of *Blast Radius* is documented in a series of
+The original development of *Blast Radius* is documented in a series of
 [blog](https://28mm.github.io) posts by the original creator:
 
 * [part 1](https://28mm.github.io/notes/d3-terraform-graphs): motivations, d3 force-directed layouts vs. vanilla graphviz.
@@ -318,8 +327,9 @@ There are more 188 forks as of August 2022, each containing new updates or featu
 - https://github.com/IBM-Cloud/blast-radius/
 - https://github.com/nishubharti/blast-radius/ 
 - https://github.com/obourdon/blast-radius/
-- https://github.com/nibhart1/blast-radius
-- 
+- https://github.com/nibhart1/blast-radius/
+
+
 It would greatly help if you could contribute to bringing all of these forks into one repository so that we can have a tool that can be used by everyone.
 
 ## Other Tools to Check Out
@@ -330,17 +340,17 @@ It would greatly help if you could contribute to bringing all of these forks int
 [Rover]: https://github.com/im2nguyen/rover
 [Pluralith]: https://www.pluralith.com/
 * [Inframap]
-    * "Read your tfstate or HCL to generate a graph specific for each provider, showing only the resources that are most important/relevant."
+    * "_Read your tfstate or HCL to generate a graph specific for each provider, showing only the resources that are most important/relevant._"
     * Input: tfstate or HCL
     * Written in: Golang
     * Pros: 
-      * Works directly with Terraform state files or .tf files
+      * Works directly with Terraform state files or .tf files, instead of DOT input
       * Docker
       * Simplifies graph
     * Cons:
       * Cannot provide more detail, oversimplification
 * [Terraform Graph Beautifier]
-  * "Terraform graph beautifier"
+  * "_Terraform graph beautifier_"
   * Input: DOT script output from ```terraform graph``` command in Terraform init directory
   * Written in: Golang
   * Pros
@@ -348,7 +358,7 @@ It would greatly help if you could contribute to bringing all of these forks int
   * Cons 
     * Requires Terraform init directory and Terraform installation
 * [Terraform Visual]
-  * "Terraform Visual is an interactive way of visualizing your Terraform plan"
+  * "_Terraform Visual is an interactive way of visualizing your Terraform plan_"
   * Input: Terraform JSON plan files
   * Written in: TypeScript, JavaScript, CSS
   * Pros
@@ -356,7 +366,7 @@ It would greatly help if you could contribute to bringing all of these forks int
     * Creates HTML page that you can save later
     * Has online version: https://hieven.github.io/terraform-visual/  (so doesn't require local installation)
 * [Rover]
-  * "Interactive Terraform visualization. State and configuration explorer."
+  * "_Interactive Terraform visualization. State and configuration explorer._"
   * Inputs: Terraform files in a directory or provided plan file
   * Written in: Golang, VueJS
   * Pros
@@ -367,7 +377,7 @@ It would greatly help if you could contribute to bringing all of these forks int
   * Cons
     * Requires Terraform directory to be init, or else it will not work (even in Docker it also needs init)
 * [Pluralith]
-  * "A tool for Terraform state visualisation and automated generation of infrastructure documentation"
+  * "_A tool for Terraform state visualisation and automated generation of infrastructure documentation_"
   * Written in: Golang
   * Pros
     * Change Highlighting 
