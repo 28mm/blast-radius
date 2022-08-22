@@ -239,6 +239,9 @@ There are many issues waiting to be resolved, and features to be added. This rep
 * Allow upload of multiple files and folders
 * Drag and drop file upload 
 * Dark mode 
+* Support for Terragrunt 
+* Support for Tfenv 
+* Compress Docker image size (currently 180+MB)
 * Editable tab names
 * Reorder tabs via drag
 * Responsive webpage
