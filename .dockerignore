@@ -1,8 +1,16 @@
 .*
+AWS/
 doc
+Dockerfile
+*.md
+!README.md
+*.svg
+*.json
+docker-compose.yml
 providers/
 LICENSE
 examples/
+example/
 PowerShell/
 BASH/
 Kubernetes/
