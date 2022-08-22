@@ -2,19 +2,20 @@ terraform {
 }
 
 provider "aws" {
-   access_key = var.AWS_ACCESS_KEY_ID
-   secret_key = var.AWS_SECRET_ACCESS_KEY
+  # uncomment if global configuration is not set up yet
+#   access_key = var.AWS_ACCESS_KEY_ID
+#   secret_key = var.AWS_SECRET_ACCESS_KEY
    region     = var.AWS_REGION
 }
 
-variable "AWS_ACCESS_KEY_ID" {
-  default = ""
-}
-
-variable "AWS_SECRET_ACCESS_KEY" {
-  default = ""
-}
-
+#variable "AWS_ACCESS_KEY_ID" {
+#  default = ""
+#}
+#
+#variable "AWS_SECRET_ACCESS_KEY" {
+#  default = ""
+#}
+#
 variable "AWS_REGION" {
   default = ""
 }
