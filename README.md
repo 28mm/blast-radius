@@ -4,16 +4,20 @@
 
 [terraform]: https://www.terraform.io/
 [examples]: https://28mm.github.io/blast-radius-docs/
+[docs]: https://28mm.github.io/blast-radius-docs/
 
-_Blast Radius_ is a tool for reasoning about [Terraform](https://www.terraform.io/) dependency graphs
-with interactive visualizations.
+_Blast Radius Fork_ is an interactive visualizer for [Terraform](https://www.terraform.io/) based off of 
+[_Blast Radius_](https://28mm.github.io/blast-radius/), 
+which hasn't been actively maintained since 2020. 
+
+It is a work in progress and is not guaranteed to be bug free.
 
 ----------------------------------
 
 ## Table of Contents 
 - [Usage](#usage)
-- [Preqrequisites](#prerequisites)
-- [Quickstart](#quickstart)
+- [Preqrequisites](#prerequisites-for-local-use)
+- [Quickstart](#local-quickstart)
 - [Docker](#docker)
   - [Docker Configurations](#docker-configurations)
     - [Docker Subdirectories](#docker--subdirectories)
@@ -23,6 +27,7 @@ with interactive visualizations.
   - [Kubernetes Debugging & Helpful Commands](#kubernetes-debugginghelpful-commands)
 - [Embedded Figures](#embedded-figures)
 - [How It Works](#how-it-works)
+- [What's Different](#whats-different)
 - [Future Implementation Possibilities](#future-implementations--possible-functionalities)
 - [Further Reading](#further-reading)
 - [Other Tools to Check Out](#other-tools-to-check-out)
@@ -41,16 +46,17 @@ Use _Blast Radius_ to:
 
 ![screenshot](doc/blastradius-interactive.png)
 
-## Prerequisites
+## Prerequisites for Local Use
 
+* [Python](https://www.python.org/) 3.7-3.9 (does not work with Python 3.10 at the moment)
 * [Graphviz](https://www.graphviz.org/)
-* [Python](https://www.python.org/) 3.7-3.9 (does not work with Python 3.10 on Ubuntu machines)
+* [Terraform](https://www.terraform.io/) (if you do not have generated Terraform DOT graphs yet)
 
 > __Note:__ For macOS you can `brew install graphviz`
 
-## Quickstart
+## Local Quickstart
 
-The fastest way to get up and running with *Blast Radius* is to install it with
+The fastest way to run with *Blast Radius* is to install it with
 `pip` to your pre-existing environment:
 
 ```sh
@@ -58,23 +64,33 @@ python -m pip install git+https://github.com/Ianyliu/blast-radius-fork
 ```
 or 
 ```sh
-python3 -m pip install git+https://github.com/Ianyliu/blast-radius-fork
+python3 -m pip3 install git+https://github.com/Ianyliu/blast-radius-fork
 ```
 
-If you have an initialized *Terraform* directory, you can just start *Blast Radius* within the initialized *Terraform*
-directory:
+You can run Blast Radius from the command line with:
 
 ```sh
+blast-radius --serve 
+```
+
+If you want to create graphs for an initialized *Terraform* directory, you can just start *Blast Radius* within the 
+initialized *Terraform*
+directory:
+
+```
 blast-radius --serve /path/to/terraform/directory
 ```
 
 And you will shortly be rewarded with a browser link http://127.0.0.1:5000/.
 
-If you __DON'T__ have an initialized *Terraform* directory and would like to start it as a standalone application to visualize existing DOT files, you can start it in any directory:
-```sh
-blast-radius --serve 
-```
-You may then upload DOT script via text input or file upload.
+[//]: # (You can specify the port number with the `--port` flag:)
+
+[//]: # ()
+[//]: # (```)
+
+[//]: # (blast-radius --serve /path/to/terraform/directory --port=8080)
+
+[//]: # (```)
 
 Other ways to run it include [Docker](#docker) and [Kubernetes](#kubernetes)
 
@@ -83,13 +99,31 @@ Other ways to run it include [Docker](#docker) and [Kubernetes](#kubernetes)
 [privileges]: https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
 [overlayfs]: https://wiki.archlinux.org/index.php/Overlay_filesystem
 
-To launch *Blast Radius* for a local directory by manually running:
+First install Docker on your machine:
+* [Linux](https://docs.docker.com/desktop/install/linux-install/)
+* [Mac](https://docs.docker.com/desktop/install/mac-install/)
+* [Windows](https://docs.docker.com/desktop/install/windows-install/) 
 
+You can also install [Docker Desktop](https://www.docker.com/products/docker-desktop/), which is a more intuitive GUI 
+for Docker.
+
+Now launch *Blast Radius* for a local directory by manually running:
+
+sh, zsh, bash, etc. (Linux recommended):
 ```sh
 docker run --rm -it -p 5000:5000 \
   -v $(pwd):/data:ro \
   --security-opt apparmor:unconfined \
   --cap-add=SYS_ADMIN \
+  ianyliu/blast-radius-fork
+```
+
+Windows PowerShell:
+```powershell
+docker run --rm -it -p 5000:5000 `
+  -v ${pwd}:/data:ro `
+  --security-opt apparmor:unconfined `
+  --cap-add=SYS_ADMIN `
   ianyliu/blast-radius-fork
 ```
 
@@ -171,7 +205,8 @@ Launch *Kubernetes* locally using Minikube, Kubernetes, and Kubectl:
 
 1. Start Minikube  
 ```minikube start```
-2. Change directories to the file containing the 2 YAML files (*k8-blast-radius-deployment.yaml* and *k8-blast-radius-service.yaml* pply the YAML configuration files to the default namespace (or any other namespace)  
+2. Change directories to the file containing the 2 YAML files (*k8-blast-radius-deployment.yaml* and 
+3. *k8-blast-radius-service.yaml* pply the YAML configuration files to the default namespace (or any other namespace)  
 ```
 kubectl apply -f k8-blast-radius-deployment.yaml
 kubectl apply -f k8-blast-radius-service.yaml
@@ -215,21 +250,40 @@ You can read more details in the [documentation for embedded figures](doc/embedd
 - [d3.js](https://d3js.org/) to implement interactive features
 - [Flask](https://flask.palletsprojects.com/) to start a server
 - [Vanilla JavaScript](http://vanilla-js.com/) and [jQuery](https://jquery.com/) for front-end functionality
-- [HTML](https://html.com/), [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS), [Bootstrap](https://getbootstrap.com/), and other libraries for front-end design
+- [HTML](https://html.com/), [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS), 
+- [Bootstrap](https://getbootstrap.com/), and other libraries for front-end design
+
+Terraform generates graphs in the form of [DOT](https://en.wikipedia.org/wiki/DOT_language) language. *Blast Radius* 
+uses [Graphviz](https://graphviz.org/) to layout the graph after converting to SVG, 
+and D3.js to implement interactive features. 
+Terraform configurations are then parsed by [python-hcl2](https://github.com/amplify-education/python-hcl2) to generate 
+a [JSON](https://en.wikipedia.org/wiki/JSON_document) representation of the graph, 
+which provides details of each resource on hover.
+All of this is hosted on [Flask](https://flask.palletsprojects.com/) and runs on a [local server](http://localhost:5000/). 
 
 ## Motivation
-The original creator of this open source project, [Patrick McMurchie](https://github.com/28mm), has been inactive on this project for some time. 
-There are many issues waiting to be resolved, and features to be added. This repository presents some basic modifications, additional features, and enhanced accessibility.  
+The original creator of this open source project, [Patrick McMurchie](https://github.com/28mm), has been inactive on 
+this project for some time. 
+There are many issues waiting to be resolved, and features to be added. This repository presents some 
+**basic modifications**, **additional features**, and **enhanced accessibility**.  
 
-## Modifications & New Features 
-* Independence from Terraform and Terraform files
-  * App can run on its own, accepting file or keyboard input 
+## What's Different
+* **Independence** from Terraform and Terraform files
+  * App can run on its own, accepting DOT file or keyboard input 
 * Multi-graph feature
-  * The app can display multiple graphs and can be compared side by side with tabs 
+  * The app can **display multiple graphs** and can be compared side by side with tabs 
 * Print 
   * The graph can be printed, although the print can sometimes cut off the graph at times
 * UI changes
   * To enable a better design, the multi-colored buttons and other parts of the page have been changed to follow the 60-30-10 design rule
+* Compatability with recent versions of Terraform, Python, and Python packages
+* Created a new Docker image at [ianyliu/blast-radius-fork](https://hub.docker.com/repository/docker/ianyliu/blast-radius-fork/) for multi-cpu architectures equipped with updated features
+* Added Shell scripts that can be used to run & build the Docker image with aliases for convenience 
+* Updated README.md 
+* Integrated changes across other forks and pull requests of Blast Radius, including: 
+  * PowerShell scripts for running and building Docker containers
+  * Running Terratests during Docker build
+  * Allowing Blast Radius to run even if JSON data couldn't be parsed  
 
 ## Future Implementations & Possible Functionalities
 * Accept file input as a command-line argument 
@@ -253,17 +307,17 @@ There are many issues waiting to be resolved, and features to be added. This rep
   * PyInstaller 
 * Mobile interface formatting
 * Loading spinner before graphs load (and disable buttons)
-* cache DOT script or SVG in local storage so it can be loaded next time without re-upload
+* Cache DOT script or SVG in local storage so it can be loaded next time without re-upload
 * Animation
   * Shows difference between current state and state after apply
   * Shows difference between one Terraform graph and another via animation 
-* Add example Terraform files that allow Blast Radius to be run on Microsoft Azure, Google Cloud, IBM Cloud Services, etc.
+* Add example Terraform DOT files that allow Blast Radius to be run on Microsoft Azure, Google Cloud, IBM Cloud Services, etc.
 * Integration with Neo4j or other graph database, parse *Terraform* files and find relationships between resources
 
 
 ## Further Reading
 
-The development of *Blast Radius* is documented in a series of
+The original development of *Blast Radius* is documented in a series of
 [blog](https://28mm.github.io) posts by the original creator:
 
 * [part 1](https://28mm.github.io/notes/d3-terraform-graphs): motivations, d3 force-directed layouts vs. vanilla graphviz.
@@ -284,6 +338,16 @@ with various *Terraform* providers, and aren't necessarily ideal. Additional
 examples, particularly demonstrations of best-practices, or of multi-cloud
 configurations strongly desired.
 
+There are more 188 forks as of August 2022, each containing new updates or features of some sort. Notable ones include: 
+- https://github.com/gruberdev/blast-radius/
+- https://github.com/IBM-Cloud/blast-radius/
+- https://github.com/nishubharti/blast-radius/ 
+- https://github.com/obourdon/blast-radius/
+- https://github.com/nibhart1/blast-radius/
+
+
+It would greatly help if you could contribute to bringing all of these forks into one repository so that we can have a tool that can be used by everyone.
+
 ## Other Tools to Check Out
 
 [Inframap]: https://github.com/cycloidio/inframap
@@ -292,17 +356,17 @@ configurations strongly desired.
 [Rover]: https://github.com/im2nguyen/rover
 [Pluralith]: https://www.pluralith.com/
 * [Inframap]
-    * "Read your tfstate or HCL to generate a graph specific for each provider, showing only the resources that are most important/relevant."
+    * "_Read your tfstate or HCL to generate a graph specific for each provider, showing only the resources that are most important/relevant._"
     * Input: tfstate or HCL
     * Written in: Golang
     * Pros: 
-      * Works directly with Terraform state files or .tf files
+      * Works directly with Terraform state files or .tf files, instead of DOT input
       * Docker
       * Simplifies graph
     * Cons:
       * Cannot provide more detail, oversimplification
 * [Terraform Graph Beautifier]
-  * "Terraform graph beautifier"
+  * "_Terraform graph beautifier_"
   * Input: DOT script output from ```terraform graph``` command in Terraform init directory
   * Written in: Golang
   * Pros
@@ -310,7 +374,7 @@ configurations strongly desired.
   * Cons 
     * Requires Terraform init directory and Terraform installation
 * [Terraform Visual]
-  * "Terraform Visual is an interactive way of visualizing your Terraform plan"
+  * "_Terraform Visual is an interactive way of visualizing your Terraform plan_"
   * Input: Terraform JSON plan files
   * Written in: TypeScript, JavaScript, CSS
   * Pros
@@ -318,7 +382,7 @@ configurations strongly desired.
     * Creates HTML page that you can save later
     * Has online version: https://hieven.github.io/terraform-visual/  (so doesn't require local installation)
 * [Rover]
-  * "Interactive Terraform visualization. State and configuration explorer."
+  * "_Interactive Terraform visualization. State and configuration explorer._"
   * Inputs: Terraform files in a directory or provided plan file
   * Written in: Golang, VueJS
   * Pros
@@ -329,7 +393,7 @@ configurations strongly desired.
   * Cons
     * Requires Terraform directory to be init, or else it will not work (even in Docker it also needs init)
 * [Pluralith]
-  * "A tool for Terraform state visualisation and automated generation of infrastructure documentation"
+  * "_A tool for Terraform state visualisation and automated generation of infrastructure documentation_"
   * Written in: Golang
   * Pros
     * Change Highlighting 
