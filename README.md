@@ -132,7 +132,7 @@ Launch *Kubernetes* locally using Minikube, Kubernetes, and Kubectl:
 <details>
 <summary></summary>
 
-* Docker or another container or virtual machine manager 
+* Docker (or another container or virtual machine manager) 
 * Kubectl: https://kubernetes.io/docs/tasks/tools/
 * Minikube: https://minikube.sigs.k8s.io/docs/start/
 </details>
@@ -144,12 +144,12 @@ Launch *Kubernetes* locally using Minikube, Kubernetes, and Kubectl:
 1. Start Minikube  
 ```minikube start```
 2. Change directories to the file containing the 2 YAML files (*k8-blast-radius-deployment.yaml* and 
-3. *k8-blast-radius-service.yaml* pply the YAML configuration files to the default namespace (or any other namespace)  
+3. *k8-blast-radius-service.yaml* apply the YAML configuration files to the default namespace (or any other namespace)  
 ```
 kubectl apply -f k8-blast-radius-deployment.yaml
 kubectl apply -f k8-blast-radius-service.yaml
 ```
-3. Access the app  
+Access the app  
 ```
 minikube service  k8-blast-radius-service
 ```
@@ -168,6 +168,26 @@ minikube service  k8-blast-radius-service
 * The most helpful tool is probably Minikube's dashboard, where you can more things  
 ```minikube dashboard```
 </details>
+
+## Parameters 
+* Directory: Defaults to `$PWD` or current directory. The directory in which to look for Terraform files. 
+This is required if the user wants to use a Terraform project as input 
+(instead of uploading a file or pasting DOT script). 
+* `--port`: Defaults to 5000. The port to access the app (http://localhost:PORT) 
+Any valid localhost port is allowed.
+* `--serve`: Starts a webserver locally with Terraform's interactive graph
+* `--json`: Prints a JSON representation of a Terraform graph. The JSON has 2 items, `edges` and `nodes`. 
+* `--dot`: Returns a string consisting of Graphviz DOT script of graph. (no colors)
+* `--svg`: Prints SVG representation of graph (with colors).
+* `--graph`: 
+* `--module-depth`: Takes an integer as input and only eliminates display of deeply nested modules. 
+This will not show every node on the graph unless the user specifies a depth larger than the graph.
+*  `--focus`: Show only specified resource and its dependencies. Not available in web app. Only works with `--json` and `--svg`.
+  * Example: ```terraform graph | blast-radius --focus \
+    "[root] module.us-west-2.module.secondary_subnet.data.aws_vpc.target" --svg```
+* `--center`: Prunes the graph to a subgraph (same thing as red button in web app). Only works with `--json` and `--svg`.
+  * Example: ```terraform graph | blast-radius --center \
+    "[root] module.us-west-2.module.secondary_subnet.data.aws_vpc.target" --svg``` 
 
 ## Embedded Figures
 
