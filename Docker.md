@@ -7,10 +7,15 @@
 - [Preqrequisites](#prerequisites)
 - [Run Docker Containers](#run-docker-containers-with-docker-hub-images)
 - [Docker Configurations](#docker-configurations)
+- [Port Configurations](#port-configurations)
 - [Docker Subdirectories](#docker--subdirectories)
 - [Image Building](#image-building)
+  - [Preqrequisites for Buildx](#prerequisites-for-buildx)
+- [Shell Scripts](#shell-scripts)
+- [Aliases](#aliases)
+  - [Temporary Aliases](#temporary-aliases)
+  - [Permanent Aliases](#permanent-aliases) 
 
-[//]: # (- [Aliases]&#40;#aliases&#41; )
 
 ## Prerequisites
 * Install Docker
