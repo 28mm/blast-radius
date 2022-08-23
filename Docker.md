@@ -245,7 +245,7 @@ but the image of Python Alpine does not usually support these architectures.
 
 
 ## Shell Scripts 
-In the ![PowerShell folder](PowerShell) and ![BASH folder](BASH) there are Docker build and run shell scripts.
+In the [PowerShell folder](PowerShell) and [BASH folder](BASH) there are Docker build and run shell scripts.
 Using shell scripts makes running and building the Docker containers easier and less error prone. 
 
 Here's an example of running the docker Shell script for running a container. 

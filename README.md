@@ -18,9 +18,7 @@ It is a work in progress and is not guaranteed to be bug free.
 - [Usage](#usage)
 - [Preqrequisites](#prerequisites-for-local-use)
 - [Quickstart](#local-quickstart)
-- [Docker](#docker)
-  - [Docker Configurations](#docker-configurations)
-    - [Docker Subdirectories](#docker--subdirectories)
+- [Docker](#docker-quickstart)
 - [Kubernetes](#kubernetes)
   - [Kubernetes Prerequisites](#kubernetes-prerequisites)
   - [Start App on Kubernetes](#start-the-app-on-kubernetes)
@@ -53,6 +51,8 @@ Use _Blast Radius_ to:
 * [Terraform](https://www.terraform.io/) (if you do not have generated Terraform DOT graphs yet)
 
 > __Note:__ For macOS you can `brew install graphviz`
+ 
+> __Note:__ For Docker usage prerequisites, see [Docker.md](Docker.md)
 
 ## Local Quickstart
 
@@ -67,7 +67,7 @@ or
 python3 -m pip3 install git+https://github.com/Ianyliu/blast-radius-fork
 ```
 
-You can run Blast Radius from the command line with:
+You can then run Blast Radius from the command line:
 
 ```sh
 blast-radius --serve 
@@ -92,22 +92,14 @@ And you will shortly be rewarded with a browser link http://127.0.0.1:5000/.
 
 [//]: # (```)
 
-Other ways to run it include [Docker](#docker) and [Kubernetes](#kubernetes)
+Other ways to run it include [Docker](#docker-quickstart) and [Kubernetes](#kubernetes)
 
-## Docker
+## Docker Quickstart
 
 [privileges]: https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
 [overlayfs]: https://wiki.archlinux.org/index.php/Overlay_filesystem
 
-First install Docker on your machine:
-* [Linux](https://docs.docker.com/desktop/install/linux-install/)
-* [Mac](https://docs.docker.com/desktop/install/mac-install/)
-* [Windows](https://docs.docker.com/desktop/install/windows-install/) 
-
-You can also install [Docker Desktop](https://www.docker.com/products/docker-desktop/), which is a more intuitive GUI 
-for Docker.
-
-Now launch *Blast Radius* for a local directory by manually running:
+Launch a container for a local directory with *Blast Radius* running:
 
 sh, zsh, bash, etc. (Linux recommended):
 ```sh
@@ -130,61 +122,7 @@ docker run --rm -it -p 5000:5000 `
 A slightly more customized variant of this is also available as an example
 [docker-compose.yml](./Docker/docker-compose.yml) usecase for Workspaces.
 
-### Docker configurations
-
-<details><summary></summary>
-
-*Terraform* module links are saved as _absolute_ paths in relative to the
-project root (note `.terraform/modules/<uuid>`). Given these paths will vary
-betwen Docker and the host, we mount the volume as read-only, assuring we don't
-ever interfere with your real environment.
-
-However, in order for *Blast Radius* to actually work with *Terraform*, it needs
-to be initialized. To accomplish this, the container creates an [overlayfs][]
-that exists within the container, overlaying your own, so that it can operate
-independently. To do this, certain runtime privileges are required --
-specifically `--cap-add=SYS_ADMIN`.
-
-For more information on how this works and what it means for your host, check
-out the [runtime privileges][privileges] documentation.
-</details>
-
-#### Docker & Subdirectories
-
-<details>
-<summary></summary>
-
-If you organized your *Terraform* project using stacks and modules,
-*Blast Radius* must be called from the project root and reference them as
-subdirectories -- don't forget to prefix `--serve`!
-
-For example, let's create a Terraform `project` with the following:
-
-```txt
-$ tree -d
-`-- project/
-    |-- modules/
-    |   |-- foo
-    |   |-- bar
-    |   `-- dead
-    `-- stacks/
-        `-- beef/
-             `-- .terraform
-```
-
-It consists of 3 modules `foo`, `bar` and `dead`, followed by one `beef` stack.
-To apply *Blast Radius* to the `beef` stack, you would want to run the container
-with the following:
-
-```sh
-$ cd project
-$ docker run --rm -it -p 5000:5000 \
-    -v $(pwd):/data:ro \
-    --security-opt apparmor:unconfined \
-    --cap-add=SYS_ADMIN \
-    ianyliu/blast-radius-fork --serve stacks/beef
-```
-</details>
+For more details on Docker usage, see [Docker.md](Docker.md)
 
 ## Kubernetes
 
@@ -352,6 +290,21 @@ It would greatly help if you could contribute to bringing all of these forks int
 [Terraform Visual]: https://github.com/hieven/terraform-visual
 [Rover]: https://github.com/im2nguyen/rover
 [Pluralith]: https://www.pluralith.com/
+* [Pluralith]
+  * "_A tool for Terraform state visualisation and automated generation of infrastructure documentation_"
+  * Written in: Golang
+  * Pros
+    * Change Highlighting
+    * Apply plan within application
+    * Cost information
+    * Provides granular details on click
+    * Plan-to-plan comparison (tabs)
+    * Filter (by Created, Destroyed, Updated, Recreated)
+    * GUI (Graphical User Interface)
+    * Lots more features... there's so many!
+  * Cons
+    * More advanced features cost money (understandably)
+    * Newer, with less tutorials and tests
 * [Inframap]
     * "_Read your tfstate or HCL to generate a graph specific for each provider, showing only the resources that are most important/relevant._"
     * Input: tfstate or HCL
@@ -389,18 +342,3 @@ It would greatly help if you could contribute to bringing all of these forks int
     * Docker compatible
   * Cons
     * Requires Terraform directory to be init, or else it will not work (even in Docker it also needs init)
-* [Pluralith]
-  * "_A tool for Terraform state visualisation and automated generation of infrastructure documentation_"
-  * Written in: Golang
-  * Pros
-    * Change Highlighting 
-    * Apply plan within application 
-    * Cost information
-    * Provides granular details on click 
-    * Plan-to-plan comparison (tabs)
-    * Filter (by Created, Destroyed, Updated, Recreated)
-    * GUI (Graphical User Interface)
-    * Lots more features... there's so many! 
-  * Cons
-    * More advanced features cost money (understandably)
-    * New and less tested
