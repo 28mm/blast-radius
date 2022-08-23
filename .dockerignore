@@ -6,6 +6,7 @@ Dockerfile
 !README.md
 *.svg
 *.json
+*.png
 docker-compose.yml
 providers/
 LICENSE
