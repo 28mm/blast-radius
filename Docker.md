@@ -5,7 +5,7 @@
 
 ## Table of Contents
 - [Preqrequisites](#prerequisites)
-- [Run Docker Containers](#run-docker-containers-with-images-on-docker-hub)
+- [Run Docker Containers](#run-docker-containers-with-docker-hub-images)
 - [Docker Configurations](#docker-configurations)
 - [Docker Subdirectories](#docker--subdirectories)
 - [Image Building](#image-building)
@@ -22,7 +22,7 @@ It is recommended to nstall [Docker Desktop](https://www.docker.com/products/doc
 
 Verify Docker is installed in your Terminal: ```docker info```
 
-## Run Docker Containers with Images on Docker Hub
+## Run Docker Containers with Docker Hub Images
 
 Launch *Blast Radius* for a local directory by manually running:
 
@@ -239,5 +239,68 @@ but the image of Python Alpine does not usually support these architectures.
 > Note: If in the future local loading of Docker images is supported, replace `--push` with `--load`
 
 
-## Shell Scripts
-In the ![Docker folder](Docker), there are 2 
+## Shell Scripts 
+In the ![PowerShell folder](PowerShell) and ![BASH folder](BASH) there are Docker build and run shell scripts.
+Using shell scripts makes running and building the Docker containers easier and less error prone. 
+
+Here's an example of running the docker Shell script for running a container. 
+
+```sh
+cd blast-radius-fork 
+/bin/bash ./docker_run.sh
+```
+
+Compare that to
+
+```sh
+docker run --rm -it -p 5000:5000 \
+  -v $(pwd):/data:ro \
+  --security-opt apparmor:unconfined \
+  --cap-add=SYS_ADMIN \
+  blast-radius-fork
+```
+
+## Aliases
+
+An alias in Linux is a shortcut to a command. They are usually used to replace long commands.
+To see what aliases you have, run `alias`. 
+
+There are 2 types of aliases. Temporary ones and permanent ones. 
+
+#### Temporary Aliases
+
+To creat temporary aliases, simply follow the formula of ```alias SHORTCUT='COMMAND'```. Here's an example of a clear 
+command referenced by `c`: `alias c='clear'`
+
+Let's say we want to use `br-docker` to replace the long Docker run command.
+
+```sh
+alias br-docker='docker run --rm -it -p 5000:5000 \
+-v $(pwd):/data:ro \
+  --security-opt apparmor:unconfined \
+  --cap-add=SYS_ADMIN \
+  ianyliu/blast-radius-fork'
+```
+Now we can just run `br-docker` whenever we want to run a Docker container to start Blast Radius!
+
+Here's another example using [Shell scripts](#shell-scripts). 
+```sh
+alias br-build='/bin/bash /Users/USERNAME/blast-radius-fork/BASH/docker_build.sh'
+```
+Now we can build our Docker image by just using `br-build`!
+
+#### Permanent Aliases
+
+To create permanent aliases, one needs to add it to their shell configuration file. 
+
+* PowerShell configuration files are usually located in `$PSHOME`
+* BASH: `~/.bashrc`
+* ZSH: `~/.zshrc`
+* FISH: `~/.config/fish/config.fish`
+
+Now open the shell config file in a text editor. 
+Example: `sudo vi ~/.bashrc`
+
+Go to the aliases section, and add your aliases. 
+Here's a helpful 
+[article](https://phoenixnap.com/kb/linux-alias-command#:~:text=In%20Linux%2C%20an%20alias%20is,and%20avoiding%20potential%20spelling%20errors.).
