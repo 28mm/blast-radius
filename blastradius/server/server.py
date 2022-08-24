@@ -31,7 +31,7 @@ def index():
     # we need terraform, graphviz, and an init-ed terraform project.
     if not which('terraform') and not which('terraform.exe'):
         is_terraform_installation = False
-    if not (os.path.exists('.terraform') and tf_data_dir is not None and os.path.exists(tf_data_dir)):
+    if not os.path.exists('.terraform') or (tf_data_dir is None and not os.path.exists(tf_data_dir)):
         is_terraform_directory = False
     if not which('dot') and not which('dot.exe'):
         #Return error page. Graphviz is a dependency that has to exist.
@@ -45,9 +45,11 @@ def index():
 
     if is_terraform_directory is False or is_terraform_installation is False:
         # Blast Radius template without default graph
+        print("Blast Radius could not find a Terraform directory ") if is_terraform_directory is False else print("Blast Radius could not find a Terraform installation. ")
         template = 'non_tf_dir.html'
     else:
         # Blast Radius template with default graph
+        print("Blast Radius is generating graphs for your Terraform directory. ")
         template = 'index.html'
 
     #Run Blast Radius presenting a default graph
