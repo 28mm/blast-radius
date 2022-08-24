@@ -46,7 +46,7 @@ Use _Blast Radius_ to:
 
 ## Prerequisites for Local Use
 
-* [Python](https://www.python.org/) 3.7-3.9 (does not work with Python 3.10 at the moment)
+* [Python](https://www.python.org/) 3.7+
 * [Graphviz](https://www.graphviz.org/)
 * [Terraform](https://www.terraform.io/) (if you do not have generated Terraform DOT graphs yet)
 
