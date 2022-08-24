@@ -45,9 +45,11 @@ def index():
 
     if is_terraform_directory is False or is_terraform_installation is False:
         # Blast Radius template without default graph
+        print("Blast Radius could not find a Terraform directory ") if is_terraform_directory is False else print("Blast Radius could not find a Terraform installation. ")
         template = 'non_tf_dir.html'
     else:
         # Blast Radius template with default graph
+        print("Blast Radius is generating graphs for your Terraform directory. ")
         template = 'index.html'
 
     #Run Blast Radius presenting a default graph
