@@ -17,8 +17,8 @@ It is a work in progress and is not guaranteed to be bug free.
 ## Table of Contents 
 - [Usage](#usage)
 - [Preqrequisites](#prerequisites-for-local-use)
-- [Quickstart](#local-quickstart)
-- [Docker](#docker-quickstart)
+- [Local Quickstart](#local-quickstart)
+- [Docker Quickstart](#docker-quickstart)
 - [Kubernetes](#kubernetes)
   - [Kubernetes Prerequisites](#kubernetes-prerequisites)
   - [Start App on Kubernetes](#start-the-app-on-kubernetes)
