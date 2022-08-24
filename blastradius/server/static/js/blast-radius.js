@@ -54,20 +54,6 @@ let uploadFile = function (file, tabNumber) {
         let formData = new FormData();
         formData.set('file', file);
         uploadRequest('/upload', formData, selector)
-
-        // fetch('/upload', {
-        //         method: "POST",
-        //         body: formData
-        //     })
-        //     .then(response => (response.json()))
-        //     .then(async function (resjson) {
-        //         let br_state = {
-        //             selector: {}
-        //         }
-        //         xml = $.parseXML(resjson.SVG);
-        //         json = JSON.parse(resjson.JSON);
-        //         await blastradius(selector, '/graph.svg', '/graph.json', br_state, xml, json)
-        //     })
     } else {
         alert("This is not a valid File!");
     }
@@ -264,7 +250,6 @@ let insertTabContent = (prevNumber) => {
     let newTabGraph = '<div id="' + graphSelector + '" class="graph"></div>'
     $('.drag-area').append(newTabContentDiv);
     $(`#tab-${curNum}`).append(topNavBar, newTabGraph);
-    // console.log($(`#tab-${curNum}`).children("nav").children("ul").children("li").last().children("div.dropdown").children("button.btn.btn-info.dropdown-toggle").first()[0].id)
 
 
 }
@@ -334,8 +319,6 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
     // become confusing.
     var color = (state['color'] ? state['color'] : d3.scaleOrdinal(d3['schemeCategory20']));
     state['color'] = color;
-
-    //console.log(state);
 
     // 1st pull down the svg, and append it to the DOM as a child
     // of our selector. If added as <img src="x.svg">, we wouldn't
