@@ -249,8 +249,14 @@ def get_terraform_exe():
 
 
 def get_python_version():
+
     completed = subprocess.run(
-        ['python', '--version'], stdout=subprocess.PIPE)
+        ['python3', '--version'], stdout=subprocess.PIPE)
+
     if completed.returncode != 0:
-        raise
+        print("'python3' was not found, trying again with 'python' ... ")
+        completed2 = subprocess.run(
+            ['python', '--version'], stdout=subprocess.PIPE)
+        if completed2.returncode != 0:
+            raise
     return completed.stdout.decode('utf-8').splitlines()[0].split(' ')[-1]
