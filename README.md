@@ -65,7 +65,7 @@ python -m pip install git+https://github.com/Ianyliu/blast-radius-fork
 ```
 or 
 ```sh
-python3 -m pip3 install git+https://github.com/Ianyliu/blast-radius-fork
+python3 -m pip install git+https://github.com/Ianyliu/blast-radius-fork
 ```
 
 You can then run Blast Radius from the command line:
