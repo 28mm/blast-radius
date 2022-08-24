@@ -31,7 +31,7 @@ def index():
     # we need terraform, graphviz, and an init-ed terraform project.
     if not which('terraform') and not which('terraform.exe'):
         is_terraform_installation = False
-    if not os.path.exists('.terraform') or (tf_data_dir is None and os.path.exists(tf_data_dir) is False):
+    if not os.path.exists('.terraform') or tf_data_dir is None or (tf_data_dir is not None and not os.path.exists(tf_data_dir)):
         is_terraform_directory = False
     if not which('dot') and not which('dot.exe'):
         #Return error page. Graphviz is a dependency that has to exist.
