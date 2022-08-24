@@ -23,6 +23,7 @@ It is a work in progress and is not guaranteed to be bug free.
   - [Kubernetes Prerequisites](#kubernetes-prerequisites)
   - [Start App on Kubernetes](#start-the-app-on-kubernetes)
   - [Kubernetes Debugging & Helpful Commands](#kubernetes-debugginghelpful-commands)
+- [Parameters](#parameters)
 - [Embedded Figures](#embedded-figures)
 - [How It Works](#how-it-works)
 - [What's Different](#whats-different)
