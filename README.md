@@ -10,7 +10,7 @@ _Blast Radius Fork_ is an interactive visualizer for [Terraform](https://www.ter
 [_Blast Radius_](https://28mm.github.io/blast-radius/), 
 which hasn't been actively maintained since 2020. 
 
-It is a work in progress and is not guaranteed to be bug free.
+It is a work in progress and is not guaranteed to be bug free. Please feel free to contribute!
 
 ----------------------------------
 
