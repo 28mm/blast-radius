@@ -25,7 +25,7 @@ build_uri = function (url, params) {
     url += '?'
     for (var key in params)
         url += key + '=' + params[key] + '&';
-    return url.slice(0,-1);
+    return url.slice(0, -1);
 }
 
 let uploadRequest = (url, formData, selector) => {
@@ -64,7 +64,7 @@ let inputGraph = async () => {
 
     if (graphinput != null) {
         let lastTabContent = $("div.tabcontent").last()[0]
-        if (lastTabContent != null ) {
+        if (lastTabContent != null) {
             let prevNumber = parseInt(lastTabContent.id.split("-")[1])
             let curNumber = parseInt(prevNumber) + 1
             let selector = "#graph-" + curNumber;
@@ -280,12 +280,12 @@ Queue.prototype.dequeue = function () {
     var oldestIndex = this._oldestIndex,
         newestIndex = this._newestIndex,
         deletedData;
- 
+
     if (oldestIndex !== newestIndex) {
         deletedData = this._storage[oldestIndex];
         delete this._storage[oldestIndex];
         this._oldestIndex++;
- 
+
         return deletedData;
     }
 };
@@ -358,24 +358,24 @@ blastradius = function (selector, svg_url, json_url, br_state = {}, uploadXML = 
                 data = uploadJSON
             }
 
+            if (error) {
+                console.error("No Terraform files were found, so JSON details will not be available. The graph is still usable but without all features enabled such as filtering content");
+                // alert("No Terraform files were found, so JSON details will not be available. The graph is still usable but without all features enabled such as filtering content");
+            }
+
             // if (!error) {
-                var edges = data.edges;
-                var svg_nodes = [];
-                var nodes = {};
-                data.nodes.forEach(function (node) {
-                    if (!(node.type in resource_groups))
+            var edges = data.edges;
+            var svg_nodes = [];
+            var nodes = {};
+            data.nodes.forEach(function (node) {
+                if (!(node.type in resource_groups))
                     if (node.label === '[root] root') { // FIXME: w/ tf 0.11.2, resource_name not set by server.
                         node.resource_name = 'root';
                     }
-                    node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
-                    nodes[node['label']] = node;
-                    svg_nodes.push(node);
-                });
-            // } else {
-            //     console.error("An error occurred when parsing JSON data for resource descriptions");
-            // alert("A server exception has occurred. The graph is still usable but without all features enabled such as filtering content")
-            //     edges = []
-            // }
+                node.group = (node.type in resource_groups) ? resource_groups[node.type] : -1;
+                nodes[node['label']] = node;
+                svg_nodes.push(node);
+            });
 
 
             // convenient to access edges by their source.
