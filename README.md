@@ -19,7 +19,7 @@ It is a work in progress and is not guaranteed to be bug free. Please feel free 
 - [Preqrequisites](#prerequisites-for-local-use)
 - [Local Quickstart](#local-quickstart)
 - [Docker Quickstart](#docker-quickstart)
-- [Kubernetes](#kubernetes)
+- [Kubernetes](#kubernetes-quickstart)
   - [Kubernetes Prerequisites](#kubernetes-prerequisites)
   - [Start App on Kubernetes](#start-the-app-on-kubernetes)
   - [Kubernetes Debugging & Helpful Commands](#kubernetes-debugginghelpful-commands)
@@ -93,7 +93,7 @@ And you will shortly be rewarded with a browser link http://127.0.0.1:5000/.
 
 [//]: # (```)
 
-Other ways to run it include [Docker](#docker-quickstart) and [Kubernetes](#kubernetes)
+Other ways to run it include [Docker](#docker-quickstart) and [Kubernetes](#kubernetes-quickstart)
 
 ## Docker Quickstart
 
@@ -125,7 +125,7 @@ A slightly more customized variant of this is also available as an example
 
 For more details on Docker usage, see [Docker.md](Docker.md)
 
-## Kubernetes
+## Kubernetes Quickstart
 
 Launch *Kubernetes* locally using Minikube, Kubernetes, and Kubectl:
 
