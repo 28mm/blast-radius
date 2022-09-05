@@ -19,7 +19,7 @@ It is a work in progress and is not guaranteed to be bug free. Please feel free 
 - [Preqrequisites](#prerequisites-for-local-use)
 - [Local Quickstart](#local-quickstart)
 - [Docker Quickstart](#docker-quickstart)
-- [Kubernetes](#kubernetes-quickstart)
+- [Kubernetes Quickstart](#kubernetes-quickstart)
   - [Kubernetes Prerequisites](#kubernetes-prerequisites)
   - [Start App on Kubernetes](#start-the-app-on-kubernetes)
   - [Kubernetes Debugging & Helpful Commands](#kubernetes-debugginghelpful-commands)
