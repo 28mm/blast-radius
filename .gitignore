@@ -102,6 +102,9 @@ venv.bak/
 .vscode
 .vscode/
 
+# Embold 
+.embold/
+
 # Rope project settings
 .ropeproject
 
