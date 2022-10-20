@@ -20,13 +20,19 @@ class Terraform:
         # handle the root module first...
         self.directory = os.path.abspath(directory) if directory else os.getcwd()
         #print(self.directory)
+        self.config = {}
         self.config_str = ''
         iterator = iglob( self.directory + '/*.tf')
         for fname in iterator:
             with open(fname, 'r', encoding='utf-8') as f:
-                self.config_str += f.read() + ' '
-        config_io = io.StringIO(self.config_str)
-        self.config = hcl.load(config_io)
+                try:
+                    contents = f.read()
+                    self.config_str += contents + ' '
+                    raw = io.StringIO(contents)
+                    parsed = hcl.load(raw)
+                    self.config.update(parsed)
+                except Exception as e:
+                    raise RuntimeError('Exception occurred while parsing ' + fname) from e
 
         # then any submodules it may contain, skipping any remote modules for
         # the time being.
@@ -36,36 +42,37 @@ class Terraform:
                 if 'source' not in mod:
                     continue
                 source = mod['source'][0]
-                # '//' used to refer to a subdirectory in a git repo
-                if re.match(r'.*\/\/.*', source):
-                    continue
-                # '@' should only appear in ssh urls
-                elif re.match(r'.*\@.*', source):
-                    continue
-                # 'github.com' special behavior.
-                elif re.match(r'github\.com.*', source):
-                    continue
-                # points to new TFE module registry
-                elif re.match(r'app\.terraform\.io', source):
-                    continue
-                # bitbucket public and private repos
-                elif re.match(r'bitbucket\.org.*', source):
-                    continue
-                # git::https or git::ssh sources
-                elif re.match(r'^git::', source):
-                    continue
-                # git:// sources
-                elif re.match(r'^git:\/\/', source):
-                    continue
-                # Generic Mercurial repos
-                elif re.match(r'^hg::', source):
-                    continue
-                # Public Terraform Module Registry
-                elif re.match(r'^[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+', source):
-                    continue
-                # AWS S3 buckets
-                elif re.match(r's3.*\.amazonaws\.com', source):
-                    continue
+                
+                # # '//' used to refer to a subdirectory in a git repo
+                # if re.match(r'.*\/\/.*', source):
+                #     continue
+                # # '@' should only appear in ssh urls
+                # elif re.match(r'.*\@.*', source):
+                #     continue
+                # # 'github.com' special behavior.
+                # elif re.match(r'github\.com.*', source):
+                #     continue
+                # # points to new TFE module registry
+                # elif re.match(r'app\.terraform\.io', source):
+                #     continue
+                # # bitbucket public and private repos
+                # elif re.match(r'bitbucket\.org.*', source):
+                #     continue
+                # # git::https or git::ssh sources
+                # elif re.match(r'^git::', source):
+                #     continue
+                # # git:// sources
+                # elif re.match(r'^git:\/\/', source):
+                #     continue
+                # # Generic Mercurial repos
+                # elif re.match(r'^hg::', source):
+                #     continue
+                # # Public Terraform Module Registry
+                # elif re.match(r'^[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+', source):
+                #     continue
+                # # AWS S3 buckets
+                # elif re.match(r's3.*\.amazonaws\.com', source):
+                #     continue
 
                 if source == '.':
                     continue   # avoid infinite recursion
@@ -73,7 +80,6 @@ class Terraform:
                 path = os.path.join(self.directory, source)
                 if os.path.exists(path):
                     # local module
-                    # fixme path join. eek.
                     self.modules[name] = Terraform(directory=path, settings=mod)
                 else:
                     # remote module
