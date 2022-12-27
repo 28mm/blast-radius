@@ -1,4 +1,4 @@
-setuptools==41.0.1
+setuptools==65.5.1
 requests==2.22.0
 Jinja2==2.10.1
 Flask==1.0.3
