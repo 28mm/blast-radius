@@ -1,7 +1,5 @@
 <h1 align="center">Blast Radius</h1>
 
-[![PyPI version](https://badge.fury.io/py/BlastRadius.svg)](https://badge.fury.io/py/BlastRadius)
-
 [terraform]: https://www.terraform.io/
 [examples]: https://28mm.github.io/blast-radius-docs/
 [docs]: https://28mm.github.io/blast-radius-docs/
