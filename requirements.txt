@@ -7,4 +7,4 @@ ply>=3.11
 python-hcl2==3.0.5
 markupsafe==2.0.1
 pyhcl<=0.4.4
-itsdangerous==2.0.1
+itsdangerous==2.1.2
