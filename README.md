@@ -1,7 +1,5 @@
 <h1 align="center">Blast Radius</h1>
 
-[![PyPI version](https://badge.fury.io/py/BlastRadius.svg)](https://badge.fury.io/py/BlastRadius)
-
 [terraform]: https://www.terraform.io/
 [examples]: https://28mm.github.io/blast-radius-docs/
 [docs]: https://28mm.github.io/blast-radius-docs/
@@ -10,7 +8,7 @@ _Blast Radius Fork_ is an interactive visualizer for [Terraform](https://www.ter
 [_Blast Radius_](https://28mm.github.io/blast-radius/), 
 which hasn't been actively maintained since 2020. 
 
-It is a work in progress and is not guaranteed to be bug free.
+It is a work in progress and is not guaranteed to be bug free. Please feel free to contribute!
 
 ----------------------------------
 
@@ -19,7 +17,7 @@ It is a work in progress and is not guaranteed to be bug free.
 - [Preqrequisites](#prerequisites-for-local-use)
 - [Local Quickstart](#local-quickstart)
 - [Docker Quickstart](#docker-quickstart)
-- [Kubernetes](#kubernetes)
+- [Kubernetes Quickstart](#kubernetes-quickstart)
   - [Kubernetes Prerequisites](#kubernetes-prerequisites)
   - [Start App on Kubernetes](#start-the-app-on-kubernetes)
   - [Kubernetes Debugging & Helpful Commands](#kubernetes-debugginghelpful-commands)
@@ -93,7 +91,7 @@ And you will shortly be rewarded with a browser link http://127.0.0.1:5000/.
 
 [//]: # (```)
 
-Other ways to run it include [Docker](#docker-quickstart) and [Kubernetes](#kubernetes)
+Other ways to run it include [Docker](#docker-quickstart) and [Kubernetes](#kubernetes-quickstart)
 
 ## Docker Quickstart
 
@@ -125,7 +123,7 @@ A slightly more customized variant of this is also available as an example
 
 For more details on Docker usage, see [Docker.md](Docker.md)
 
-## Kubernetes
+## Kubernetes Quickstart
 
 Launch *Kubernetes* locally using Minikube, Kubernetes, and Kubectl:
 
@@ -303,6 +301,8 @@ There are more 188 forks as of August 2022, each containing new updates or featu
 - https://github.com/nishubharti/blast-radius/ 
 - https://github.com/obourdon/blast-radius/
 - https://github.com/nibhart1/blast-radius/
+
+An alternate working Docker image for Blast Radius is https://hub.docker.com/r/grubertech/blast-radius
 
 
 It would greatly help if you could contribute to bringing all of these forks into one repository so that we can have a tool that can be used by everyone.

@@ -18,7 +18,7 @@ class Terraform:
         self.settings = settings if settings else {}
 
         # handle the root module first...
-        self.directory = directory if directory else os.getcwd()
+        self.directory = os.path.abspath(directory) if directory else os.getcwd()
         #print(self.directory)
         self.config = {}
         self.config_str = ''
@@ -73,6 +73,9 @@ class Terraform:
                 # # AWS S3 buckets
                 # elif re.match(r's3.*\.amazonaws\.com', source):
                 #     continue
+
+                if source == '.':
+                    continue   # avoid infinite recursion
 
                 path = os.path.join(self.directory, source)
                 if os.path.exists(path):
