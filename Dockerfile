@@ -5,11 +5,11 @@ FROM hashicorp/terraform:$TF_VERSION AS terraform
 
 FROM python:$PYTHON_VERSION-alpine
 RUN pip install -U --no-cache-dir pip ply \
-    && apk add --update --no-cache graphviz ttf-freefont \
+    && apk add --update --no-cache graphviz ttf-freefont git \
     && apk upgrade
 
 COPY --from=terraform /bin/terraform /bin/terraform
-COPY ./Docker/docker-entrypoint.sh /bin/docker-entrypoint.sh
+COPY ./docker-entrypoint.sh /bin/docker-entrypoint.sh
 RUN chmod +x /bin/docker-entrypoint.sh
 
 WORKDIR /src
