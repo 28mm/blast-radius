@@ -91,6 +91,9 @@ And you will shortly be rewarded with a browser link http://127.0.0.1:5000/.
 
 [//]: # (```)
 
+
+Note: If you do not have an initialized Terraform directory but have the DOT script (the output of the `terraform graph` command, note that this is not the same as a JSON file or state graph). You can either copy and paste the DOT script into the text input field or uploaded the DOT script file.
+
 Other ways to run it include [Docker](#docker-quickstart) and [Kubernetes](#kubernetes-quickstart)
 
 ## Docker Quickstart
