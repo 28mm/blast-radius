@@ -13,19 +13,21 @@ It is a work in progress and is not guaranteed to be bug free. Please feel free 
 ----------------------------------
 
 ## Table of Contents 
+- [Table of Contents](#table-of-contents)
 - [Usage](#usage)
-- [Preqrequisites](#prerequisites-for-local-use)
+- [Prerequisites for Local Use](#prerequisites-for-local-use)
 - [Local Quickstart](#local-quickstart)
 - [Docker Quickstart](#docker-quickstart)
 - [Kubernetes Quickstart](#kubernetes-quickstart)
   - [Kubernetes Prerequisites](#kubernetes-prerequisites)
-  - [Start App on Kubernetes](#start-the-app-on-kubernetes)
-  - [Kubernetes Debugging & Helpful Commands](#kubernetes-debugginghelpful-commands)
+  - [Start the App on Kubernetes](#start-the-app-on-kubernetes)
+  - [Kubernetes Debugging/Helpful Commands](#kubernetes-debugginghelpful-commands)
 - [Parameters](#parameters)
 - [Embedded Figures](#embedded-figures)
 - [How It Works](#how-it-works)
+- [Motivation](#motivation)
 - [What's Different](#whats-different)
-- [Future Implementation Possibilities](#future-implementations--possible-functionalities)
+- [Future Implementations \& Possible Functionalities](#future-implementations--possible-functionalities)
 - [Further Reading](#further-reading)
 - [Other Tools to Check Out](#other-tools-to-check-out)
 
@@ -120,6 +122,8 @@ docker run --rm -it -p 5000:5000 `
   --cap-add=SYS_ADMIN `
   ianyliu/blast-radius-fork
 ```
+
+Note: If you have spaces in your directory then you may have to change `-v ${pwd}:/data:ro` to `-v "${pwd}:/data:ro"` instead.
 
 A slightly more customized variant of this is also available as an example
 [docker-compose.yml](./Docker/docker-compose.yml) usecase for Workspaces.

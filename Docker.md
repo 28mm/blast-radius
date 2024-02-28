@@ -4,17 +4,18 @@
 [overlayfs]: https://wiki.archlinux.org/index.php/Overlay_filesystem
 
 ## Table of Contents
-- [Preqrequisites](#prerequisites)
-- [Run Docker Containers](#run-docker-containers-with-docker-hub-images)
-- [Docker Configurations](#docker-configurations)
-- [Port Configurations](#port-configurations)
-- [Docker Subdirectories](#docker--subdirectories)
+- [Table of Contents](#table-of-contents)
+- [Prerequisites](#prerequisites)
+- [Run Docker Containers with Docker Hub Images](#run-docker-containers-with-docker-hub-images)
+- [Docker configurations](#docker-configurations)
+- [Port configurations](#port-configurations)
+- [Docker \& Subdirectories](#docker--subdirectories)
 - [Image Building](#image-building)
-  - [Preqrequisites for Buildx](#prerequisites-for-buildx)
+  - [Prerequisites for Buildx](#prerequisites-for-buildx)
 - [Shell Scripts](#shell-scripts)
 - [Aliases](#aliases)
-  - [Temporary Aliases](#temporary-aliases)
-  - [Permanent Aliases](#permanent-aliases) 
+    - [Temporary Aliases](#temporary-aliases)
+    - [Permanent Aliases](#permanent-aliases)
 
 
 ## Prerequisites
@@ -39,6 +40,8 @@ docker run --rm -it -p 5000:5000 \
   --cap-add=SYS_ADMIN \
   ianyliu/blast-radius-fork
 ```
+
+Note: If you have spaces in your directory then you may have to change `-v ${pwd}:/data:ro` to `-v "${pwd}:/data:ro"` instead.
 
 > Windows PowerShell
 ```powershell
