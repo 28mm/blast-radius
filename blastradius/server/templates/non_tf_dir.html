@@ -1,0 +1,193 @@
+<html>
+
+<head>
+    <title>Blast Radius (Terraform Graph Tools)</title>
+    <meta charset="utf-8">
+
+    <script src="/static/js/jquery.slim.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/fontawesome-all.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+
+
+    <script src="/static/js/d3.v4.js"></script>
+    <script src="/static/js/d3-tip.js"></script>
+    <script src="/static/js/blast-radius.js"></script>
+    <script src="/static/js/categories.js"></script>
+    <script src="/static/js/svg-pan-zoom.js"></script>
+    <script src="/static/js/selectize.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/selectize.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <style>
+        .navbar-nav>li {
+            padding-left: 6px;
+        }
+
+        .navbar-brand {
+            font-family: 'courier new';
+        }
+    </style>
+</head>
+
+<body onload="document.getElementById('overlay').style.display = 'none';">
+    <div id="overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="drag-area">
+        <!-- tabs -->
+        <nav class="navbar fixed-bottom navbar-expand bg-light">
+            <ul class="navbar-nav tab-ul">
+
+                <li class="nav-item nav-item-tab" id="nav-item-1">
+                    <div class="tabdiv" id="tabdiv-1" style="display: flex;">
+                        <button class="btn btn-primary btn-animate tablink" id="tablink-1" title="{{folder_name}}"
+                            style="color: #fff; background-color: #555;">
+                            <i class="fas fa-home"></i>
+                            {{folder_name}}
+                            &nbsp;</button>
+                        <button class="btn btn-primary btn-animate close-tab" title="close tab {{folder_name}}"
+                            id="close-tab-1" style="color: #fff; background-color: #555; margin-left: -2%;" hidden
+                            disabled>
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </li>
+
+            </ul>
+        </nav>
+        <div id="tab-1" class="tabcontent">
+            <!-- navigation and controls -->
+            <nav class="navbar fixed-top navbar-expand bg-light">
+                <ul class="navbar-nav">
+                    <!-- Upload graph -->
+                    <li class="nav-item">
+                        <!-- <div class="drag-area"> -->
+                        <!-- <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div> -->
+                        <button class="btn btn-primary btn-animate graph-upload" id="graph-1-upload"
+                            title="upload ">&nbsp;<i class="fas fa-cloud-upload-alt"></i>
+                        </button>
+                        <input type="file" class="graph-input-upload" id="graph-1-input-upload" hidden>
+                        <!-- </div> -->
+                    </li>
+                    <!-- Input graph -->
+                    <li class="nav-item">
+                        <button class="btn btn-primary graph-text-input" id="graph-1-text-input" title="input"
+                            onclick="inputGraph();removeFirstTabs();">&nbsp;<i class="fas fa-keyboard"></i></button>
+                    </li>
+                    <!-- Help -->
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="diagMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="help">
+                                <i class="fas fa-question-circle" aria-hidden="true"></i>
+                            </button>
+                            <div class="dropdown-menu diagmenu" aria-labelledby="diagMenuButton">
+                                <div class="dropdown-item">
+                                    <label><b>Help &amp; Diagnostics</b></label>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="dropdown-item"><b>Project:</b> {{help.cwd}}</div>
+                                <div class="dropdown-item"><b>Terraform:</b> {{help.tf_version}}</div>
+                                <div class="dropdown-item"><b>Terraform Path:</b> {{help.tf_exe}}</div>
+                                <div class="dropdown-item"><b>Python Version:</b> {{help.python_version}}</div>
+                                <div class="dropdown-item"><a href="https://28mm.github.io/blast-radius-docs">Blast
+                                        Radius
+                                        Documentation</a></div>
+                                <div class="dropdown-item"><a href="https://www.github.com/ianyliu/blast-radius-fork">Blast
+                                        Radius
+                                        GitHub</a></div>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+            </nav>
+
+            <!-- main document body -->
+            <div class="container" height="70"></div><!-- ensure some padding at top -->
+            <!-- no div#container b/c div#graph-1 and child svg need to use all available area for
+         pan/zoom interactions and to avoid clipping                                    -->
+
+            <div id="graph-1" class="graph"></div>
+
+        </div>
+
+    </div>
+
+</body>
+
+<script>
+    let selector = "graph-1"
+    let upload_btn = document.getElementById(selector + "-upload");
+    let upload_input = document.getElementById(selector + "-input-upload");
+    // let dropArea = document.getElementsByClassName(".drag-area");
+    var handle_upload = async (file, filename) => {
+        let prevNumber = parseInt($("div.tabcontent").last()[0].id.split("-")[1])
+        insertTabContent(prevNumber)
+        curNumber = parseInt(prevNumber) + 1
+        await createTab(filename, curNumber)
+        await uploadFile(file, curNumber);
+        $('#tablink-' + curNumber).click();
+        removeFirstTabs();
+    }
+
+    // dropArea.addEventListener("dragover", (event) => {
+    //     console.log("dragover")
+    //     event.preventDefault(); //preventing from default behaviour
+    //     dropArea.classList.add("active");
+    // }, {
+    //     once: true
+    // });
+
+    // let handle_dragleave = () => {
+    //     console.log("dragleave")
+    //     dropArea.classList.remove("active");
+    // }
+    // dropArea.addEventListener("dragleave", handle_dragleave, {
+    //     once: true
+    // });
+
+    // dropArea.addEventListener("drop", function (event) {
+    //     console.log("drop")
+    //     event.preventDefault(); //preventing from default behaviour
+    //     event.stopImmediatePropagation();
+    //     //getting user select file and [0] this means if user select multiple files then we'll select only the first one
+    //     let file = event.dataTransfer.files[0];
+
+    //     handle_upload(file, file.name);
+    // }, {
+    //     once: true,
+    //     passive: false
+    // });
+
+    var handle_upload_input = async function () {
+        let file = this.files[0];
+        // dropArea.classList.add("active");
+        handle_upload(file, file.name);
+    }
+    upload_input.addEventListener('change', handle_upload_input, {
+        once: true
+    });
+
+    upload_btn.onclick = () => {
+        upload_input.click()
+    }
+    let removeFirstTabs = () => {
+        $('#tab-1').remove()
+        $('#tabdiv-1').remove()
+
+        let tabContentDiv = $("div.tabcontent");
+
+        if (tabContentDiv.last()[0] != null && tabContentDiv.last()[0] == tabContentDiv.first()[0]) {
+            let newLastTabNum = parseInt(tabContentDiv.last()[0].id.split("-")[1]);
+            let xButton = $(`#close-tab-${newLastTabNum}`);
+            xButton.prop("disabled", true);
+            xButton.prop("hidden", true);
+        }
+    }
+</script>
+
+</html>

@@ -22,13 +22,13 @@ def main():
     parser = parser = argparse.ArgumentParser(description='blast-radius: Interactive Terraform Graph Visualizations')
     parser.add_argument('directory', type=str, help='terraform configuration directory', default=os.getcwd(), nargs='?')
     parser.add_argument('--port', type=int, help='specify a port other than the default 5000', default=os.getenv('BLAST_RADIUS_PORT',5000))
-    
+
     output_group = parser.add_mutually_exclusive_group()
     output_group.add_argument('--json', action='store_const', const=True, default=False, help='print a json representation of the Terraform graph')
     output_group.add_argument('--dot', action='store_const', const=True, default=False, help='print the graphviz/dot representation of the Terraform graph')
     output_group.add_argument('--svg', action='store_const', const=True, default=False, help='print the svg representation of the Terraform graph')
     output_group.add_argument('--serve', action='store_const', const=True, default=False, help='spins up a webserver with an interactive Terraform graph')
-    
+
     parser.add_argument('--graph', type=str, help='`terraform graph` output (defaults to stdin)', default=sys.stdin)
 
     # options to limit, re-focus, and re-center presentation of larger graphs.
@@ -45,9 +45,14 @@ def main():
     args = parser.parse_args()
 
     if args.serve:
-        os.chdir(args.directory)
-        app.run(host='0.0.0.0',port=args.port)
-        sys.exit(0)
+        if args.graph == sys.stdin:
+            os.chdir(args.directory)
+            app.run(host='0.0.0.0',port=args.port)
+            sys.exit(0)
+        else:
+            os.chdir(args.directory)
+            app.run(host='0.0.0.0',port=args.port)
+            sys.exit(0)
     
     elif args.json or args.dot or args.svg:
         if args.graph is sys.stdin:

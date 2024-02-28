@@ -1,8 +1,8 @@
-version: '3.7'
+version: '3.8'
 services:
 
   blastradius:
-    image: 28mm/blast-radius
+    image: ianyliu/blast-radius-fork
     cap_add:
       - SYS_ADMIN
     security_opt:
