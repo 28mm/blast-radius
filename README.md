@@ -18,12 +18,6 @@ Use _Blast Radius_ to:
 
 ![screenshot](doc/blastradius-interactive.png)
 
-## Prerequisites
-
-* [Graphviz](https://www.graphviz.org/)
-* [Python](https://www.python.org/) 3.7 or newer
-
-> __Note:__ For macOS you can `brew install graphviz`
 
 ## Quickstart
 
@@ -121,11 +115,6 @@ You will need the following:
 
 You can read more details in the [documentation](doc/embedded.md)
 
-## Implementation Details
-
-*Blast Radius* uses the [Graphviz][] package to layout graph diagrams,
-[PyHCL](https://github.com/virtuald/pyhcl) to parse [Terraform][] configuration,
-and [d3.js](https://d3js.org/) to implement interactive features and animations.
 
 ## Further Reading
 
