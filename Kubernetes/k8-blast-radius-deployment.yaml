@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8-blast-radius-deployment
+spec:
+  selector:
+    matchLabels:
+      app: flask-blast-radius
+  template:
+    metadata:
+      labels:
+        app: flask-blast-radius
+    spec:
+      containers:
+        - name: flask-k8s
+          image: docker.io/ianyliu/blast-radius-fork
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          args: ["blast-radius", "--serve"]
+          securityContext:
+              capabilities:
+                add: [ "SYS_ADMIN" ]

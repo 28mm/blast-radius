@@ -1,0 +1,48 @@
+name: Windows wheel
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  wheel:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+      - name: Build wheel
+        run: |
+          python -m pip install --upgrade pip wheel
+          python -m pip wheel --wheel-dir wheelhouse .
+      - name: Install the built wheel
+        run: |
+          python -m pip install --force-reinstall wheelhouse/blastradius-*.whl
+      - name: Verify the Windows console launcher
+        run: |
+          blast-radius --help
+          python -m unittest discover -s tests -v
+          node --test tests/frontend/*.test.js
+      - name: Verify serve mode
+        run: |
+          blast-radius --serve --host 127.0.0.1 --port 5055 . >server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:5055/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat server.log
+          exit 1

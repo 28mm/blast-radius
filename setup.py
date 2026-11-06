@@ -19,7 +19,12 @@ setup(
     long_description_content_type='text/markdown',
     author='Patrick McMurchie',
     author_email='patrick.mcmurchie@gmail.com',
-    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-    scripts=['bin/blast-radius'],
+    packages=find_packages(exclude=['ez_setup', 'examples', 'example', 'tests']),
+    entry_points={
+        'console_scripts': [
+            'blast-radius=blastradius.cli:main',
+        ],
+    },
     install_requires=reqs,
+    include_package_data=True,
 )

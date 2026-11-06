@@ -1,16 +1,10 @@
 #!/bin/sh
 set -e
 
-# If command starts with an option, prepend the blast-radius.
-if [ "${1}" != "blast-radius" ]; then
-  if [ -n "${1}" ]; then
-    set -- blast-radius "$@"
-  fi
+# Preserve the existing Docker shorthand for commands such as `--serve`.
+if [ -n "${1}" ] && [ "${1}" != "blast-radius" ]; then
+  set -- blast-radius "$@"
 fi
-
-# Assert CLI args are overwritten, otherwise set them to preferred defaults
-export TF_CLI_ARGS_get=${TF_CLI_ARGS_get:'-update'}
-export TF_CLI_ARGS_init=${TF_CLI_ARGS_init:'-input=false'}
 
 # Inside the container
 # Need to create the upper and work dirs inside a tmpfs.
@@ -26,14 +20,22 @@ mount -t overlay overlay -o lowerdir=/data,upperdir=/tmp/overlay/upper,workdir=/
 # change to the overlayFS
 cd /data-rw
 
-# Is Terraform already initialized? Ensure modules are all downloaded.
-[ -d '.terraform' ] && terraform get
+/bin/docker-terraform-init.sh /data-rw
 
-# Reinitialize for some reason
-terraform init
+if [ -n "${CHDIR:-}" ]; then
+  case "$CHDIR" in
+    /*)
+      config_dir=$CHDIR
+      ;;
+    *)
+      config_dir=/data-rw/$CHDIR
+      ;;
+  esac
+else
+  config_dir=/data-rw
+fi
 
-# it's possible that we're in a sub-directory. leave.
-cd /data-rw
+cd "$config_dir"
 
 # Let's go!
 exec "$@"

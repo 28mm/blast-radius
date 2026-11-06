@@ -1,0 +1,109 @@
+name: Docker Terraform version smoke test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-smoke:
+    name: ${{ matrix.scenario }} Terraform ${{ matrix.terraform_version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - scenario: default
+            terraform_version: "1.15.8"
+            required_version: ">= 1.7.5"
+            override_default: false
+          - scenario: issue-39-override
+            terraform_version: "1.7.5"
+            required_version: "= 1.7.5"
+            override_default: true
+
+    env:
+      IMAGE_TAG: blast-radius-fork:${{ matrix.scenario }}
+      EXPECTED_TERRAFORM_VERSION: ${{ matrix.terraform_version }}
+      REQUIRED_TERRAFORM_VERSION: ${{ matrix.required_version }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Test Terraform initialization policy
+        run: python -m unittest tests/test_docker_init.py -v
+
+      - name: Build Docker image
+        run: |
+          build_args=()
+          if [[ "${{ matrix.override_default }}" == "true" ]]; then
+            build_args+=(--build-arg "TF_VERSION=${EXPECTED_TERRAFORM_VERSION}")
+          fi
+
+          docker build "${build_args[@]}" \
+            --build-arg PYTHON_VERSION=3.10 \
+            -t "${IMAGE_TAG}" \
+            .
+
+      - name: Verify embedded Terraform version
+        run: |
+          docker run --rm --entrypoint terraform \
+            "${IMAGE_TAG}" version | tee terraform-version.txt
+          grep -F "Terraform v${EXPECTED_TERRAFORM_VERSION}" terraform-version.txt
+
+          docker run --rm --entrypoint /bin/sh "${IMAGE_TAG}" \
+            -c 'printf "%s\n" "$BLAST_RADIUS_TERRAFORM_VERSION"' |
+            grep -Fx "${EXPECTED_TERRAFORM_VERSION}"
+
+      - name: Create minimal Terraform project
+        run: |
+          mkdir -p /tmp/blast-radius-tf-smoke
+          cat > /tmp/blast-radius-tf-smoke/main.tf <<EOF
+          terraform {
+            required_version = "${REQUIRED_TERRAFORM_VERSION}"
+          }
+
+          resource "terraform_data" "example" {
+            input = "blast-radius"
+          }
+          EOF
+
+      - name: Run Blast Radius container and request graph endpoints
+        run: |
+          set -euo pipefail
+          cleanup() {
+            docker logs blast-radius-smoke || true
+            docker rm -f blast-radius-smoke || true
+          }
+          trap cleanup EXIT
+
+          docker run -d \
+            --name blast-radius-smoke \
+            -p 5001:5000 \
+            -v /tmp/blast-radius-tf-smoke:/data:ro \
+            --security-opt apparmor:unconfined \
+            --cap-add=SYS_ADMIN \
+            "${IMAGE_TAG}"
+
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5001/ >/tmp/blast-radius-index.html; then
+              break
+            fi
+            sleep 1
+          done
+
+          curl -fsS http://127.0.0.1:5001/ >/tmp/blast-radius-index.html
+          curl -fsS http://127.0.0.1:5001/graph.svg >/tmp/blast-radius-graph.svg
+          curl -fsS http://127.0.0.1:5001/graph.json >/tmp/blast-radius-graph.json
+
+          grep "<svg" /tmp/blast-radius-graph.svg
+          grep '"nodes"' /tmp/blast-radius-graph.json
+          docker logs blast-radius-smoke | grep "Terraform has been successfully initialized"

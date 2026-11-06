@@ -1,3 +1,6 @@
+#Allow print function to work in Python 2
+from __future__ import print_function
+
 # standard libraries
 import json
 import re
@@ -152,21 +155,25 @@ class DotGraph(Graph):
 
     def set_module_depth(self, depth):
         """
-        group resources belonging to modules into a single node, to simplify 
-        presentation. No claims made for this code. It's garbage!
-       """
+        Group resources below the requested module depth into stand-in nodes.
+        """
 
         depth += 1 # account for [root] module
 
         def is_too_deep(modules):
-            if len(modules) >= depth and modules[0] != 'root':
-                return True
+            return len(modules) >= depth and modules[0] != 'root'
 
         def find_edge(edges, e):
             for edge in edges:
                 if e.source == edge.source and e.target == edge.target and e.edge_type == edge.edge_type:
                     return True
             return False
+
+        def find_placeholder(modules):
+            for placeholder in placeholders:
+                if placeholder.is_standin(modules):
+                    return placeholder
+            return None
         
         # find DotNodes at too great a depth.
         too_deep     = [ n for n in self.nodes if is_too_deep(n.modules) ]
@@ -182,38 +189,29 @@ class DotGraph(Graph):
             if match == False:
                 placeholders.append(ModuleNode(n.modules[:depth]))
 
-        # create replacement edges
+        # Replace endpoints below the requested depth with their stand-in node.
+        # Edges within the same collapsed module become self-edges and disappear,
+        # while dependencies between different collapsed modules are preserved.
         new_edges = []
         for e in self.edges:
             src_mods = DotNode._label_to_modules(e.source)
             tgt_mods = DotNode._label_to_modules(e.target)
 
-            if is_too_deep(src_mods) and is_too_deep(tgt_mods):
+            source = e.source
+            target = e.target
+
+            if is_too_deep(src_mods):
+                source = find_placeholder(src_mods).label
+            if is_too_deep(tgt_mods):
+                target = find_placeholder(tgt_mods).label
+
+            if source == target:
                 continue
-            elif is_too_deep(src_mods):
-                for p in placeholders:
-                    if p.is_standin(src_mods):
-                        replace = True
-                        for ne in new_edges:
-                            if ne.source == p.label and ne.target == e.target:
-                                replace = False
-                                break
-                        if replace:
-                            new_edges.append(DotEdge(p.label, e.target, fmt=Format('')))
-                        break
-            elif is_too_deep(tgt_mods):
-                for p in placeholders:
-                    if p.is_standin(tgt_mods):
-                        replace = True
-                        for ne in new_edges:
-                            if ne.source == e.source and ne.target == p.label:
-                                replace = False
-                                break
-                        if replace:
-                            new_edges.append(DotEdge(e.source, p.label, fmt=Format('')))
-                        break
-            else:
+
+            if source == e.source and target == e.target:
                 new_edges.append(e)
+            else:
+                new_edges.append(DotEdge(source, target, fmt=e.fmt, edge_type=e.edge_type))
 
         # make sure we haven't got any duplicate edges.
         final_edges = []
@@ -246,31 +244,33 @@ class DotGraph(Graph):
                 edges_by_target[e.target] = [ e ]
 
         edges_to_save = OrderedSet() # edge objects
-        nodes_to_save = OrderedSet() # label strings
+        nodes_to_save = OrderedSet([node.label]) # label strings
 
-        q = deque()
-        if node.label in edges_by_source:
-            q.append(node.label)
-            nodes_to_save.add(node.label)
-            while len(q) > 0:
-                source = q.pop()
-                if source in edges_by_source:
-                    for e in edges_by_source[source]:
-                        q.append(e.target)
-                        edges_to_save.add(e)
-                        nodes_to_save.add(e.target)
+        q = deque([node.label])
+        visited = set()
+        while q:
+            source = q.popleft()
+            if source in visited:
+                continue
+            visited.add(source)
+            for e in edges_by_source.get(source, []):
+                edges_to_save.add(e)
+                nodes_to_save.add(e.target)
+                if e.target not in visited:
+                    q.append(e.target)
 
-        q = deque()
-        if node.label in edges_by_target:
-            q.append(node.label)
-            nodes_to_save.add(node.label)
-            while len(q) > 0:
-                target = q.pop()
-                if target in edges_by_target:
-                    for e in edges_by_target[target]:
-                        q.append(e.source)
-                        edges_to_save.add(e)
-                        nodes_to_save.add(e.source)
+        q = deque([node.label])
+        visited = set()
+        while q:
+            target = q.popleft()
+            if target in visited:
+                continue
+            visited.add(target)
+            for e in edges_by_target.get(target, []):
+                edges_to_save.add(e)
+                nodes_to_save.add(e.source)
+                if e.source not in visited:
+                    q.append(e.source)
 
         self.edges = list(edges_to_save)
         self.nodes = [ n for n in self.nodes if n.label in nodes_to_save ]
@@ -287,19 +287,20 @@ class DotGraph(Graph):
                 edges_by_source[e.source] = [ e ]
 
         edges_to_save = OrderedSet() # edge objects
-        nodes_to_save = OrderedSet() # label strings
+        nodes_to_save = OrderedSet([node.label]) # label strings
 
-        q = deque()
-        if node.label in edges_by_source:
-            q.append(node.label)
-            nodes_to_save.add(node.label)
-            while len(q) > 0:
-                source = q.pop()
-                if source in edges_by_source:
-                    for e in edges_by_source[source]:
-                        q.append(e.target)
-                        edges_to_save.add(e)
-                        nodes_to_save.add(e.target)
+        q = deque([node.label])
+        visited = set()
+        while q:
+            source = q.popleft()
+            if source in visited:
+                continue
+            visited.add(source)
+            for e in edges_by_source.get(source, []):
+                edges_to_save.add(e)
+                nodes_to_save.add(e.target)
+                if e.target not in visited:
+                    q.append(e.target)
 
         self.edges = list(edges_to_save)
         self.nodes = [ n for n in self.nodes if n.label in nodes_to_save ]
@@ -418,8 +419,7 @@ class DotNode(Node):
 
         self.fmt.add(id=self.svg_id, shape='box')
 
-
-        self.modules = [ m for m in self.module.split('.') if m != 'module' ]
+        self.modules = DotNode._label_to_modules(self.label)
 
     def __iter__(self):
         for key in {'label', 'simple_name', 'type', 'resource_name', 'group', 'svg_id', 'definition', 'cluster', 'module', 'modules'}:
@@ -447,18 +447,32 @@ class DotNode(Node):
         return m.groupdict()['name'] if m else ''
 
     @staticmethod
+    def _module_names(label):
+        address = re.sub(r'^\[root\]\s+', '', label).split(maxsplit=1)[0]
+        remaining = address
+        modules = []
+        module_re = re.compile(r'^module\.([^.\s\[]+(?:\[[^\]]+\])?)(?:\.|$)')
+
+        while remaining:
+            match = module_re.match(remaining)
+            if not match:
+                break
+            modules.append(match.group(1))
+            remaining = remaining[match.end():]
+
+        return modules
+
+    @staticmethod
     def _module(label):
-        try:
-            if not re.match(r'(\[root\]\s+)*module\..*', label):
-                return 'root'
-            m = re.match(r'(\[root\]\s+)*(?P<module>\S+)\.(?P<type>\S+)\.\S+', label)
-            return m.groupdict()['module']
-        except:
-            raise Exception("None: ", label)
+        modules = DotNode._module_names(label)
+        if not modules:
+            return 'root'
+        return 'module.' + '.module.'.join(modules)
 
     @staticmethod
     def _label_to_modules(label):
-        return [ m for m in DotNode._module(label).split('.') if m != 'module' ]
+        modules = DotNode._module_names(label)
+        return modules if modules else ['root']
 
 
 class ModuleNode(DotNode):
@@ -466,20 +480,9 @@ class ModuleNode(DotNode):
     Stands in for multiple DotNodes at the same module depth...
     '''
     def __init__(self, modules):
-        self.label = '[root] ' + 'module.' + '.module.'.join(modules) + '.collapsed.etc'
-        self.fmt = Format('')
-        self.simple_name    = re.sub(r'\[root\]\s+', '', self.label) # strip root module notation.
-        self.type           = DotNode._resource_type(self.label)
-        self.resource_name  = DotNode._resource_name(self.label)
-        self.svg_id         = 'node_' + str(Node.svg_id_counter())
-        self.definition     = {}
-        self.group          = 20000 # for coloration. placeholder. replaced in javascript.
-        self.module         = DotNode._module(self.label) # for module groupings. 'root' or 'module.foo.module.bar'
-        self.cluster        = None # for stacked resources (usually var/output).
-        self.modules        = [ m for m in self.module.split('.') if m != 'module' ]
+        label = '[root] ' + 'module.' + '.module.'.join(modules) + '.collapsed.etc'
+        super().__init__(label, fmt=Format(''))
         self.collapsed      = True
-
-        self.fmt.add(id=self.svg_id, shape='box')
 
     def is_standin(self, modules):
         'should this ModuleNode standin for the provided DotNode?'
@@ -521,5 +524,3 @@ class DotEdge(Edge):
     def __iter__(self):
         for key in {'source', 'target', 'svg_id', 'edge_type'}: 
             yield (key, getattr(self, key))
-
-

@@ -1,0 +1,43 @@
+digraph {
+        compound = "true"
+        newrank = "true"
+        subgraph "root" {
+                "[root] aws_instance.BlastRadiusTest (expand)" [label = "aws_instance.BlastRadiusTest", shape = "box"]
+                "[root] aws_internet_gateway.igw (expand)" [label = "aws_internet_gateway.igw", shape = "box"]
+                "[root] aws_main_route_table_association.rtAssoc (expand)" [label = "aws_main_route_table_association.rtAssoc", shape = "box"]
+                "[root] aws_route.route1 (expand)" [label = "aws_route.route1", shape = "box"]
+                "[root] aws_route_table.routeTable (expand)" [label = "aws_route_table.routeTable", shape = "box"]
+                "[root] aws_security_group.BRS (expand)" [label = "aws_security_group.BRS", shape = "box"]
+                "[root] aws_subnet.first-subnet (expand)" [label = "aws_subnet.first-subnet", shape = "box"]
+                "[root] aws_vpc.main (expand)" [label = "aws_vpc.main", shape = "box"]
+                "[root] output.ec2-public-dns" [label = "output.ec2-public-dns", shape = "note"]
+                "[root] output.ec2-public-ip" [label = "output.ec2-public-ip", shape = "note"]
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"]" [label = "provider[\"registry.terraform.io/hashicorp/aws\"]", shape = "diamond"]
+                "[root] var.amiId" [label = "var.amiId", shape = "note"]
+                "[root] var.keyName" [label = "var.keyName", shape = "note"]
+                "[root] var.keyPath" [label = "var.keyPath", shape = "note"]
+                "[root] var.tfvars" [label = "var.tfvars", shape = "note"]
+                "[root] aws_instance.BlastRadiusTest (expand)" -> "[root] aws_security_group.BRS (expand)"
+                "[root] aws_instance.BlastRadiusTest (expand)" -> "[root] aws_subnet.first-subnet (expand)"
+                "[root] aws_instance.BlastRadiusTest (expand)" -> "[root] var.amiId"
+                "[root] aws_instance.BlastRadiusTest (expand)" -> "[root] var.keyName"
+                "[root] aws_instance.BlastRadiusTest (expand)" -> "[root] var.keyPath"
+                "[root] aws_internet_gateway.igw (expand)" -> "[root] aws_vpc.main (expand)"
+                "[root] aws_main_route_table_association.rtAssoc (expand)" -> "[root] aws_route_table.routeTable (expand)"
+                "[root] aws_route.route1 (expand)" -> "[root] aws_internet_gateway.igw (expand)"
+                "[root] aws_route.route1 (expand)" -> "[root] aws_route_table.routeTable (expand)"
+                "[root] aws_route_table.routeTable (expand)" -> "[root] aws_vpc.main (expand)"
+                "[root] aws_security_group.BRS (expand)" -> "[root] aws_vpc.main (expand)"
+                "[root] aws_subnet.first-subnet (expand)" -> "[root] aws_vpc.main (expand)"
+                "[root] aws_vpc.main (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+                "[root] output.ec2-public-dns" -> "[root] aws_instance.BlastRadiusTest (expand)"
+                "[root] output.ec2-public-ip" -> "[root] aws_instance.BlastRadiusTest (expand)"
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_instance.BlastRadiusTest (expand)"
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_main_route_table_association.rtAssoc (expand)"
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_route.route1 (expand)"
+                "[root] root" -> "[root] output.ec2-public-dns"
+                "[root] root" -> "[root] output.ec2-public-ip"
+                "[root] root" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)"
+                "[root] root" -> "[root] var.tfvars"
+        }
+}

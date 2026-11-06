@@ -1,6 +1,10 @@
 import re
 import os
-import collections
+
+try:  # works in Python >= 3.3
+    import collections.abc as collections
+except ImportError:  # Python <= 3.2 including Python 2
+    import collections as collections
 
 class Re:
     '''A bit of a hack to simplify conditionals with 
